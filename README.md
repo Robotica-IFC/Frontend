@@ -1,44 +1,27 @@
-# Frontend
+<h1 align="center">Robotica IFC (Frontend)</h1>
 
-This template should help get you started developing with Vue 3 in Vite.
+###
 
-## Recommended IDE Setup
+<p align="center">Esse é o projeto desenvolvido pelos alunos:<br><br><a href="https://github.com/LauraEloysa" target="_blank">Laura Eloysa</a><br>
+<a href="https://github.com/LucasFontini1" target="_blank">Lucas Fontini</a><br>
+<a href="https://github.com/mariisbx" target="_blank">Maria Aparecida</a><br><br>Da turma 3INFO3 de 2026 do Instituto Federal Catarinense Campus Araquari<br><br>Esse Projeto é proposto na materia de projeto integrador, que visa integrar as materias do terceiro ano do ensino medio integrado</p>
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+###
 
-## Recommended Browser Setup
+<h2 align="center">As tecnologias usadas são as seguintes:</h2>
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+###
 
-## Customize configuration
+<div align="center">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" height="40" alt="figma logo"  />
+  <img width="20" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" height="40" alt="html5 logo"  />
+  <img width="20" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" height="40" alt="css logo"  />
+  <img width="20" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" height="40" alt="javascript logo"  />
+  <img width="20" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" height="40" alt="vuejs logo"  />
+</div>
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+###
