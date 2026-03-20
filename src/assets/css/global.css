@@ -21,18 +21,17 @@ body {
   min-width: 100vw;
 }
 
-/* Espaçamento para conteúdo abaixo do header fixo */
 .page {
   padding: 72px 16px 16px;
   max-width: 600px;
   margin: 0 auto;
 }
 
-/*Cores*/
 :root{
-    --principal-claro: #2761AA;
+    --botao-claro: #2761AA;
     --fundo-claro: #F6F6F2;
-    --botao-claro: #003D66;
+    --principal-claro: #003D66;
     --destaque-claro: #6084B0;
     --texto-claro: #141414;
+    --placeholder: #9A9A9A;
 }
