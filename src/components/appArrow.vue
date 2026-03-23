@@ -1,0 +1,22 @@
+<template>
+
+<div class="arrow">
+    <span class="mdi mdi-arrow-left"></span>
+</div>
+
+</template>
+
+<style scoped>
+div.arrow{
+    margin: 16px 0 0 32px;
+    color: var(--principal-secundario-claro);
+    font-size: 25px;
+}
+
+div.arrow span:active{
+    display:inline-block;
+    transform: scale(0.9);
+    color: var(--principal-claro);
+}
+</style>
+
