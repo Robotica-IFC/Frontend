@@ -8,7 +8,6 @@
 
 <style scoped>
 div.arrow{
-    margin: 16px 0 0 32px;
     color: var(--principal-secundario-claro);
     font-size: 25px;
 }

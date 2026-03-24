@@ -1,91 +1,105 @@
 <script setup>
-import appInput from '@/components/form/appInput.vue';
-import appArrow from '@/components/appArrow.vue';
-import appButton from '@/components/form/appButton.vue';
+import appInput from "@/components/form/appInput.vue";
+import appArrow from "@/components/appArrow.vue";
+import appButton from "@/components/form/appButton.vue";
+import { ref } from "vue";
+import router from "@/router";
+
+const password = ref(false)
+
+const passwordValue = ref('')
 </script>
 
 <template>
+  <div class="page">
     <div class="arrow">
-        <appArrow> </appArrow>
+      <appArrow></appArrow>
     </div>
 
-    <div class="page">
-        <img src="/src/assets/gif/acenar.gif" alt="Robo-acenando">
-        <h2>Bem-vindo(a) à Robótica!</h2>
-        <form>
-            <appInput :placeholder="'E-Mail'" :icon="'mdi mdi-email-outline'"></appInput>
-            <appInput :placeholder="'Senha'" :icon="'mdi mdi-lock-open'">
-                <button>
-                    <span class="mdi mdi-eye-outline"></span>
-                </button>
-            </appInput>
+    <img src="/src/assets/gif/acenar.gif" alt="Robo-acenando" />
 
-            <div class="botao">
-                <appButton :variant="'primary'" label="Entrar"> </appButton>
-                <appButton label="Esqueceu a senha?" :variant="'secondary'"> </appButton>
-            </div>
-        </form>
+    <h2>Bem-vindo(a) à Robótica!</h2>
 
-        <footer>
-            <div class="footer-text">
-                <span>Não possui um cadastro?</span>
-                <appButton variant="secondary" label="Cadastre-se" />
-            </div>
-        </footer>
+    <form>
+      <appInput name="email" style="margin-bottom: 20px;" :placeholder="'E-Mail'" :icon="'mdi mdi-email-outline'"></appInput>
 
-    </div>
+      <appInput :type="password ? 'text' : 'password'" name="password" v-model="passwordValue" :placeholder="'Senha'" :icon="'mdi mdi-lock-open'">
+          <span @click="password = !password" :class="password ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"></span>
+      </appInput>
+
+      <div class="botao">
+        <appButton variant="primary" label="Entrar"></appButton>
+        <appButton variant="secondary" label="Esqueceu a senha?"></appButton>
+      </div>
+    </form>
+
+    <footer>
+      <div class="footer-text">
+        <span>Não possui um cadastro?</span>
+        <appButton @click="router.push('/sign')" variant="secondary" label="Cadastre-se" />
+      </div>
+    </footer>
+  </div>
 </template>
+
 <style scoped>
-div.page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    width: 100%;
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.arrow {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
 }
 
 img {
-    width: 250px;
-    height: auto;
-    margin: 0;
-    margin-top: -30px;
+  width: 250px;
+  height: auto;
+  margin-top: -30px;
 }
 
 h2 {
-    font-size: 23px;
-    margin: 30px 0 20px;
-    text-align: center;
+  font-size: 23px;
+  margin: 30px 0 20px;
+  text-align: center;
 }
 
 form button {
-    background-color: var(--fundo-claro);
-    border: none;
-    font-size: 20px;
-    color: var(--principal-secundario-claro)
+  background-color: var(--fundo-claro);
+  border: none;
+  font-size: 20px;
+  color: var(--principal-secundario-claro);
 }
 
 form span {
-    display: flex;
-    justify-content: right;
-    margin-left: 40px;
+  display: flex;
+  justify-content: right;
+  margin-left: 40px;
+  color: var(--principal-secundario-claro);
+  font-size: 20px;
 }
 
 .botao {
-    margin-top: 25px;
+  margin-top: 25px;
 }
 
 .footer-text .btn {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .footer-text {
-    font-size: 16px;
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    width: 100%;
-    height: 50px;
-    justify-content: center;
+  font-size: 16px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  justify-content: center;
+  margin-top: auto;
 }
 </style>
