@@ -1,7 +1,10 @@
 <script setup>
 import appArrow from '../appArrow.vue'
 import appButton from '../form/appButton.vue'
+import { useTemplateStore } from '@/store/template';
 import router from '@/router'
+
+const templateStore = useTemplateStore()
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import router from '@/router'
     <div class="top"><!--Div que define oq ficara na parte de cima, permitindo usar space-bettwen, ASS: Lucas-->
       
       <div class="arrow"><!--Seta que retorna, ASS: Lucas-->
-        <app-arrow />
+        <app-arrow @back="router.push('/')" />
       </div>
 
       <img src="/src/assets/gif/acenar.gif" alt="Robo-acenando" /> <!--Tem q trocar pelo robo acenando, ASS: Lucas-->
@@ -17,14 +20,14 @@ import router from '@/router'
       <h2>Você quer se cadastrar como:</h2>
 
       <div class="btns"> <!--Div que fica os dois btn, ASS: Lucas-->
-        <app-button class="btn">
+        <app-button class="btn" @click="templateStore.sign = 1">
           <div class="btn-content"><!--Div para estilização do conteudo do botao, ASS: Lucas-->
             <span class="mdi mdi-account-school"></span>
             Aluno
           </div>
         </app-button>
 
-        <app-button class="btn">
+        <app-button class="btn" @click="templateStore.sign = 2">
           <div class="btn-content">
             <span class="mdi mdi-human-male-board-poll"></span>
             Professor
