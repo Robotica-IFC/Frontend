@@ -57,6 +57,12 @@ function validacao(){
           type="email"
           required
         ></appInput>
+        <appInput
+          placeholder="Instituto"
+          icon="mdi mdi-town-hall"
+          type="email"
+          required
+        ></appInput>
 
         <appInput
           placeholder="Senha"

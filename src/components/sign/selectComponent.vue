@@ -15,7 +15,7 @@ const templateStore = useTemplateStore()
         <app-arrow @back="router.push('/')" />
       </div>
 
-      <img src="/src/assets/gif/acenar.gif" alt="Robo-acenando" /> <!--Tem q trocar pelo robo acenando, ASS: Lucas-->
+      <img src="/src/assets/gif/pensando.gif" alt="Robo-pensando" />
 
       <h2>Você quer se cadastrar como:</h2>
 
