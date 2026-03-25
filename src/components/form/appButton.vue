@@ -35,7 +35,8 @@ const props = defineProps({
 .btn button{
     text-align: center;
     border: none;
-    transition: 0.5s;
+    transition: 0.1s;
+    width: 100%;
 }
 
 .primary {
@@ -43,7 +44,7 @@ const props = defineProps({
     font-size: 16px;
     padding: 10px 80px;
     height: auto;
-    background-color: var(--botao-claro);
+    background-color: var(--principal-claro);
     color: var(--fundo-claro);
 }
 .secondary {

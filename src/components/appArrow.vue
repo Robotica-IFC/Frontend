@@ -1,7 +1,10 @@
+<script setup>
+    import router from '@/router';
+</script>
 <template>
 
 <div class="arrow">
-    <span class="mdi mdi-arrow-left"></span>
+    <span @click="router.back" class="mdi mdi-arrow-left"></span>
 </div>
 
 </template>
