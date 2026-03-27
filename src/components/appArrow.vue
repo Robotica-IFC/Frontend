@@ -1,7 +1,12 @@
+<script setup>
+    // import router from '@/router';
+
+    const emits = defineEmits(['back'])
+</script>
 <template>
 
 <div class="arrow">
-    <span class="mdi mdi-arrow-left"></span>
+    <span @click="emits('back')" class="mdi mdi-arrow-left"></span>
 </div>
 
 </template>
@@ -12,10 +17,13 @@ div.arrow{
     font-size: 25px;
 }
 
+div.arrow span{
+    display: inline-block;
+    cursor: pointer;
+}
+
 div.arrow span:active{
-    display:inline-block;
     transform: scale(0.9);
     color: var(--principal-claro);
 }
 </style>
-
