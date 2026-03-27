@@ -5,8 +5,7 @@ export const useTemplateStore = defineStore('template', () => {
     const sign = ref(0);
     const changePassword = ref(0);
 
-
-    return{
+    return {
         sign,
         changePassword,
     }
