@@ -29,7 +29,7 @@ const passwordValue = ref('')
 
       <div class="botao">
         <appButton variant="primary" label="Entrar"></appButton>
-        <appButton variant="secondary" label="Esqueceu a senha?"></appButton>
+        <appButton @click="router.push('/change-password')" variant="secondary" label="Esqueceu a senha?" ></appButton>
       </div>
     </form>
 

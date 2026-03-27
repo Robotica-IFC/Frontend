@@ -20,6 +20,10 @@ const props = defineProps({
     default: 'primary',
   },
   name: String,
+  required: {
+    type: Boolean,
+    default: false
+  }
 })
 </script>
 
@@ -37,6 +41,7 @@ const props = defineProps({
       :placeholder="props.placeholder"
       :value="props.modelValue"
       @input="emit('update:modelValue', $event.target.value)"
+      :required="props.required"
     />
 
     <slot />
@@ -54,7 +59,7 @@ div.input {
   text-align: left;
   margin: 0 auto;
   width: 300px;
-  font-size: 22px;
+  font-size: 28px;
   margin-top: 12px;
 }
 input {
