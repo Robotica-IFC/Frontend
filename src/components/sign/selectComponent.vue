@@ -53,6 +53,10 @@ const templateStore = useTemplateStore()
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+}
 }
 
 .top {

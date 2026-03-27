@@ -12,6 +12,7 @@ const props = defineProps({
     default: "button",
   },
 });
+
 </script>
 
 <template>
@@ -39,6 +40,9 @@ const props = defineProps({
   border-radius: 8px;
   font-size: 16px;
   padding: 10px 80px;
+
+.primary:active {
+  transform: scale(0.95);
   height: auto;
   background-color: var(--principal-claro);
   color: var(--fundo-claro);
