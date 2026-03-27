@@ -15,7 +15,8 @@ const passwordValue2 = ref("");
 
 function validacao(){
   if(passwordValue.value == passwordValue2.value){
-    templateStore.sign = 3
+    templateStore.teacherOrStudent = false;
+    templateStore.sign = 3;
   }else{
     alert('As senhas não coincidem')
   }

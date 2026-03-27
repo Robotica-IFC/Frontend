@@ -5,6 +5,7 @@ import { useTemplateStore } from "@/store/template";
 import appInput from "../form/appInput.vue";
 import { ref } from "vue";
 import appButton from "../form/appButton.vue";
+import stepComponent from "../stepComponent.vue";
 
 const templateStore = useTemplateStore();
 
@@ -15,6 +16,7 @@ const passwordValue2 = ref("");
 
 function validacao(){
   if(passwordValue.value == passwordValue2.value){
+    templateStore.teacherOrStudent = true
     templateStore.sign = 3
   }else{
     alert('As senhas não coincidem')
@@ -86,7 +88,9 @@ function validacao(){
       </div>
       <appButton type="submit">Continuar</appButton>
     </form>
-    <div class="bottom"><!--Div que separa a parte de baixo, ASS: Lucas--></div>
+    <div class="bottom"><!--Div que separa a parte de baixo, ASS: Lucas-->
+      <stepComponent step=1 first="Informações" second="Confirme seu E-Mail" third="Dados finais"></stepComponent>
+    </div>
   </div>
 </template>
 <style scoped>
