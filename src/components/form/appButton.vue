@@ -40,7 +40,9 @@ const props = defineProps({
   border-radius: 8px;
   font-size: 16px;
   padding: 10px 80px;
-
+  background-color: var(--principal-claro);
+  color: white;
+}
 .primary:active {
   transform: scale(0.95);
   height: auto;

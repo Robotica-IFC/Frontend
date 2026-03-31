@@ -1,6 +1,19 @@
 <script setup>
 const props = defineProps({
-  step: Number
+  step: Number,
+  first: {
+    type: String,
+    default: 'Inserir e-mail'
+  },
+  second: {
+    type: String,
+    default: 'Verificar código'
+  },
+  
+  third: {
+    type: String,
+    default: 'Redefinir senha'
+  }
 })
 </script>
 
@@ -13,21 +26,21 @@ const props = defineProps({
 
       <div class="step">
         <div :class="['circle', step >= 1 ? 'active' : '']">
-          <span v-if="step > 1">✓</span>
+          <span v-if="props.step > 1">✓</span>
         </div>
-        <p>Inserir e-mail</p>
+        <p>{{ props.first }}</p>
       </div>
 
       <div class="step">
         <div :class="['circle', step >= 2 ? 'active' : '']">
-          <span v-if="step > 2">✓</span>
+          <span v-if="props.step > 2">✓</span>
         </div>
-        <p>Verificar código</p>
+        <p>{{ props.second }}</p>
       </div>
 
       <div class="step">
-        <div :class="['circle', step === 3 ? 'active' : '']"></div>
-        <p>Redefinir senha</p>
+        <div :class="['circle', props.step === 3 ? 'active' : '']"></div>
+        <p>{{ props.third }}</p>
       </div>
 
     </div>
@@ -44,13 +57,13 @@ const props = defineProps({
 
 .line {
   position: absolute;
-  top: 17px;
-  left: 35px;
-  width: 85%;
+  top: 12.5px;
+  left: 45px;
+  width: 72%;
   height: 4px;
   background: #ccc; 
   z-index: 1;
-}
+}   
 
 .steps {
   display: flex;
@@ -68,8 +81,8 @@ const props = defineProps({
 }
 
 .circle {
-  width: 35px;
-  height: 35px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background: #ccc; 
   display: flex;
