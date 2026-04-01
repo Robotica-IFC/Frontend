@@ -6,22 +6,25 @@ import appInput from "../form/appInput.vue";
 import { ref } from "vue";
 import appButton from "../form/appButton.vue";
 import stepComponent from "../stepComponent.vue";
+import { useStudentStore } from "@/store/studentStore";
 
 const templateStore = useTemplateStore();
+const studentStore = useStudentStore()
 
 const password = ref(false);
 const password2 = ref(false);
-const passwordValue = ref("");
+//const passwordValue = ref("");
 const passwordValue2 = ref("");
 
 function validacao(){
-  if(passwordValue.value == passwordValue2.value){
+  if(studentStore.state.student.senha == passwordValue2.value){
     templateStore.teacherOrStudent = true
     templateStore.sign = 3
   }else{
     alert('As senhas não coincidem')
   }
 }
+
 </script>
 <template>
   <div class="page">
@@ -39,18 +42,20 @@ function validacao(){
     <form @submit.prevent="validacao()" class="mid">
       <!--Div que separa a parte do meio, ASS: Lucas-->
       <div class="inputs">
-        <appInput placeholder="Nome" icon="mdi mdi-account" required></appInput>
+        <appInput placeholder="Nome" icon="mdi mdi-account" required v-model="studentStore.state.student.nome"></appInput>
         <appInput
           placeholder="Data de nascimento"
           icon="mdi mdi-calendar-multiselect"
           type="date"
           required
+          v-model="studentStore.state.student.data_nascimento"
         ></appInput>
         <appInput
           placeholder="CPF"
           icon="mdi mdi-card-account-details-outline"
           type="number"
           required
+          v-model="studentStore.state.student.cpf"
         ></appInput>
         <appInput placeholder="Telefone" icon="mdi mdi-phone" type="tel"></appInput>
         <appInput
@@ -58,14 +63,15 @@ function validacao(){
           icon="mdi mdi-email-outline"
           type="email"
           required
+          v-model="studentStore.state.student.email"
         ></appInput>
 
         <appInput
           placeholder="Senha"
           icon="mdi mdi-lock-open"
-          v-model="passwordValue"
           :type="password ? 'text' : 'password'"
           required
+          v-model="studentStore.state.student.senha"
         >
           <span
             @click="password = !password"

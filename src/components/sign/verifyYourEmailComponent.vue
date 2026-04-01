@@ -4,8 +4,11 @@ import appArrow from '../appArrow.vue';
 import verifyCodeComponent from '../verifyCodeComponent.vue';
 import stepComponent from '../stepComponent.vue';
 import appButton from '../form/appButton.vue';
+//import { useStudentStore } from '@/store/studentStore';
+//import { onMounted } from 'vue';
 
 const templateStore = useTemplateStore();
+//const studentStore = useStudentStore();
 
 function back() {
   templateStore.sign = templateStore.teacherOrStudent ? 1 : 2
