@@ -3,7 +3,7 @@ import appArrow from "../appArrow.vue";
 // import router from '@/router';
 import { useTemplateStore } from "@/store/template";
 import appInput from "../form/appInput.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import appButton from "../form/appButton.vue";
 import stepComponent from "../stepComponent.vue";
 import { useStudentStore } from "@/store/studentStore";
@@ -19,7 +19,7 @@ const passwordValue2 = ref("");
 function validacao(){
   if(studentStore.state.student.senha == passwordValue2.value){
     templateStore.teacherOrStudent = true
-    templateStore.sign = 3
+    templateStore.sign = 4
   }else{
     alert('As senhas não coincidem')
   }

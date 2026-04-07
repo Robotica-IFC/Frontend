@@ -5,6 +5,7 @@ import appArrow from '../appArrow.vue'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
 import AppInput from '../form/appInput.vue'
+import { onMounted, ref } from 'vue'
 
 const studentStore = useStudentStore()
 const templateStore = useTemplateStore()
@@ -13,19 +14,19 @@ function back() {
   templateStore.sign = templateStore.teacherOrStudent ? 3 : 3
 }
 
-async function handleImage(event) {
-  const file = event.target.files[0]
+const file = ref(null)
 
-  if (!file) return
-
-  const image = await studentStore.uploadImage(file)
-
-  // salvar chave para enviar ao backend
-  studentStore.state.student.imagem_perfil = image.attachment_key
-
-  // salvar url para preview
-  studentStore.state.student.imagem_preview = image.url
+function handleFileChange(e) {
+  file.value = e.target.files[0]
 }
+
+function submit() {
+  studentStore.submit(file.value)
+}
+
+onMounted(() => {
+  console.log(templateStore.sign)
+})
 </script>
 <template>
   <div class="page">
@@ -40,18 +41,10 @@ async function handleImage(event) {
 
       <h2>Informe seus dados:</h2>
     </div>
-    <form @submit.prevent="studentStore.createStudent()" class="final">
-      <appInput variant="signImage" type="file" name="imagem_perfil" @change="handleImage">
-        <img
-          v-if="studentStore.student.imagem_preview"
-          :src="studentStore.student.imagem_preview"
-          class="preview"
-        />
-
-        <span v-else class="mdi mdi-account"></span>
-
-        <span class="mdi mdi-camera camera"></span>
-      </appInput>
+    <form @submit.prevent="submit" class="final">
+      <input type="file" class="image" @change="handleFileChange">
+      <appInput placeholder="Nome de usuario" icon="mdi mdi-account-edit"></appInput>
+      <appButton type="submit">Criar conta</appButton>
     </form>
   </div>
 </template>
@@ -83,5 +76,10 @@ h2 {
 .final {
   display: flex;
   justify-content: center;
+}
+
+form{
+  display: flex;
+  flex-direction: column ;
 }
 </style>

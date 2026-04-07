@@ -15,8 +15,7 @@ export const useStudentStore = defineStore('student', () => {
       data_nascimento: '',
       ativo: true,
       email_verificado: true,
-      imagem_perfil: null,
-      imagem_preview: null,
+      imagem_perfil: 'b5cac9ca-5f98-422c-9a41-1696ca1a6a5d', //Esse e o attachment key da imagem padrão da minha api alterar quando mudar de maquina, ASS: Luca
     },
     students: [],
   })
@@ -59,16 +58,26 @@ export const useStudentStore = defineStore('student', () => {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await api.post('images', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    const response = await api.post('media/images', formData)
 
-    // salva no state
-    state.student.imagem_perfil = response.data.attachment_key
-    state.student.imagem_preview = response.data.url
+    return response.data
   }
+
+  //Função para criar usuario
+
+  async function submit(file) {
+    try {
+      if (file) {
+        const image = await uploadImage(file)
+        state.student.imagem_perfil = image.attachment_key
+      }
+
+      await createStudent()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return {
     // STATE evitar o maximo usar
     state,
@@ -85,5 +94,8 @@ export const useStudentStore = defineStore('student', () => {
 
     // Funções de imagem
     uploadImage,
+
+    // Criação geral do user
+    submit,
   }
 })
