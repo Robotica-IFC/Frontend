@@ -2,8 +2,12 @@ import { defineStore } from 'pinia'
 import studentsApi from '@/api/studentApi'
 import { computed, reactive } from 'vue'
 import router from '@/router'
+import { useTemplateStore } from './template'
 
 export const useStudentStore = defineStore('student', () => {
+  // Ativando a instancia da store ASS: Lucas
+  const templateStore = useTemplateStore();
+  
   const state = reactive({
     //Estado global que não pode ser alterado diretamente
     student: {
@@ -49,8 +53,6 @@ export const useStudentStore = defineStore('student', () => {
         email_verificado: state.student.email_verificado,
         imagem_perfil: state.student.imagem_perfil,
       })
-
-      alert('Conta criada com sucesso')
     } catch(error) {
       console.error(error.response?.data || error)
     }
@@ -77,7 +79,7 @@ export const useStudentStore = defineStore('student', () => {
       }
 
       await createStudent()
-      router.push('/test')
+      templateStore.successful = true;
     } catch (error) {
       console.error(error)
     }
