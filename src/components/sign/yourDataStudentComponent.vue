@@ -57,7 +57,7 @@ function validacao(){
           required
           v-model="studentStore.state.student.cpf"
         ></appInput>
-        <appInput placeholder="Telefone" icon="mdi mdi-phone" type="tel"></appInput>
+        <appInput placeholder="Telefone" icon="mdi mdi-phone" type="tel" v-model="studentStore.state.student.telefone"></appInput>
         <appInput
           placeholder="E-Mail"
           icon="mdi mdi-email-outline"

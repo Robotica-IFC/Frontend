@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import api from '@/plugins/axios'
+import studentsApi from '@/api/studentApi'
 import { computed, reactive } from 'vue'
+import router from '@/router'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
@@ -19,20 +20,25 @@ export const useStudentStore = defineStore('student', () => {
     },
     students: [],
   })
+
   const student = computed(() => state.student) // O que sera usado nos components
   const students = computed(() => state.students)
 
   // Funções de get
   async function getStudents() {
-    const response = await api.get('alunos')
+    try {
+      const response = await studentsApi.getAll()
 
-    students.value = response.data.results
+      state.students.value = response.data.results ?? response.data
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   // Funções de POST
   async function createStudent() {
     try {
-      const response = await api.post('alunos', {
+      const response = await studentsApi.create({
         nome: state.student.nome,
         email: state.student.email,
         cpf: state.student.cpf,
@@ -45,10 +51,8 @@ export const useStudentStore = defineStore('student', () => {
       })
 
       alert('Conta criada com sucesso')
-    } catch {
-      if (Error) {
-        console.error(Error)
-      }
+    } catch(error) {
+      console.error(error.response?.data || error)
     }
   }
 
@@ -56,9 +60,9 @@ export const useStudentStore = defineStore('student', () => {
 
   async function uploadImage(file) {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append("file", file)
 
-    const response = await api.post('media/images', formData)
+    const response = await studentsApi.uploadImage(formData)
 
     return response.data
   }
@@ -73,6 +77,7 @@ export const useStudentStore = defineStore('student', () => {
       }
 
       await createStudent()
+      router.push('/test')
     } catch (error) {
       console.error(error)
     }
