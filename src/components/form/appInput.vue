@@ -1,10 +1,10 @@
 <script setup>
-import { defineEmits } from 'vue'
+import { defineEmits, computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])
 
 const props = defineProps({
-  modelValue: String,
+  modelValue: [String, Number],
   label: {
     type: String,
   },
@@ -23,8 +23,13 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  maxlength: Number
+  maxlength: Number,
 })
+
+const value = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val),
+});
 </script>
 
 <template>
@@ -44,7 +49,7 @@ const props = defineProps({
       :required="required"
       :class="variant"
       :maxlength="props.maxlength"
-
+      v-model="value"
     />
 
     <slot />
@@ -113,6 +118,56 @@ input.terciary {
   box-sizing: border-box;
   font-size: 20px;
 }
+
+/* Foto de perfil */
+div.input.signImage {
+  border: none;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background-color: #e8dfd7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* esconder input real */
+div.input.signImage input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* preview da imagem */
+div.input.signImage img.preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ícone padrão */
+div.input.signImage .mdi-account {
+  font-size: 45px;
+  color: #555;
+}
+
+/* ícone de câmera */
+div.input.signImage .camera {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #0e3a5d;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  padding: 6px;
+}
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
