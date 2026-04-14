@@ -11,4 +11,4 @@
     <putEmailComponent v-if="store.changePassword === 0"></putEmailComponent>
     <checkCodeComponent v-if="store.changePassword === 1"></checkCodeComponent>
     <resetPasswordComponent v-if="store.changePassword === 2"></resetPasswordComponent>
-</template>
+</template>  
