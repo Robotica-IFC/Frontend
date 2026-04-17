@@ -4,24 +4,26 @@
 
     const studentStore = useStudentStore()
 
-    onMounted(() => {
-        studentStore.getStudents()
-
+    onMounted(async () => {
+        await studentStore.getStudents()
         console.log(studentStore.students)
     })
 </script>
+
 <template>
     <div class="page">
-    <ul>
-        <li v-for="a in studentStore.students.value" :key="a.id">
-            <p>
-                {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
-            </p>
-            <a :href="a.imagem_perfil.file" target="_blank">
-            <img :src="a.imagem_perfil.file" alt="">
-            </a>
-        </li>
-    </ul>
+        <ul>
+            <li v-for="a in studentStore.students" :key="a.id">
+                <p>
+                    {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                </p>
+                
+                <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
+                    <img :src="a.imagem_perfil.file" :alt="a.nome">
+                </a>
+                <img v-else src="/img/default2.jpg" alt="Imagem padrão">
+            </li>
+        </ul>
     </div>
 </template>
 <style scoped>
@@ -53,5 +55,6 @@ div.page{
         height: 30vh;
         border-radius: 50%;
         object-fit: cover;
+        margin-top: 10px;
     }
 </style>

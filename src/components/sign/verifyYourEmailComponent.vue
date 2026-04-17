@@ -32,7 +32,7 @@ function back() {
         <verifyCodeComponent></verifyCodeComponent>
         <div class="btns">
           <appButton>Reenviar código</appButton>
-          <appButton>Continuar</appButton>
+          <appButton @click="templateStore.sign = 4">Continuar</appButton>
         </div>
       </div>
     </div>

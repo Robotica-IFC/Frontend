@@ -88,6 +88,8 @@ const props = defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 10px;
+  font-size: 10px;
 }
 
 .circle.active {

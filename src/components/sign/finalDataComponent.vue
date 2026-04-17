@@ -3,9 +3,9 @@ import { useStudentStore } from '@/store/studentStore'
 import { useTemplateStore } from '@/store/template'
 import appArrow from '../appArrow.vue'
 import appButton from '../form/appButton.vue'
-import appInput from '../form/appInput.vue'
 import AppInput from '../form/appInput.vue'
 import { onMounted, ref } from 'vue'
+import stepComponent from '../stepComponent.vue'
 
 const studentStore = useStudentStore()
 const templateStore = useTemplateStore()
@@ -16,9 +16,9 @@ function back() {
 
 const file = ref(null)
 
-function handleFileChange(e) {
-  file.value = e.target.files[0]
-}
+// function handleFileChange(e) {
+//   file.value = e.target.files[0]
+// }
 
 function submit() {
   studentStore.submit(file.value)
@@ -42,10 +42,13 @@ onMounted(() => {
       <h2>Informe seus dados:</h2>
     </div>
     <form @submit.prevent="submit" class="final">
-      <input type="file" class="image" @change="handleFileChange">
-      <appInput placeholder="Nome de usuario" icon="mdi mdi-account-edit"></appInput>
+      <!-- <input type="file" class="image" @change="handleFileChange"> -->
+      <appInput placeholder="Nome de usuario" icon="mdi mdi-account-edit" v-model="studentStore.student.nome"></appInput>
       <appButton type="submit">Criar conta</appButton>
     </form>
+    <div class="bottom">
+        <stepComponent :step=3 first="Informações" second="Confirme seu E-Mail" third="Dados finais"></stepComponent>
+    </div>
   </div>
 </template>
 <style scoped>

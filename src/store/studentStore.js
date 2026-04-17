@@ -16,7 +16,7 @@ export const useStudentStore = defineStore('student', () => {
       data_nascimento: '',
       ativo: true,
       email_verificado: true,
-      imagem_perfil: 'b5cac9ca-5f98-422c-9a41-1696ca1a6a5d', //Esse e o attachment key da imagem padrão da minha api alterar quando mudar de maquina, ASS: Luca
+      imagem_perfil: '', //Esse e o attachment key da imagem padrão da minha api alterar quando mudar de maquina, ASS: Luca
     },
     students: [],
   })
@@ -29,7 +29,7 @@ export const useStudentStore = defineStore('student', () => {
     try {
       const response = await studentsApi.getAll()
 
-      state.students.value = response.data.results ?? response.data
+      state.students = response.data.results ?? response.data
     } catch (error) {
       console.error(error)
     }
@@ -53,6 +53,7 @@ export const useStudentStore = defineStore('student', () => {
       alert('Conta criada com sucesso')
     } catch(error) {
       console.error(error.response?.data || error)
+      throw error;
     }
   }
 
@@ -79,7 +80,8 @@ export const useStudentStore = defineStore('student', () => {
       await createStudent()
       router.push('/test')
     } catch (error) {
-      console.error(error)
+      console.error("Falha no processo de criação:", error)
+      alert('Falha ao criar conta: ' + (error.response?.data?.detail || error.message))
     }
   }
 
