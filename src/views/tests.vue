@@ -1,17 +1,21 @@
 <script setup>
     import { useStudentStore } from '@/store/studentStore';
+    import { useTeacherStore } from '@/store/teacherStore';
     import { onMounted } from 'vue';
 
     const studentStore = useStudentStore()
+    const teacherStore = useTeacherStore()
 
     onMounted(async () => {
         await studentStore.getStudents()
-        console.log(studentStore.students)
+        await teacherStore.getTeachers()
     })
 </script>
 
 <template>
     <div class="page">
+    <div class="a">
+    <h1>alunos max10</h1>
         <ul>
             <li v-for="a in studentStore.students" :key="a.id">
                 <p>
@@ -24,6 +28,22 @@
                 <img v-else src="/img/default2.jpg" alt="Imagem padrão">
             </li>
         </ul>
+        </div>
+        <div class="a">
+        <h1>Professores max10</h1>
+        <ul>
+            <li v-for="a in teacherStore.teachers" :key="a.id">
+                <p>
+                    {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                </p>
+                
+                <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
+                    <img :src="a.imagem_perfil.file" :alt="a.nome">
+                </a>
+                <img v-else src="/img/default2.jpg" alt="Imagem padrão">
+            </li>
+        </ul>
+        </div>
     </div>
 </template>
 <style scoped>
@@ -32,6 +52,7 @@ div.page{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
     ul{
         width: 70%;
@@ -51,10 +72,14 @@ div.page{
         text-align: center;
     }
     li img{
-        width: 100%;
+        width: 30vh;
         height: 30vh;
         border-radius: 50%;
         object-fit: cover;
         margin-top: 10px;
+    }
+    .a{
+        display: flex;
+        flex-direction: column;
     }
 </style>
