@@ -26,7 +26,7 @@ function back() {
 
         <img src="/src/assets/gif/digitando.gif" alt="Robo-acenando" />
 
-        <h2>Informe seus dados:</h2>
+        <h2>Confirme seu E-Mail</h2>
       </div>
       <div class="mid">
         <verifyCodeComponent></verifyCodeComponent>
