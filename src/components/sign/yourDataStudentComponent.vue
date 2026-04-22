@@ -53,7 +53,6 @@ function validacao(){
         <appInput
           placeholder="CPF"
           icon="mdi mdi-card-account-details-outline"
-          type="number"
           required
           v-model="studentStore.state.student.cpf"
         ></appInput>

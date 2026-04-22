@@ -1,16 +1,17 @@
 import { defineStore } from 'pinia'
-import studentsApi from '@/api/studentApi'
+import teacherApi from '@/api/teacherApi'
 import { computed, reactive } from 'vue'
 import router from '@/router'
 import imageApi from '@/api/imageApi'
 
-export const useStudentStore = defineStore('student', () => {
+export const useTeacherStore = defineStore('teacher', () => {
   const state = reactive({
     //Estado global que não pode ser alterado diretamente
-    student: {
+    teacher: {
       id: null,
       nome: '',
       username: '',
+      instituicao: '',
       email: '',
       cpf: '',
       senha: '',
@@ -20,37 +21,38 @@ export const useStudentStore = defineStore('student', () => {
       email_verificado: true,
       imagem_perfil: 'e52625ec-f04a-490b-a52b-5d6db97ec88f', //Esse e o attachment key da imagem padrão da minha api alterar quando mudar de maquina, ASS: Luca
     },
-    students: [],
+    teachers: [],
   })
 
-  const student = computed(() => state.student) // O que sera usado nos components
-  const students = computed(() => state.students)
+  const teacher = computed(() => state.teacher) // O que sera usado nos components
+  const teachers = computed(() => state.teachers)
 
   // Funções de get
-  async function getStudents() {
+  async function getTeachers() {
     try {
-      const response = await studentsApi.getAll()
+      const response = await teacherApi.getAll()
 
-      state.students = response.data.results ?? response.data
+      state.teachers = response.data.results ?? response.data
     } catch (error) {
       console.error(error)
     }
   }
 
   // Funções de POST
-  async function createStudent() {
+  async function createTeacher() {
     try {
-      const response = await studentsApi.create({
-        nome: state.student.nome,
-        username: state.student.username,
-        email: state.student.email,
-        cpf: state.student.cpf,
-        senha: state.student.senha,
-        telefone: state.student.telefone,
-        data_nascimento: state.student.data_nascimento,
-        ativo: state.student.ativo,
-        email_verificado: state.student.email_verificado,
-        imagem_perfil: state.student.imagem_perfil,
+      const response = await teacherApi.create({
+        nome: state.teacher.nome,
+        username: state.teacher.username,
+        instituicao: state.teacher.instituicao,
+        email: state.teacher.email,
+        cpf: state.teacher.cpf,
+        senha: state.teacher.senha,
+        telefone: state.teacher.telefone,
+        data_nascimento: state.teacher.data_nascimento,
+        ativo: state.teacher.ativo,
+        email_verificado: state.teacher.email_verificado,
+        imagem_perfil: state.teacher.imagem_perfil,
       })
 
       alert('Conta criada com sucesso')
@@ -76,13 +78,12 @@ export const useStudentStore = defineStore('student', () => {
   async function submit(file) {
     const apenasNumeros = /^\d+$/
 
-    if (!apenasNumeros.test(state.student.cpf)) {
+    if (!apenasNumeros.test(state.teacher.cpf)) {
       alert('O CPF deve conter apenas números!')
       return
     }
 
-    // Verifica se o Telefone é inválido
-    if (!apenasNumeros.test(state.student.telefone)) {
+    if (!apenasNumeros.test(state.teacher.telefone)) {
       alert('O telefone deve conter apenas números!')
       return
     }
@@ -90,10 +91,10 @@ export const useStudentStore = defineStore('student', () => {
     try {
       if (file) {
         const image = await uploadImage(file)
-        state.student.imagem_perfil = image.attachment_key
+        state.teacher.imagem_perfil = image.attachment_key
       }
 
-      await createStudent()
+      await createTeacher()
       router.push('/test')
     } catch (error) {
       console.error('Falha no processo de criação:', error)
@@ -106,14 +107,14 @@ export const useStudentStore = defineStore('student', () => {
     state,
 
     // Usar para listar
-    student,
-    students,
+    teacher,
+    teachers,
 
     // Funções de get
-    getStudents,
+    getTeachers,
 
     // Funções de post
-    createStudent,
+    createTeacher,
 
     // Funções de imagem
     uploadImage,
