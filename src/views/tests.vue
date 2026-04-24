@@ -2,13 +2,16 @@
 import { useStudentStore } from '@/store/studentStore';
 import { useTeacherStore } from '@/store/teacherStore';
 import { onMounted } from 'vue';
+import { useInstituteStore } from '@/store/instituteStore';
 
 const studentStore = useStudentStore()
 const teacherStore = useTeacherStore()
+const instituteStore = useInstituteStore()
 
 onMounted(async () => {
     await studentStore.getStudents()
     await teacherStore.getTeachers()
+    await instituteStore.getInstitutes()
 })
 </script>
 
@@ -39,6 +42,20 @@ onMounted(async () => {
 
                     <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
                         <img :src="a.imagem_perfil.file" :alt="a.nome">
+                    </a>
+                    <img v-else src="/img/default2.jpg" alt="Imagem padrão">
+                </li>
+            </ul>
+        </div>
+        <div class="a">
+            <h1>Institutos max10</h1>
+            <ul>
+                <li v-for="a in instituteStore.institutes" :key="a.id">
+                    <p>
+                        {{ a.nome }}
+                    </p>
+                    <a v-if="a.logo" :href="a.logo.file" target="_blank">
+                        <img :src="a.logo.file" :alt="a.nome">
                     </a>
                     <img v-else src="/img/default2.jpg" alt="Imagem padrão">
                 </li>
