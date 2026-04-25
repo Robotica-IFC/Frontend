@@ -71,4 +71,19 @@ const props = defineProps({
     bottom: 0;
     left: 0;
 }
+
+.card{
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 5px 0;
+  background-color: var(--principal-claro);
+  color: white;
+  width: 100px;
+}
+.card:active {
+  transform: scale(0.95);
+  height: auto;
+  background-color: var(--principal-claro);
+  color: var(--fundo-claro);
+}
 </style>
