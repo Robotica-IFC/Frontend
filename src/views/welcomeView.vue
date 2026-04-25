@@ -2,12 +2,28 @@
 import appInput from "@/components/form/appInput.vue";
 import appArrow from "@/components/appArrow.vue";
 import appButton from "@/components/form/appButton.vue";
-import { ref } from "vue";
+import { ref, reactive } from "vue"; // Adicionado reactive
+import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
 
-const password = ref(false)
+const authStore = useAuthStore();
+const showPassword = ref(false); // Mudei o nome para não confundir com o valor
 
-const passwordValue = ref('')
+// Objeto com as credenciais que o Django espera
+const credentials = reactive({
+  email: '',
+  password: ''
+});
+
+const handleLogin = async () => {
+  try {
+    await authStore.login(credentials);
+    // Se o login for bem sucedido, o redirecionamento já acontece lá na store!
+  } catch (error) {
+    // Aqui você pode tratar erros de senha errada, por exemplo
+    alert("Email ou senha inválidos.");
+  }
+};
 </script>
 
 <template>
@@ -20,16 +36,21 @@ const passwordValue = ref('')
 
     <h2>Bem-vindo(a) à Robótica!</h2>
 
-    <form>
-      <appInput name="email" style="margin-bottom: 20px;" :placeholder="'E-Mail'" :icon="'mdi mdi-email-outline'"></appInput>
+    <form @submit.prevent="handleLogin">
+      <appInput v-model="credentials.email" name="email" style="margin-bottom: 20px;" placeholder="E-Mail"
+        icon="mdi mdi-email-outline" />
 
-      <appInput :type="password ? 'text' : 'password'" name="password" v-model="passwordValue" :placeholder="'Senha'" :icon="'mdi mdi-lock-open'">
-          <span @click="password = !password" :class="password ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"></span>
+      <appInput v-model="credentials.password" :type="showPassword ? 'text' : 'password'" name="password"
+        placeholder="Senha" icon="mdi mdi-lock-open">
+        <span @click="showPassword = !showPassword"
+          :class="showPassword ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"></span>
       </appInput>
 
       <div class="botao">
-        <appButton variant="primary" label="Entrar"></appButton>
-        <appButton @click="router.push('/change-password')" variant="secondary" label="Esqueceu a senha?" ></appButton>
+        <appButton type="submit" variant="primary" label="Entrar" />
+
+        <appButton type="button" @click="router.push('/change-password')" variant="secondary"
+          label="Esqueceu a senha?" />
       </div>
     </form>
 

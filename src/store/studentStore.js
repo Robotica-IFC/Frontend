@@ -6,83 +6,82 @@ import imageApi from '@/api/imageApi'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
-    //Estado global que não pode ser alterado diretamente
     student: {
       id: null,
-      nome: '',
+      name: '', 
       username: '',
       email: '',
+      password: '',
       cpf: '',
-      senha: '',
       telefone: '',
       data_nascimento: '',
+      descricao: '',
       ativo: true,
-      email_verificado: true,
-      imagem_perfil: 'e52625ec-f04a-490b-a52b-5d6db97ec88f', //Esse e o attachment key da imagem padrão da minha api alterar quando mudar de maquina, ASS: Luca
+      email_verificado: false,
+      imagem_perfil: 'e52625ec-f04a-490b-a52b-5d6db97ec88f', 
     },
     students: [],
+    meUser: null,
   })
 
-  const student = computed(() => state.student) // O que sera usado nos components
+  const student = computed(() => state.student)
   const students = computed(() => state.students)
 
-  // Funções de get
   async function getStudents() {
     try {
       const response = await studentsApi.getAll()
-
       state.students = response.data.results ?? response.data
     } catch (error) {
       console.error(error)
     }
   }
 
-  // Funções de POST
   async function createStudent() {
     try {
       const response = await studentsApi.create({
-        nome: state.student.nome,
-        username: state.student.username,
-        email: state.student.email,
+        name: state.student.name, 
+        username: state.student.username, 
+        email: state.student.email, 
+        password: state.student.password, 
         cpf: state.student.cpf,
-        senha: state.student.senha,
         telefone: state.student.telefone,
         data_nascimento: state.student.data_nascimento,
-        ativo: state.student.ativo,
-        email_verificado: state.student.email_verificado,
+        descricao: state.student.descricao,
         imagem_perfil: state.student.imagem_perfil,
       })
 
-      alert('Conta criada com sucesso')
+      state.meUser = {
+        id: response.data.user.id,
+        name: response.data.user.name,
+        username: response.data.user.username,
+        email: response.data.user.email,
+        tipo: 'aluno'
+      }
+
+      alert('Conta criada com sucesso!')
     } catch (error) {
-      console.error(error.response?.data || error)
+      const errorMsg = error.response?.data 
+      console.error('Erro detalhado:', errorMsg)
       throw error
     }
   }
 
-  // CRUD de imagem de perfil
-
   async function uploadImage(file) {
     const formData = new FormData()
     formData.append('file', file)
-
     const response = await imageApi.uploadImage(formData)
-
     return response.data
   }
-
-  //Função para criar usuario
 
   async function submit(file) {
     const apenasNumeros = /^\d+$/
 
-    if (!apenasNumeros.test(state.student.cpf)) {
+    if (state.student.cpf && !apenasNumeros.test(state.student.cpf)) {
       alert('O CPF deve conter apenas números!')
       return
     }
 
-    // Verifica se o Telefone é inválido
-    if (!apenasNumeros.test(state.student.telefone)) {
+    if (state.student.telefone && !apenasNumeros.test(state.student.telefone)) {
       alert('O telefone deve conter apenas números!')
       return
     }
@@ -94,31 +93,27 @@ export const useStudentStore = defineStore('student', () => {
       }
 
       await createStudent()
-      router.push('/test')
+      router.push('/login')
     } catch (error) {
       console.error('Falha no processo de criação:', error)
-      alert('Falha ao criar conta: ' + (error.response?.data?.detail || error.message))
+      const backendError = error.response?.data
+      let mensagem = 'Falha ao criar conta.'
+      
+      if (backendError) {
+        mensagem += ' Verifique os dados: ' + Object.values(backendError).flat().join(', ')
+      }
+      
+      alert(mensagem)
     }
   }
 
   return {
-    // STATE evitar o maximo usar
     state,
-
-    // Usar para listar
     student,
     students,
-
-    // Funções de get
     getStudents,
-
-    // Funções de post
     createStudent,
-
-    // Funções de imagem
     uploadImage,
-
-    // Criação geral do user
     submit,
   }
 })

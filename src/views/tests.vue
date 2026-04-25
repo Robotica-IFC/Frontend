@@ -17,12 +17,16 @@ onMounted(async () => {
 
 <template>
     <div class="page">
+        <div class="me">
+            <h1>Me</h1>
+            <p>{{ studentStore.state.meUser?.name }}</p>
+        </div>
         <div class="a">
             <h1>alunos max10</h1>
             <ul>
                 <li v-for="a in studentStore.students" :key="a.id">
                     <p>
-                        {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                        {{ a.user.name }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
                     </p>
 
                     <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
