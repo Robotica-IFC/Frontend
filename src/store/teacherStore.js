@@ -19,7 +19,7 @@ export const useTeacherStore = defineStore('teacher', () => {
       data_nascimento: '',
       ativo: true,
       email_verificado: true,
-      imagem_perfil: 'e52625ec-f04a-490b-a52b-5d6db97ec88f', 
+      imagem_perfil: '',
     },
     teachers: [],
     meUser: null,
@@ -41,6 +41,7 @@ export const useTeacherStore = defineStore('teacher', () => {
   async function createTeacher() {
     try {
       const response = await teacherApi.create({
+        // ... seus campos enviados continuam iguais
         name: state.teacher.name,
         username: state.teacher.username,
         instituicao: state.teacher.instituicao,
@@ -56,6 +57,8 @@ export const useTeacherStore = defineStore('teacher', () => {
 
       console.log('Resposta Professor:', response.data)
 
+      // AQUI ESTÁ A CORREÇÃO:
+      // Se o backend retorna o usuário dentro de response.data.user:
       if (response.data.user) {
         state.meUser = {
           id: response.data.user.id,
@@ -64,10 +67,20 @@ export const useTeacherStore = defineStore('teacher', () => {
           email: response.data.user.email,
           tipo: 'professor',
         }
+      } else {
+        // Caso o backend do professor retorne o objeto direto (sem a chave .user)
+        state.meUser = {
+          id: response.data.id,
+          name: response.data.name,
+          username: response.data.username,
+          email: response.data.email,
+          tipo: 'professor',
+        }
       }
 
-      // Sincroniza com o authStore
+      // Agora salva o usuário formatado no authStore
       authStore.state.user = state.meUser
+
       alert('Conta de professor criada com sucesso!')
     } catch (error) {
       const errorMsg = error.response?.data
