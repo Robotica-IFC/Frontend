@@ -3,12 +3,13 @@ import studentsApi from '@/api/studentApi'
 import { computed, reactive } from 'vue'
 import router from '@/router'
 import imageApi from '@/api/imageApi'
+import { useAuthStore } from './authStore'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
     student: {
       id: null,
-      name: '', 
+      name: '',
       username: '',
       email: '',
       password: '',
@@ -18,7 +19,7 @@ export const useStudentStore = defineStore('student', () => {
       descricao: '',
       ativo: true,
       email_verificado: false,
-      imagem_perfil: 'e52625ec-f04a-490b-a52b-5d6db97ec88f', 
+      imagem_perfil: '',
     },
     students: [],
     meUser: null,
@@ -26,6 +27,8 @@ export const useStudentStore = defineStore('student', () => {
 
   const student = computed(() => state.student)
   const students = computed(() => state.students)
+
+  const authStore = useAuthStore()
 
   async function getStudents() {
     try {
@@ -39,28 +42,31 @@ export const useStudentStore = defineStore('student', () => {
   async function createStudent() {
     try {
       const response = await studentsApi.create({
-        name: state.student.name, 
-        username: state.student.username, 
-        email: state.student.email, 
-        password: state.student.password, 
+        name: state.student.name,
+        username: state.student.username,
+        email: state.student.email,
+        password: state.student.password,
         cpf: state.student.cpf,
         telefone: state.student.telefone,
         data_nascimento: state.student.data_nascimento,
         descricao: state.student.descricao,
         imagem_perfil: state.student.imagem_perfil,
       })
-
-      state.meUser = {
-        id: response.data.user.id,
-        name: response.data.user.name,
-        username: response.data.user.username,
-        email: response.data.user.email,
-        tipo: 'aluno'
+      console.log(response.data)
+      if (response.data.user) {
+        state.meUser = {
+          id: response.data.user.id,
+          name: response.data.user.name,
+          username: response.data.user.username,
+          email: response.data.user.email,
+          tipo: 'aluno',
+        }
       }
 
+      authStore.state.user = state.meUser
       alert('Conta criada com sucesso!')
     } catch (error) {
-      const errorMsg = error.response?.data 
+      const errorMsg = error.response?.data
       console.error('Erro detalhado:', errorMsg)
       throw error
     }
@@ -93,16 +99,30 @@ export const useStudentStore = defineStore('student', () => {
       }
 
       await createStudent()
-      router.push('/login')
+
+      router.push('/test')
+
+      Object.assign(state.student, {
+        id: null,
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        cpf: '',
+        telefone: '',
+        data_nascimento: '',
+        descricao: '',
+        imagem_perfil: null,
+      })
     } catch (error) {
       console.error('Falha no processo de criação:', error)
       const backendError = error.response?.data
       let mensagem = 'Falha ao criar conta.'
-      
+
       if (backendError) {
         mensagem += ' Verifique os dados: ' + Object.values(backendError).flat().join(', ')
       }
-      
+
       alert(mensagem)
     }
   }

@@ -3,10 +3,12 @@ import { useStudentStore } from '@/store/studentStore';
 import { useTeacherStore } from '@/store/teacherStore';
 import { onMounted } from 'vue';
 import { useInstituteStore } from '@/store/instituteStore';
+import { useAuthStore } from '@/store/authStore';
 
 const studentStore = useStudentStore()
 const teacherStore = useTeacherStore()
 const instituteStore = useInstituteStore()
+const authStore = useAuthStore()
 
 onMounted(async () => {
     await studentStore.getStudents()
@@ -19,7 +21,7 @@ onMounted(async () => {
     <div class="page">
         <div class="me">
             <h1>Me</h1>
-            <p>{{ studentStore.state.meUser?.name }}</p>
+            <p>{{ authStore.user?.name }} / {{ authStore.user?.username }}</p>
         </div>
         <div class="a">
             <h1>alunos max10</h1>

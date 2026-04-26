@@ -6,11 +6,10 @@ import { useStudentStore } from './studentStore'
 
 export const useAuthStore = defineStore('auth', () => {
   const state = reactive({
-    accessToken: null,
-    refreshToken: null,
-    user: null,
+    accessToken: localStorage.getItem('access_token') || null,
+    refreshToken: localStorage.getItem('refresh_token') || null,
+    user: null, // Adicionar quando subir para o vercel JSON.parse(localStorage.getItem('user_data')) || null, 
   })
-  const studentStore = useStudentStore()
 
   const isAuthenticated = computed(() => !!state.accessToken)
   const user = computed(() => state.user)
@@ -18,15 +17,13 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials) {
     try {
       const response = await authApi.login(credentials)
-      state.accessToken = response.data.access
-      state.refreshToken = response.data.refresh
+      const access = response.data.access
+      const refresh = response.data.refresh
 
-      // Decodifica o Base64 do meio do Token
-      const payload = JSON.parse(atob(state.accessToken.split('.')[1]))
-      console.log("CONTEÚDO DO TOKEN:", payload);
-      
-      // Monta o objeto com os dados injetados pelo MyTokenObtainPairSerializer
-      state.user = {
+      // Decodifica o payload do Token
+      const payload = JSON.parse(atob(access.split('.')[1]))
+
+      const userData = {
         id: payload.user_id,
         name: payload.name,
         username: payload.username,
@@ -35,15 +32,20 @@ export const useAuthStore = defineStore('auth', () => {
         cpf: payload.cpf,
         telefone: payload.telefone,
         descricao: payload.descricao,
-        imagem_perfil: payload.imagem_perfil
+        imagem_perfil: payload.imagem_perfil,
       }
 
-      // Sincroniza o usuário logado com o meUser da outra store
-      console.log('User logged in:', state.user) // Log para verificar os dados do usuário
-      studentStore.state.meUser = state.user
+      // Salva no State
+      state.accessToken = access
+      state.refreshToken = refresh
+      state.user = userData
+
+      // Salva no LocalStorage para não deslogar no F5
+      // localStorage.setItem('access_token', access)
+      // localStorage.setItem('refresh_token', refresh)
+      // localStorage.setItem('user_data', JSON.stringify(userData))
 
       router.push('/test')
-      
     } catch (error) {
       console.error('Login failed:', error)
       throw error
@@ -54,11 +56,16 @@ export const useAuthStore = defineStore('auth', () => {
     state.accessToken = null
     state.refreshToken = null
     state.user = null
-    studentStore.state.meUser = null
+
+    // localStorage.removeItem('access_token')
+    // localStorage.removeItem('refresh_token')
+    // localStorage.removeItem('user_data')
+
     router.push('/')
   }
 
   return {
+    state, // Exportar o state caso precise de acesso direto
     isAuthenticated,
     user,
     login,
