@@ -43,7 +43,7 @@ onMounted(async () => {
             <ul>
                 <li v-for="a in teacherStore.teachers" :key="a.id">
                     <p>
-                        {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                        {{ a.user.name }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
                     </p>
 
                     <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">

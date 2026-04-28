@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const state = reactive({
     accessToken: localStorage.getItem('access_token') || null,
     refreshToken: localStorage.getItem('refresh_token') || null,
-    user: null, // Adicionar quando subir para o vercel JSON.parse(localStorage.getItem('user_data')) || null, 
+    user: null, // Adicionar quando subir para o vercel JSON.parse(localStorage.getItem('user_data')) || null,
   })
 
   const isAuthenticated = computed(() => !!state.accessToken)
@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
       const refresh = response.data.refresh
 
       // Decodifica o payload do Token
-      const payload = JSON.parse(atob(access.split('.')[1]))
+      const payload = JSON.parse(decodeURIComponent(escape(atob(access.split('.')[1]))))
 
       const userData = {
         id: payload.user_id,
@@ -34,6 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
         descricao: payload.descricao,
         imagem_perfil: payload.imagem_perfil,
       }
+      console.log(userData)
 
       // Salva no State
       state.accessToken = access
