@@ -20,7 +20,6 @@ export const useAuthStore = defineStore('auth', () => {
       const access = response.data.access
       const refresh = response.data.refresh
 
-      // Decodifica o payload do Token
       const payload = JSON.parse(decodeURIComponent(escape(atob(access.split('.')[1]))))
 
       const userData = {
