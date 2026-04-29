@@ -101,7 +101,7 @@ function validacao() {
     alert('Selecione ou cadastre um instituto primeiro')
     return
   }
-  teacherStore.teacher.senha = passwordValue.value
+  teacherStore.teacher.password = passwordValue.value
   templateStore.teacherOrStudent = true
   templateStore.sign = 5
 }
@@ -122,7 +122,7 @@ function validacao() {
         <appInput
           placeholder="Nome completo"
           icon="mdi mdi-account"
-          v-model="teacherStore.teacher.nome"
+          v-model="teacherStore.teacher.name"
           required
         />
         <appInput
