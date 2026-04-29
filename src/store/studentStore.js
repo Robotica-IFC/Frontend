@@ -52,14 +52,14 @@ export const useStudentStore = defineStore('student', () => {
         descricao: state.student.descricao,
         imagem_perfil: state.student.imagem_perfil,
       })
-      console.log(response.data)
-      if (response.data.user) {
-        state.meUser = response.data.user
-        state.meUser.tipo = 'aluno'
-      }
 
-      authStore.state.user = state.meUser
-      alert('Conta criada com sucesso!')
+      const credentials = reactive({
+        email: state.student.email,
+        password: state.student.password,
+      })
+
+      authStore.login(credentials)
+
     } catch (error) {
       const errorMsg = error.response?.data
       console.error('Erro detalhado:', errorMsg)
@@ -94,8 +94,6 @@ export const useStudentStore = defineStore('student', () => {
       }
 
       await createStudent()
-
-      router.push('/test')
 
       Object.assign(state.student, {
         id: null,

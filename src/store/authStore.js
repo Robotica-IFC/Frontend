@@ -32,10 +32,9 @@ export const useAuthStore = defineStore('auth', () => {
         telefone: payload.telefone,
         descricao: payload.descricao,
         imagem_perfil: payload.imagem_perfil,
+        instituicao: payload.instituicao
       }
-      console.log(userData)
 
-      // Salva no State
       state.accessToken = access
       state.refreshToken = refresh
       state.user = userData
