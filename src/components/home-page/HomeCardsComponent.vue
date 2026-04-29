@@ -29,6 +29,7 @@ import appButton from '../form/appButton.vue';
   justify-content: center;
   align-items: center;
   gap: 20px;
+  padding: 30px 0;
 }
 
 div.card {
@@ -42,6 +43,7 @@ div.card {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  margin: 0;
 }
 
 .card h2 {
