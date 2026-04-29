@@ -22,6 +22,7 @@ onMounted(async () => {
         <div class="me">
             <h1>Me</h1>
             <p>{{ authStore.user?.name }} / {{ authStore.user?.username }}</p>
+            <img :src="authStore.user?.imagem_perfil.file" :alt="authStore.user?.name">
         </div>
         <div class="a">
             <h1>alunos max10</h1>

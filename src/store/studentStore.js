@@ -54,13 +54,8 @@ export const useStudentStore = defineStore('student', () => {
       })
       console.log(response.data)
       if (response.data.user) {
-        state.meUser = {
-          id: response.data.user.id,
-          name: response.data.user.name,
-          username: response.data.user.username,
-          email: response.data.user.email,
-          tipo: 'aluno',
-        }
+        state.meUser = response.data.user
+        state.meUser.tipo = 'aluno'
       }
 
       authStore.state.user = state.meUser

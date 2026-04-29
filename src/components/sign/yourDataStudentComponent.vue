@@ -42,7 +42,7 @@ function validacao(){
     <form @submit.prevent="validacao()" class="mid">
       <!--Div que separa a parte do meio, ASS: Lucas-->
       <div class="inputs">
-        <appInput placeholder="Nome" icon="mdi mdi-account" required v-model="studentStore.state.student.name"></appInput>
+        <appInput placeholder="Nome completo" icon="mdi mdi-account" required v-model="studentStore.state.student.name"></appInput>
         <appInput
           placeholder="Data de nascimento"
           icon="mdi mdi-calendar-multiselect"
