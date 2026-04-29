@@ -3,26 +3,34 @@ import { useStudentStore } from '@/store/studentStore';
 import { useTeacherStore } from '@/store/teacherStore';
 import { onMounted } from 'vue';
 import { useInstituteStore } from '@/store/instituteStore';
+import { useAuthStore } from '@/store/authStore';
 
 const studentStore = useStudentStore()
 const teacherStore = useTeacherStore()
 const instituteStore = useInstituteStore()
+const authStore = useAuthStore()
 
 onMounted(async () => {
     await studentStore.getStudents()
     await teacherStore.getTeachers()
     await instituteStore.getInstitutes()
+    console.log(authStore.user)
 })
 </script>
 
 <template>
     <div class="page">
+        <div class="me">
+            <h1>Me</h1>
+            <p>{{ authStore.user?.name }} / {{ authStore.user?.username }}</p>
+            <img :src="authStore.user?.imagem_perfil" :alt="authStore.user?.name">
+        </div>
         <div class="a">
             <h1>alunos max10</h1>
             <ul>
                 <li v-for="a in studentStore.students" :key="a.id">
                     <p>
-                        {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                        {{ a.user.name }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
                     </p>
 
                     <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
@@ -37,7 +45,7 @@ onMounted(async () => {
             <ul>
                 <li v-for="a in teacherStore.teachers" :key="a.id">
                     <p>
-                        {{ a.nome }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                        {{ a.user.name }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
                     </p>
 
                     <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
