@@ -45,7 +45,7 @@ onMounted(() => {
 
       <img src="/src/assets/gif/digitando.gif" alt="Robo-acenando" class="gif-header" />
 
-      <h2>Informe seus dados:</h2>
+      <h2>Quase lá, {{ studentStore.state.student.name }}!</h2>
     </div>
 
     <form @submit.prevent="submit" class="final">

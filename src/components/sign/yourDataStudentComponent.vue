@@ -17,7 +17,7 @@ const password2 = ref(false);
 const passwordValue2 = ref("");
 
 function validacao(){
-  if(studentStore.state.student.senha == passwordValue2.value){
+  if(studentStore.state.student.password == passwordValue2.value){
     templateStore.teacherOrStudent = true
     templateStore.sign = 3
   }else{
@@ -42,7 +42,7 @@ function validacao(){
     <form @submit.prevent="validacao()" class="mid">
       <!--Div que separa a parte do meio, ASS: Lucas-->
       <div class="inputs">
-        <appInput placeholder="Nome" icon="mdi mdi-account" required v-model="studentStore.state.student.nome"></appInput>
+        <appInput placeholder="Nome completo" icon="mdi mdi-account" required v-model="studentStore.state.student.name"></appInput>
         <appInput
           placeholder="Data de nascimento"
           icon="mdi mdi-calendar-multiselect"
@@ -70,7 +70,7 @@ function validacao(){
           icon="mdi mdi-lock-open"
           :type="password ? 'text' : 'password'"
           required
-          v-model="studentStore.state.student.senha"
+          v-model="studentStore.state.student.password"
         >
           <span
             @click="password = !password"
