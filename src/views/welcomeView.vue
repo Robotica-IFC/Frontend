@@ -2,14 +2,13 @@
 import appInput from "@/components/form/appInput.vue";
 import appArrow from "@/components/appArrow.vue";
 import appButton from "@/components/form/appButton.vue";
-import { ref, reactive } from "vue"; // Adicionado reactive
+import { ref, reactive, onMounted } from "vue"; // Adicionado reactive
 import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
 
 const authStore = useAuthStore();
-const showPassword = ref(false); // Mudei o nome para não confundir com o valor
+const showPassword = ref(false);
 
-// Objeto com as credenciais que o Django espera
 const credentials = reactive({
   email: '',
   password: ''
@@ -18,12 +17,17 @@ const credentials = reactive({
 const handleLogin = async () => {
   try {
     await authStore.login(credentials);
-    // Se o login for bem sucedido, o redirecionamento já acontece lá na store!
   } catch (error) {
-    // Aqui você pode tratar erros de senha errada, por exemplo
     alert("Email ou senha inválidos.");
   }
 };
+
+onMounted(() => {
+  if(authStore.user !== null){
+    router.push('test')
+  }
+  console.log(authStore.user)
+})
 </script>
 
 <template>
