@@ -11,7 +11,7 @@ const authStore = useAuthStore()
 const user = authStore.user
 </script>
 <template>
-  <div class="total">
+  <div class="page">
     <div class="top">
       <appArrow @back="router.back"></appArrow>
       <span class="mdi mdi-square-edit-outline"></span>
