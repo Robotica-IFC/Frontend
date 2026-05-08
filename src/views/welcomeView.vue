@@ -2,14 +2,13 @@
 import appInput from "@/components/form/appInput.vue";
 import appArrow from "@/components/appArrow.vue";
 import appButton from "@/components/form/appButton.vue";
-import { ref, reactive } from "vue"; // Adicionado reactive
+import { ref, reactive, onMounted } from "vue";
 import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
 
 const authStore = useAuthStore();
-const showPassword = ref(false); // Mudei o nome para não confundir com o valor
+const showPassword = ref(false);
 
-// Objeto com as credenciais que o Django espera
 const credentials = reactive({
   email: '',
   password: ''
@@ -18,12 +17,18 @@ const credentials = reactive({
 const handleLogin = async () => {
   try {
     await authStore.login(credentials);
-    // Se o login for bem sucedido, o redirecionamento já acontece lá na store!
   } catch (error) {
-    // Aqui você pode tratar erros de senha errada, por exemplo
     alert("Email ou senha inválidos.");
   }
 };
+
+onMounted(() => {
+  // Agora verificamos se o usuário está autenticado pelo token
+  // A store já processou o token e montou o user no F5 antes de chegar aqui
+  if (authStore.isAuthenticated) {
+    router.push('/home-page');
+  }
+});
 </script>
 
 <template>
@@ -37,20 +42,36 @@ const handleLogin = async () => {
     <h2>Bem-vindo(a) à Robótica!</h2>
 
     <form @submit.prevent="handleLogin">
-      <appInput v-model="credentials.email" name="email" style="margin-bottom: 20px;" placeholder="E-Mail"
-        icon="mdi mdi-email-outline" />
+      <appInput 
+        v-model="credentials.email" 
+        name="email" 
+        style="margin-bottom: 20px;" 
+        placeholder="E-Mail"
+        icon="mdi mdi-email-outline" 
+      />
 
-      <appInput v-model="credentials.password" :type="showPassword ? 'text' : 'password'" name="password"
-        placeholder="Senha" icon="mdi mdi-lock-open">
-        <span @click="showPassword = !showPassword"
-          :class="showPassword ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"></span>
+      <appInput 
+        v-model="credentials.password" 
+        :type="showPassword ? 'text' : 'password'" 
+        name="password"
+        placeholder="Senha" 
+        icon="mdi mdi-lock-open"
+      >
+        <span 
+          @click="showPassword = !showPassword"
+          :class="showPassword ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"
+        ></span>
       </appInput>
 
       <div class="botao">
         <appButton type="submit" variant="primary" label="Entrar" />
 
-        <appButton type="button" @click="router.push('/change-password')" variant="secondary"
-          label="Esqueceu a senha?" />
+        <appButton 
+          type="button" 
+          @click="router.push('/change-password')" 
+          variant="secondary"
+          label="Esqueceu a senha?" 
+        />
       </div>
     </form>
 
@@ -103,14 +124,14 @@ form span {
   margin-left: 40px;
   color: var(--principal-secundario-claro);
   font-size: 20px;
+  cursor: pointer;
 }
 
 .botao {
   margin-top: 25px;
-}
-
-.footer-text .btn {
-  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .footer-text {
