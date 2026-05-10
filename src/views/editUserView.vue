@@ -1,5 +1,5 @@
 <script setup>
-    import panelcomponent from '@/components/layout/panelcomponent.vue';
+    import panelcomponent from '@/components/layout/panel/panelcomponent.vue';
 </script>
 <template>
     <panelcomponent></panelcomponent>

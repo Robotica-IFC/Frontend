@@ -1,0 +1,159 @@
+<script setup>
+import appArrow from '@/components/appArrow.vue'
+// import { useTemplateStore } from '@/store/template'
+import router from '@/router'
+import { useAuthStore } from '@/store/authStore'
+// import { onMounted } from 'vue'
+import appButton from '@/components/form/appButton.vue'
+
+// const templateStore = useTemplateStore()
+const authStore = useAuthStore()
+const user = authStore.user
+</script>
+<template>
+    <div class="page">
+        <div class="top">
+            <appArrow @back="router.back"></appArrow>
+            <span class="mdi mdi-square-edit-outline"></span>
+        </div>
+        <div class="data">
+            <div class="first-data">
+                <dvi class="name-image">
+                    <img class="profile-image" :src="user.imagem_perfil" :alt="user.name" />
+                    <div>
+                        <h1>{{ user.username }}</h1>
+                        <h2>{{ user.email }}</h2>
+                        <h3>{{ user.name }}</h3>
+                    </div>
+                </dvi>
+                <p class="desc">{{ user.descricao }}</p>
+            </div>
+        </div>
+        <div class="logout">
+            <button class="danger" @click="authStore.logout()"><span class="mdi mdi-logout"></span>
+                <span>Sair da conta</span></button>
+            <button class="danger"><span class="mdi mdi-trash-can-outline"></span>
+                <span>Excluir conta</span></button>
+        </div>
+        <div class="equipe-card">
+            <span class="mdi mdi-account-multiple-outline"></span>
+            <div class="info-team">
+                <h1>Envie solicitações para entrar nas equipes</h1>
+                <p>Explore as equipes da Robótica IFC e envie uma solicitação para participar</p>
+                <appButton width="50%">Explorar equipes</appButton>
+            </div>
+        </div>
+    </div>
+</template>
+<style scoped>
+.total {
+    width: 100%;
+    min-height: 100dvh;
+    z-index: 999;
+}
+
+.top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.mdi {
+    font-size: 25px;
+}
+
+div.first-data {
+    padding: 30px;
+}
+
+img.profile-image {
+    width: 32%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border: solid gray 1px;
+    border-radius: 50%;
+}
+
+.name-image {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    & div {
+        width: 50%;
+
+        & h1 {
+            font-size: 25px;
+        }
+
+        & h2,
+        h3 {
+            font-size: 12.5px;
+            font-weight: 400;
+        }
+    }
+}
+
+.desc {
+    margin-top: 10px;
+    font-size: 13.5px;
+    text-align: justify;
+}
+
+.logout{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: left;
+}
+
+.danger {
+    background-color: transparent;
+    border: none;
+    color: var(--danger-claro);
+    display: flex;
+    align-items: center;
+
+    & span:last-child {
+        margin-left: 5px;
+        font-size: 16px;
+    }
+
+    & span.mdi{
+        font-size: 25px;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }   
+}
+.equipe-card{
+    display: flex;
+    align-items: start;
+    width: 90%;
+    margin-top: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5  );
+    padding: 10px;
+
+    & h1{
+        font-size: 17px;
+        color: var(--principal-claro);
+    }
+    & span.mdi{
+        font-size: 25px;
+        color: var(--principal-claro);
+        margin-right: 15px;
+    }
+    & p{
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    & .info-team{
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        width: 100%;
+    }
+}
+</style>
