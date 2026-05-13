@@ -15,13 +15,16 @@ const props = defineProps({
     type: String,
     default: "100%",
   },
+  font: {
+    type: String,
+  }
 });
 
 </script>
 
 <template>
   <div class="btn">
-    <button :type="props.type" :class="props.variant" :style="{ width: props.width }" @click="emit('click', props.variant)">
+    <button :type="props.type" :class="props.variant" :style="{ width: props.width, fontSize: props.font }" @click="emit('click', props.variant)">
       {{ props.label }}
       <slot />
     </button>
@@ -41,9 +44,10 @@ const props = defineProps({
 }
 
 .primary {
+  width: 100%;
   border-radius: 8px;
   font-size: 16px;
-  padding: 10px 80px;
+  padding: 10px;
   background-color: var(--principal-claro);
   color: white;
 }
