@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import authApi from '@/api/authApi'
 import { computed, ref } from 'vue'
 import router from '@/router'
-import { jwtDecode } from "jwt-decode"
+import { jwtDecode } from 'jwt-decode'
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(localStorage.getItem('access_token') || null)
@@ -15,7 +15,8 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const payload = jwtDecode(token)
       user.value = {
-        id: payload.user_id,
+        id: payload.aluno_id || payload.professor_id,
+        user_id: payload.user_id,
         name: payload.name,
         username: payload.username,
         email: payload.email,
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
         telefone: payload.telefone,
         descricao: payload.descricao,
         imagem_perfil: payload.imagem_perfil,
-        instituicao: payload.instituicao
+        instituicao: payload.instituicao,
       }
     } catch (e) {
       user.value = null
@@ -42,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       accessToken.value = access
       refreshToken.value = refresh
-      
+
       setUserFromToken(access)
 
       localStorage.setItem('access_token', access)
@@ -57,18 +58,24 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function refreshAccessToken() {
     try {
-      if (!refreshToken.value) throw new Error("No refresh token")
-      
+      if (!refreshToken.value) throw new Error('No refresh token')
+
       const response = await authApi.refresh({ refresh: refreshToken.value })
       const { access } = response.data
-      
+
       accessToken.value = access
       localStorage.setItem('access_token', access)
       setUserFromToken(access)
-      
+
       return access
     } catch (e) {
       logout()
+    }
+  }
+
+  function updateUserData(newData) {
+    if (user.value) {
+      user.value = { ...user.value, ...newData }
     }
   }
 
@@ -88,6 +95,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     login,
     logout,
-    refreshAccessToken
+    refreshAccessToken,
+    updateUserData
   }
 })

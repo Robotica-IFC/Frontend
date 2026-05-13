@@ -1,19 +1,19 @@
 <script setup>
 import appArrow from '@/components/appArrow.vue'
-// import { useTemplateStore } from '@/store/template'
+import { useTemplateStore } from '@/store/template'
 import router from '@/router'
 import { useAuthStore } from '@/store/authStore'
 // import { onMounted } from 'vue'
 import appButton from '@/components/form/appButton.vue'
 
-// const templateStore = useTemplateStore()
+const templateStore = useTemplateStore()
 const authStore = useAuthStore()
 const user = authStore.user
 </script>
 <template>
   <div class="top">
     <appArrow @back="router.back"></appArrow>
-    <span class="mdi mdi-square-edit-outline"></span>
+    <span class="mdi mdi-square-edit-outline" @click="templateStore.panel = false"></span>
   </div>
   <div class="page">
     <div class="data">
