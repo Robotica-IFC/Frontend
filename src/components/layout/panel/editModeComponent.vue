@@ -39,7 +39,7 @@ function handleFile(event) {
 const handleSave = async () => {
   loading.value = true;
   const profileId = authStore.user.id;
-  const userId = authStore.user.user.id;
+  const userId = authStore.user.user_id;
 
   try {
     // 1. Dados do Perfil (Aluno/Professor)
