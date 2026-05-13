@@ -8,7 +8,6 @@ const teamStore = useTeamStore()
 onMounted(() => {
   teamStore.getTeams()
 })
-
 </script>
 
 <template>
@@ -17,25 +16,29 @@ onMounted(() => {
       <li v-for="t in teamStore.teams" :key="t.id">
         <div class="primeiro">
           <div class="img">
-            <img :src="t.image_perfil.file" alt="image_equipe" />
+            <img
+              :src="t.image_perfil?.file || 'https://via.placeholder.com/58'"
+              alt="image_equipe"
+            />
           </div>
 
           <div class="info">
             <h1>{{ t.nome }}</h1>
 
             <p>
-              <span class="mdi mdi-account-outline"></span> Líder: {{ t.professores[0].username }}
+              <span class="mdi mdi-account-outline"></span>
+              Líder: {{ t.professores?.[0]?.user?.username || t.professores?.[0]?.user?.name || 'Sem líder' }}
             </p>
 
             <p>
               <span class="mdi mdi-map-marker"></span>
-              {{ t.instituicao.sigla }} - {{ t.instituicao.cidade }}
+              {{ t.instituicao?.sigla || 'N/A' }} -
+              {{ t.instituicao?.cidade || 'Local não informado' }}
             </p>
 
             <p>
               <span class="mdi mdi-account-multiple-outline"></span>
-              {{ t.alunos.length + t.professores.length }}
-              membros
+              {{ (t.alunos?.length || 0) + (t.professores?.length || 0) }} membros
             </p>
           </div>
         </div>
@@ -48,25 +51,26 @@ onMounted(() => {
               <span class="mdi mdi-folder-outline"></span>
               12 projetos
             </p>
-            <p v-for="c in t.categorias.slice(0, 2)" :key="c.id" class="categoria">
+            <p v-for="c in t.categorias?.slice(0, 2)" :key="c.id" class="categoria">
               {{ c.nome }}
             </p>
           </div>
-
           <button><span class="mdi mdi-chevron-right"></span></button>
         </div>
       </li>
     </ul>
   </div>
 
-<Pagination
-  :currentPage="teamStore.currentPage"
-  :totalPages="teamStore.totalPages"
-  @change="(page) => {
-    console.log('clicou página:', page)
-    teamStore.getTeams(page)
-  }"
-/>
+  <Pagination
+    :currentPage="teamStore.currentPage"
+    :totalPages="teamStore.totalPages"
+    @change="
+      (page) => {
+        console.log('clicou página:', page)
+        teamStore.getTeams(page)
+      }
+    "
+  />
 </template>
 <style scoped>
 /* ESTRUTURA */
@@ -75,7 +79,7 @@ ul {
   padding: 0;
   margin: 0;
   flex-direction: column;
-  align-items: flex-start; 
+  align-items: flex-start;
 }
 
 li {
