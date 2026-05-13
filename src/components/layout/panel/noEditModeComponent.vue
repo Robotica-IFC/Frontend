@@ -26,7 +26,7 @@ const user = authStore.user
             <h3>{{ user.name }}</h3>
           </div>
         </dvi>
-        <p class="desc">{{ user.descricao }}</p>
+        <p class="desc">{{ user.descricao || 'Sem descrição &#128532' }}</p>
       </div>
     </div>
     <div class="equipe-card">
