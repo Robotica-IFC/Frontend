@@ -4,7 +4,8 @@ import { useAuthStore } from '@/store/authStore'
 import { useStudentStore } from '@/store/studentStore'
 import { useTeacherStore } from '@/store/teacherStore'
 import appArrow from '@/components/appArrow.vue'
-import router from '@/router'
+import appButton from '@/components/form/appButton.vue'
+// import router from '@/router'
 import { useTemplateStore } from '@/store/template'
 import api from '@/api/config'
 
@@ -32,7 +33,10 @@ function handleFile(event) {
   const file = event.target.files[0]
   if (file) {
     imageFile.value = file
-    imagePreview.ref = URL.createObjectURL(file)
+    if (imagePreview.value.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview.value)
+    }
+    imagePreview.value = URL.createObjectURL(file)
   }
 }
 
@@ -42,56 +46,46 @@ const handleSave = async () => {
   const userId = authStore.user.user_id;
 
   try {
-    // 1. Dados do Perfil (Aluno/Professor)
     const profilePayload = {
       descricao: formData.value.descricao,
       telefone: formData.value.telefone,
+      instituicao: formData.value.instituicao,
     };
 
-    // 2. Dados do Usuário (User)
     const userPayload = {
       name: formData.value.name,
       username: formData.value.username,
     };
 
-    // ATUALIZAÇÃO DO ALUNO (Já funciona)
     if (authStore.user.tipo === 'aluno') {
       await studentStore.updateStudent(profileId, profilePayload);
     } else {
       await teacherStore.updateTeacher(profileId, profilePayload);
     }
 
-    // ATUALIZAÇÃO DO USUÁRIO (Onde deu erro de credenciais)
-    // Forçamos o header de autorização caso o interceptor falhe
     await api.patch(`/usuarios/${userId}/`, userPayload, {
       headers: {
         Authorization: `Bearer ${authStore.accessToken}`
       }
     });
 
-    // 3. Atualiza o Pinia
-    authStore.updateUserData({
-      ...profilePayload,
-      ...userPayload
-    });
+    await authStore.refreshUserSession();
 
     alert("Perfil e usuário atualizados!");
     useTemplateStore().panel = true;
 
   } catch (error) {
-  console.error("Erro detalhado:", error.response?.data);
-  
-  const backendErrors = error.response?.data;
-  if (backendErrors && backendErrors.username) {
-    alert("Este nome de usuário já está em uso. Escolha outro!");
-  } else if (backendErrors) {
-    // Lista outros erros (ex: email inválido, telefone curto)
-    const mensagens = Object.values(backendErrors).flat().join('\n');
-    alert("Erro na validação:\n" + mensagens);
-  } else {
-    alert("Erro de conexão ou autenticação.");
-  }
-} finally {
+    console.error("Erro detalhado:", error.response?.data);
+    const backendErrors = error.response?.data;
+    if (backendErrors && backendErrors.username) {
+      alert("Este nome de usuário já está em uso. Escolha outro!");
+    } else if (backendErrors) {
+      const mensagens = Object.values(backendErrors).flat().join('\n');
+      alert("Erro na validação:\n" + mensagens);
+    } else {
+      alert("Erro de conexão ou autenticação.");
+    }
+  } finally {
     loading.value = false;
   }
 };
@@ -100,21 +94,21 @@ const handleSave = async () => {
 <template>
   <div class="top">
     <appArrow @back="useTemplateStore().panel = true"></appArrow>
-    <button class="save-btn" @click="handleSave" :disabled="loading">
-      {{ loading ? 'Salvando...' : 'Salvar' }}
-    </button>
+
   </div>
 
   <div class="page">
     <div class="edit-header">
       <div class="image-upload-container">
-        <img :src="imagePreview" class="profile-image-edit" />
-        <label for="file-input" class="upload-icon">
-          <span class="mdi mdi-camera"></span>
+        <label for="file-input" class="image-label">
+          <img :src="imagePreview" class="profile-image-edit" />
+          <div class="upload-icon">
+            <span class="mdi mdi-camera"></span>
+          </div>
         </label>
         <input id="file-input" type="file" @change="handleFile" accept="image/*" hidden />
       </div>
-      <p>Toque na câmera para alterar a foto</p>
+      <p>Toque na foto para alterar</p>
     </div>
 
     <form class="edit-form" @submit.prevent>
@@ -143,6 +137,11 @@ const handleSave = async () => {
         <textarea v-model="formData.descricao" rows="4" placeholder="Conte um pouco sobre você..."></textarea>
       </div>
     </form>
+    <button class="save-btn" @click="handleSave" :disabled="loading">
+      {{ loading ? 'Salvando...' : 'Salvar' }}
+    </button>
+    <appButton @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
+
   </div>
 </template>
 
@@ -161,6 +160,7 @@ const handleSave = async () => {
   padding: 8px 20px;
   border-radius: 20px;
   font-weight: bold;
+  margin-bottom: -13px;
 }
 
 .page {
@@ -168,6 +168,7 @@ const handleSave = async () => {
   display: flex;
   flex-direction: column;
   gap: 25px;
+  width: 100%;
 }
 
 .edit-header {
@@ -181,6 +182,14 @@ const handleSave = async () => {
   position: relative;
   width: 120px;
   height: 120px;
+  cursor: pointer;
+}
+
+.image-label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .profile-image-edit {
@@ -189,6 +198,11 @@ const handleSave = async () => {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #ddd;
+  transition: opacity 0.2s;
+}
+
+.image-upload-container:hover .profile-image-edit {
+  opacity: 0.8;
 }
 
 .upload-icon {
@@ -202,8 +216,8 @@ const handleSave = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
 }
 
 .edit-form {
@@ -224,7 +238,8 @@ const handleSave = async () => {
   color: #666;
 }
 
-.input-group input, .input-group textarea {
+.input-group input,
+.input-group textarea {
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;

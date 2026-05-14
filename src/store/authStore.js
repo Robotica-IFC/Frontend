@@ -40,15 +40,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await authApi.login(credentials)
       const { access, refresh } = response.data
-
       accessToken.value = access
       refreshToken.value = refresh
-
       setUserFromToken(access)
-
       localStorage.setItem('access_token', access)
       localStorage.setItem('refresh_token', refresh)
-
       router.push('/home-page')
     } catch (error) {
       console.error('Login failed:', error)
@@ -58,9 +54,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function refreshAccessToken() {
     try {
-      if (!refreshToken.value) throw new Error('No refresh token')
+      const rToken = localStorage.getItem('refresh_token') // Força a leitura atualizada
+      if (!rToken) {
+        console.warn('Nenhum refresh token encontrado no localStorage')
+        throw new Error('No refresh token')
+      }
 
-      const response = await authApi.refresh({ refresh: refreshToken.value })
+      const response = await authApi.refresh({ refresh: rToken })
       const { access } = response.data
 
       accessToken.value = access
@@ -69,8 +69,15 @@ export const useAuthStore = defineStore('auth', () => {
 
       return access
     } catch (e) {
-      logout()
+      console.error('Erro ao atualizar token:', e.response?.data || e.message)
+      logout() // Se o refresh falhar, o usuário precisa logar de novo
+      throw e
     }
+  }
+
+  // Nova função para atualizar a sessão após o edit profile
+  async function refreshUserSession() {
+    return await refreshAccessToken()
   }
 
   function updateUserData(newData) {
@@ -96,6 +103,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     refreshAccessToken,
-    updateUserData
+    refreshUserSession,
+    updateUserData,
   }
 })

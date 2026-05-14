@@ -6,6 +6,10 @@
   const templateStore = useTemplateStore()
 </script>
 <template>
-  <noEditModeComponent v-if="templateStore.panel" />
-  <editModeComponent></editModeComponent>
+  <div v-if="templateStore.panel">
+    <noEditModeComponent />
+  </div>
+  <div v-else>
+    <editModeComponent></editModeComponent>
+  </div>
 </template>

@@ -107,6 +107,8 @@ img.profile-image {
   margin-top: 10px;
   font-size: 13.5px;
   text-align: justify;
+  white-space: pre-line;
+  word-wrap: break-word;
 }
 
 .logout {

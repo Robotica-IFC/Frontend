@@ -94,4 +94,13 @@ const props = defineProps({
   background-color: var(--principal-claro);
   color: var(--fundo-claro);
 }
+.danger{
+  background-color: var(--danger-claro);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-top: 0;
+}
 </style>
