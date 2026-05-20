@@ -32,9 +32,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  if (accessToken.value) {
-    setUserFromToken(accessToken.value)
+if (accessToken.value) {
+  setUserFromToken(accessToken.value)
+  
+  const cache = localStorage.getItem('user_profile_cache')
+  if (cache && user.value) {
+    user.value = { ...user.value, ...JSON.parse(cache) }
   }
+}
 
   async function login(credentials) {
     try {
@@ -54,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function refreshAccessToken() {
     try {
-      const rToken = localStorage.getItem('refresh_token') // Força a leitura atualizada
+      const rToken = localStorage.getItem('refresh_token')
       if (!rToken) {
         console.warn('Nenhum refresh token encontrado no localStorage')
         throw new Error('No refresh token')
@@ -70,12 +75,11 @@ export const useAuthStore = defineStore('auth', () => {
       return access
     } catch (e) {
       console.error('Erro ao atualizar token:', e.response?.data || e.message)
-      logout() // Se o refresh falhar, o usuário precisa logar de novo
+      logout()
       throw e
     }
   }
 
-  // Nova função para atualizar a sessão após o edit profile
   async function refreshUserSession() {
     return await refreshAccessToken()
   }

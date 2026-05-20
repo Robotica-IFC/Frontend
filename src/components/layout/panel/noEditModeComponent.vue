@@ -1,15 +1,17 @@
 <script setup>
+import { storeToRefs } from 'pinia'
 import appArrow from '@/components/appArrow.vue'
 import { useTemplateStore } from '@/store/template'
 import router from '@/router'
 import { useAuthStore } from '@/store/authStore'
-// import { onMounted } from 'vue'
 import appButton from '@/components/form/appButton.vue'
 
 const templateStore = useTemplateStore()
 const authStore = useAuthStore()
-const user = authStore.user
+
+const { user } = storeToRefs(authStore)
 </script>
+
 <template>
   <div class="top">
     <appArrow @back="router.back"></appArrow>
@@ -18,15 +20,19 @@ const user = authStore.user
   <div class="page">
     <div class="data">
       <div class="first-data">
-        <dvi class="name-image">
-          <img class="profile-image" :src="user.imagem_perfil" :alt="user.name" />
+        <div class="name-image">
+          <img
+            class="profile-image"
+            :src="user?.imagem_perfil ? `${user.imagem_perfil}?t=${Date.now()}` : ''"
+            :alt="user?.name"
+          />
           <div>
-            <h1>{{ user.username }}</h1>
-            <h2>{{ user.email }}</h2>
-            <h3>{{ user.name }}</h3>
+            <h1>{{ user?.username }}</h1>
+            <h2>{{ user?.email }}</h2>
+            <h3>{{ user?.name }}</h3>
           </div>
-        </dvi>
-        <p class="desc">{{ user.descricao || 'Sem descrição &#128532' }}</p>
+        </div>
+        <p class="desc">{{ user?.descricao || 'Sem descrição 😢' }}</p>
       </div>
     </div>
     <div class="equipe-card">

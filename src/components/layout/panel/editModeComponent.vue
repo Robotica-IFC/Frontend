@@ -1,33 +1,32 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/store/authStore'
 import { useStudentStore } from '@/store/studentStore'
 import { useTeacherStore } from '@/store/teacherStore'
 import appArrow from '@/components/appArrow.vue'
 import appButton from '@/components/form/appButton.vue'
-// import router from '@/router'
 import { useTemplateStore } from '@/store/template'
 import api from '@/api/config'
+import imageApi from '@/api/imageApi'
 
 const authStore = useAuthStore()
 const studentStore = useStudentStore()
 const teacherStore = useTeacherStore()
 
-const user = authStore.user
+const { user } = storeToRefs(authStore)
 const loading = ref(false)
 const imageFile = ref(null)
 
-// Estado reativo para o formulário
 const formData = ref({
-  name: user.name || '',
-  username: user.username || '',
-  descricao: user.descricao || '',
-  telefone: user.telefone || '',
-  instituicao: user.instituicao || '', // Apenas para professor
+  name: user.value?.name || '',
+  username: user.value?.username || '',
+  descricao: user.value?.descricao || '',
+  telefone: user.value?.telefone || '',
+  instituicao: user.value?.instituicao || '',
 })
 
-// Preview da imagem
-const imagePreview = ref(user.imagem_perfil || '')
+const imagePreview = ref(user.value?.imagem_perfil || '')
 
 function handleFile(event) {
   const file = event.target.files[0]
@@ -42,8 +41,8 @@ function handleFile(event) {
 
 const handleSave = async () => {
   loading.value = true;
-  const profileId = authStore.user.id;
-  const userId = authStore.user.user_id;
+  const profileId = authStore.user?.id;
+  const userId = authStore.user?.user_id;
 
   try {
     const profilePayload = {
@@ -57,7 +56,27 @@ const handleSave = async () => {
       username: formData.value.username,
     };
 
-    if (authStore.user.tipo === 'aluno') {
+    let uploadedImageKey = null;
+    let backendImageUrl = null;
+
+    if (imageFile.value) {
+      try {
+        const imageFormData = new FormData();
+        imageFormData.append('file', imageFile.value); 
+
+        const imageResponse = await imageApi.uploadImage(imageFormData);
+        uploadedImageKey = imageResponse.data?.id || imageResponse.data?.attachment_key;
+        backendImageUrl = imageResponse.data?.url || imageResponse.data?.image || imageResponse.data?.file;
+        
+        if (uploadedImageKey) {
+          profilePayload.imagem_perfil = uploadedImageKey; 
+        }
+      } catch (imgError) {
+        console.error("Erro no upload da imagem:", imgError);
+      }
+    }
+
+    if (authStore.user?.tipo === 'aluno') {
       await studentStore.updateStudent(profileId, profilePayload);
     } else {
       await teacherStore.updateTeacher(profileId, profilePayload);
@@ -69,21 +88,48 @@ const handleSave = async () => {
       }
     });
 
-    await authStore.refreshUserSession();
+    const userTypeRoute = authStore.user?.tipo === 'aluno' ? 'alunos' : 'professores';
+    const responseFreshData = await api.get(`/${userTypeRoute}/${profileId}/`, {
+      headers: {
+        Authorization: `Bearer ${authStore.accessToken}`
+      }
+    });
 
-    alert("Perfil e usuário atualizados!");
+    const freshProfile = responseFreshData.data;
+
+    // Correção estratégica: Se uma nova imagem foi upada, usamos a URL dela.
+    // Se não, mantemos o preview atual da tela (que contém a URL que já funcionava).
+    const finalImageUrl = backendImageUrl || imagePreview.value;
+
+    const updatedDataForStore = {
+      name: freshProfile.usuario?.name || formData.value.name,
+      username: freshProfile.usuario?.username || formData.value.username,
+      descricao: freshProfile.descricao,
+      telefone: freshProfile.telefone,
+      instituicao: freshProfile.instituicao,
+      imagem_perfil: finalImageUrl
+    };
+
+    authStore.updateUserData(updatedDataForStore);
+    localStorage.setItem('user_profile_cache', JSON.stringify(updatedDataForStore));
+
+    imageFile.value = null;
+    alert("Perfil e usuário atualizados com sucesso!");
     useTemplateStore().panel = true;
 
   } catch (error) {
-    console.error("Erro detalhado:", error.response?.data);
+    console.error("Erro detalhado no salvamento:", error.response?.data || error.message);
     const backendErrors = error.response?.data;
     if (backendErrors && backendErrors.username) {
       alert("Este nome de usuário já está em uso. Escolha outro!");
+    } else if (backendErrors && backendErrors.refresh) {
+      alert("Sua sessão expirou. Por favor, faça login novamente.");
+      authStore.logout();
     } else if (backendErrors) {
       const mensagens = Object.values(backendErrors).flat().join('\n');
       alert("Erro na validação:\n" + mensagens);
     } else {
-      alert("Erro de conexão ou autenticação.");
+      alert("Erro ao salvar as alterações. Verifique os dados.");
     }
   } finally {
     loading.value = false;
@@ -94,7 +140,6 @@ const handleSave = async () => {
 <template>
   <div class="top">
     <appArrow @back="useTemplateStore().panel = true"></appArrow>
-
   </div>
 
   <div class="page">
@@ -114,37 +159,39 @@ const handleSave = async () => {
     <form class="edit-form" @submit.prevent>
       <div class="input-group">
         <label>Nome Completo</label>
-        <input v-model="formData.name" type="text" placeholder="Seu nome">
+        <input v-model="formData.name" type="text" placeholder="Seu nome" />
       </div>
 
       <div class="input-group">
         <label>Username</label>
-        <input v-model="formData.username" type="text" placeholder="@usuario">
+        <input v-model="formData.username" type="text" placeholder="@usuario" />
       </div>
 
       <div class="input-group">
         <label>Telefone</label>
-        <input v-model="formData.telefone" type="text" placeholder="Apenas números">
+        <input v-model="formData.telefone" type="text" placeholder="Apenas números" />
       </div>
 
-      <div v-if="user.tipo === 'professor'" class="input-group">
+      <div v-if="user?.tipo === 'professor'" class="input-group">
         <label>Instituição</label>
-        <input v-model="formData.instituicao" type="text" placeholder="Sua escola/faculdade">
+        <input v-model="formData.instituicao" type="text" placeholder="Sua escola/faculdade" />
       </div>
 
       <div class="input-group">
         <label>Descrição (Bio)</label>
-        <textarea v-model="formData.descricao" rows="4" placeholder="Conte um pouco sobre você..."></textarea>
+        <textarea
+          v-model="formData.descricao"
+          rows="4"
+          placeholder="Conte um pouco sobre você..."
+        ></textarea>
       </div>
     </form>
     <button class="save-btn" @click="handleSave" :disabled="loading">
       {{ loading ? 'Salvando...' : 'Salvar' }}
     </button>
     <appButton @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
-
   </div>
 </template>
-
 <style scoped>
 .top {
   display: flex;
