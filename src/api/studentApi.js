@@ -5,8 +5,20 @@ const studentsApi = {
         return api.get('alunos/')
     },
 
+    getById(id) {
+        return api.get(`alunos/${id}/`)
+    },
+
     create(data) {
         return api.post('alunos/', data)
+    },
+
+    update(id, data) {
+        return api.patch(`alunos/${id}/`, data)
+    },
+
+    delete(id) {
+        return api.delete(`alunos/${id}/`)
     },
 
     uploadImage(formData) {

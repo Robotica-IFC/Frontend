@@ -59,7 +59,6 @@ export const useStudentStore = defineStore('student', () => {
       })
 
       authStore.login(credentials)
-
     } catch (error) {
       const errorMsg = error.response?.data
       console.error('Erro detalhado:', errorMsg)
@@ -120,6 +119,18 @@ export const useStudentStore = defineStore('student', () => {
     }
   }
 
+  // Funções de UPDATE de student
+
+  async function updateStudent(id, data) {
+    try {
+      const response = await studentsApi.update(id, data) // Chama o PATCH da API
+      return response.data
+    } catch (error) {
+      console.error('Erro na store:', error)
+      throw error
+    }
+  }
+
   return {
     state,
     student,
@@ -128,5 +139,6 @@ export const useStudentStore = defineStore('student', () => {
     createStudent,
     uploadImage,
     submit,
+    updateStudent,
   }
 })
