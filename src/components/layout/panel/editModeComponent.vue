@@ -189,7 +189,7 @@ const handleSave = async () => {
     <button class="save-btn" @click="handleSave" :disabled="loading">
       {{ loading ? 'Salvando...' : 'Salvar' }}
     </button>
-    <appButton width="50%" @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
+    <appButton width="65%" @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
   </div>
 </template>
 <style scoped>
@@ -207,7 +207,7 @@ const handleSave = async () => {
   padding: 8px 20px;
   border-radius: 20px;
   font-weight: bold;
-  width: 50%;
+  width: 65%;
   margin: 0 auto -13px auto;
 }
 
