@@ -4,6 +4,7 @@ import { useTeacherStore } from '@/store/teacherStore';
 import { onMounted } from 'vue';
 import { useInstituteStore } from '@/store/instituteStore';
 import { useAuthStore } from '@/store/authStore';
+import { jwtDecode } from "jwt-decode";
 
 const studentStore = useStudentStore()
 const teacherStore = useTeacherStore()
@@ -24,6 +25,7 @@ onMounted(async () => {
             <h1>Me</h1>
             <p>{{ authStore.user?.name }} / {{ authStore.user?.username }}</p>
             <img :src="authStore.user?.imagem_perfil" :alt="authStore.user?.name">
+            <button @click="authStore.logout()">Sair</button>
         </div>
         <div class="a">
             <h1>alunos max10</h1>
