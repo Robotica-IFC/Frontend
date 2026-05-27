@@ -41,3 +41,17 @@ function changePage(page) {
 
   </nav>
 </template>
+
+<style setup>
+.pagination{
+  text-align: center;
+  justify-content: space-between;
+}
+.pagination button{
+  border: none;
+  font-weight: 600;
+  background-color: var(--
+  fundo-claro);
+  color: var(--principal-claro);
+}
+</style>

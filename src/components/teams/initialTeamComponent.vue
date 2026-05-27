@@ -10,7 +10,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page">
+  <div>
 
     <div class="inicio">
 

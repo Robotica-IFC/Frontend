@@ -11,7 +11,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page">
+  <div>
     <ul>
       <li v-for="t in teamStore.teams" :key="t.id">
         <div class="primeiro">
@@ -31,7 +31,7 @@ onMounted(() => {
             </p>
 
             <p>
-              <span class="mdi mdi-map-marker"></span>
+              <span class="mdi mdi-map-marker" style="color:var(--principal-claro)"></span>
               {{ t.instituicao?.sigla || 'N/A' }} -
               {{ t.instituicao?.cidade || 'Local não informado' }}
             </p>
@@ -71,18 +71,25 @@ onMounted(() => {
       }
     "
   />
+
 </template>
 <style scoped>
 /* ESTRUTURA */
+
 ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
   list-style: none;
   padding: 0;
   margin: 0;
-  flex-direction: column;
-  align-items: flex-start;
+  width: 100%;
+  margin-top: 20px;
 }
 
 li {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -121,19 +128,23 @@ img {
 /* TEXTO ESQUERDA */
 .info {
   flex: 1;
+  min-width: 0;
 }
 
 h1 {
   margin: 0 0 7px 0;
   color: #0b4b78;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 p {
   margin: 3px 0;
-  font-size: 10px;
+  font-size: 12px;
   color: #1f1f1f;
 
   display: flex;
@@ -155,6 +166,7 @@ p {
   font-size: 10px;
   color: #333;
   font-weight: 500;
+  font-size: 10px;
 }
 
 .categoria {
@@ -166,9 +178,8 @@ p {
   color: #fff;
 
   border-radius: 3px;
-  font-size: 9px;
+  font-size: 10p.5x;
   font-weight: 600;
-  line-height: 1.1;
   text-align: center;
 }
 
@@ -184,7 +195,9 @@ p {
 .projetos {
   flex: 1;
   min-width: 0;
+
 }
+
 
 button {
   border: none;
@@ -199,7 +212,7 @@ button {
 }
 
 button .mdi-chevron-right {
-  font-size: 22px;
+  font-size: 25px;
   color: #0b4b78;
 }
 </style>

@@ -4,6 +4,8 @@ import listTeamsComponent from '@/components/teams/listTeamsComponent.vue'
 </script>
 
 <template>
-<initialTeamComponent/>
-<listTeamsComponent/>
+  <div class="page">
+    <initialTeamComponent />
+    <listTeamsComponent />
+  </div>
 </template>
