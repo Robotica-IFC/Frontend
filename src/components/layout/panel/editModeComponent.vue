@@ -138,11 +138,11 @@ const handleSave = async () => {
 </script>
 
 <template>
+
+  <div class="page">
   <div class="top">
     <appArrow @back="useTemplateStore().panel = true"></appArrow>
   </div>
-
-  <div class="page">
     <div class="edit-header">
       <div class="image-upload-container">
         <label for="file-input" class="image-label">
@@ -189,7 +189,7 @@ const handleSave = async () => {
     <button class="save-btn" @click="handleSave" :disabled="loading">
       {{ loading ? 'Salvando...' : 'Salvar' }}
     </button>
-    <appButton @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
+    <appButton width="50%" @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
   </div>
 </template>
 <style scoped>
@@ -207,7 +207,8 @@ const handleSave = async () => {
   padding: 8px 20px;
   border-radius: 20px;
   font-weight: bold;
-  margin-bottom: -13px;
+  width: 50%;
+  margin: 0 auto -13px auto;
 }
 
 .page {
@@ -215,7 +216,6 @@ const handleSave = async () => {
   display: flex;
   flex-direction: column;
   gap: 25px;
-  width: 100%;
 }
 
 .edit-header {
