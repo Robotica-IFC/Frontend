@@ -11,7 +11,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="content">
     <ul>
       <li v-for="t in teamStore.teams" :key="t.id">
         <div class="primeiro">
@@ -59,9 +59,8 @@ onMounted(() => {
         </div>
       </li>
     </ul>
-  </div>
 
-  <Pagination
+     <Pagination class="pagination-wrapper "
     :currentPage="teamStore.currentPage"
     :totalPages="teamStore.totalPages"
     @change="
@@ -71,10 +70,24 @@ onMounted(() => {
       }
     "
   />
+    </div>
+
 
 </template>
 <style scoped>
 /* ESTRUTURA */
+
+.content {
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.pagination-wrapper {
+  margin-top: auto;
+}
 
 ul {
   display: flex;
@@ -91,9 +104,10 @@ ul {
 li {
   width: 100%;
   display: flex;
+  overflow: hidden;
   align-items: center;
   gap: 10px;
-
+  box-sizing: border-box;
   background: #fff;
   padding: 14px 10px;
   margin-bottom: 14px;
@@ -104,10 +118,18 @@ li {
 
 /* LADOS */
 .primeiro {
-  width: 60%;
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.segundo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 /* IMAGEM */
@@ -183,14 +205,6 @@ p {
   text-align: center;
 }
 
-.segundo {
-  width: 40%;
-  min-width: 0;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .projetos {
   flex: 1;
