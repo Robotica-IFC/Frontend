@@ -40,8 +40,7 @@ export const useTeacherStore = defineStore('teacher', () => {
 
   async function createTeacher() {
     try {
-      // Força a extração apenas do ID (UUID) em formato String
-      const instituicaoId =
+      const intuicaoId =
         typeof state.teacher.instituicao === 'object'
           ? state.teacher.instituicao?.id
           : state.teacher.instituicao
@@ -51,29 +50,37 @@ export const useTeacherStore = defineStore('teacher', () => {
           ? state.teacher.imagem_perfil?.attachment_key
           : state.teacher.imagem_perfil
 
-      // Enviamos tudo na raiz, garantindo as PKs limpas
-      const response = await teacherApi.create({
+      // MONTAGEM DO PAYLOAD
+      const payload = {
+        // Campos que o serializer intercepta para criar o User interno
         name: state.teacher.name,
         username: state.teacher.username,
         email: state.teacher.email,
         password: state.teacher.password,
-        ativo: state.teacher.ativo,
-        email_verificado: state.teacher.email_verificado,
+
+        // Campos do modelo Professor
         cpf: state.teacher.cpf,
         telefone: state.teacher.telefone,
         data_nascimento: state.teacher.data_nascimento,
-        instituicao: instituicaoId, // Apenas a String do UUID
-        imagem_perfil: imagemId || null, // Apenas a String do UUID ou null
-      })
+        instituicao: intuicaoId,
+        imagem_perfil: imagemId || null,
+        ativo: state.teacher.ativo,
+        email_verificado: state.teacher.email_verificado,
+
+        // GAMBIARRA NECESSÁRIA: Enviamos vazio/nulo para passar pelo validador do Django.
+        // O método 'create' do backend vai ignorar esse valor e vincular o user correto.
+        user: '',
+      }
+
+      const response = await teacherApi.create(payload)
 
       const credentials = reactive({
         email: state.teacher.email,
         password: state.teacher.password,
       })
 
-      authStore.login(credentials)
+      await authStore.login(credentials)
     } catch (error) {
-      // Esse log vai te mostrar no console EXATAMENTE qual campo deu erro
       console.error('Erro detalhado vindo do servidor:', error.response?.data)
       throw error
     }
@@ -107,7 +114,6 @@ export const useTeacherStore = defineStore('teacher', () => {
 
       await createTeacher()
 
-      // Limpa o estado voltando aos valores padrão iniciais
       Object.assign(state.teacher, {
         id: null,
         name: '',
@@ -128,9 +134,40 @@ export const useTeacherStore = defineStore('teacher', () => {
       let mensagem = 'Falha ao criar conta.'
 
       if (backendError) {
-        mensagem += ' Verifique os dados: ' + Object.values(backendError).flat().join(', ')
+        mensagem +=
+          ' Verifique os dados: ' +
+          Object.values(backendError)
+            .flat()
+            .map((err) => {
+              return typeof err === 'object' ? Object.values(err).flat().join(', ') : err
+            })
+            .join(', ')
       }
       alert(mensagem)
+    }
+  }
+
+  async function updateTeacher(id, data) {
+    try {
+      // Cria uma cópia dos dados para não modificar diretamente o formulário na tela
+      const payload = { ...data }
+
+      // Se a instituição veio como um objeto, extrai apenas o ID (UUID) string
+      if (payload.instituicao && typeof payload.instituicao === 'object') {
+        payload.instituicao = payload.instituicao.id
+      }
+
+      // Se a imagem de perfil veio como objeto, extrai apenas a chave string
+      if (payload.imagem_perfil && typeof payload.imagem_perfil === 'object') {
+        payload.imagem_perfil = payload.imagem_perfil.attachment_key || payload.imagem_perfil.id
+      }
+
+      // Agora envia o payload limpo com o UUID correto
+      const response = await teacherApi.update(id, payload)
+      return response.data
+    } catch (error) {
+      console.error('Erro na store de professores ao atualizar:', error)
+      throw error
     }
   }
 
@@ -142,5 +179,6 @@ export const useTeacherStore = defineStore('teacher', () => {
     createTeacher,
     uploadImage,
     submit,
+    updateTeacher,
   }
 })

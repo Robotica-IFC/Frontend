@@ -30,6 +30,9 @@ const { user } = storeToRefs(authStore)
             <h1>{{ user?.username }}</h1>
             <h2>{{ user?.email }}</h2>
             <h3>{{ user?.name }}</h3>
+            <h3 v-if="user?.tipo === 'professor' && user?.instituicao">
+              {{ typeof user.instituicao === 'object' ? user.instituicao?.nome : user.instituicao }}
+            </h3>
           </div>
         </div>
         <p class="desc">{{ user?.descricao || 'Sem descrição 😢' }}</p>
