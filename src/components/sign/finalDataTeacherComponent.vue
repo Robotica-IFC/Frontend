@@ -63,6 +63,7 @@ onMounted(() => {
         placeholder="Nome de usuário (ex: prof_luca)"
         icon="mdi mdi-account-edit"
         v-model="teacherStore.teacher.username"
+        required=""
       />
 
       <appButton type="submit">Finalizar Cadastro</appButton>

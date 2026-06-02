@@ -4,6 +4,9 @@ import signView from '@/views/signView.vue'
 import changePasswordView from '@/views/changePasswordView.vue'
 import tests from '@/views/tests.vue'
 import HomePageView from '@/views/homePageView.vue'
+import teamView from '@/views/teamView.vue'
+import editUserView from '@/views/editUserView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,9 +32,19 @@ const router = createRouter({
       component: HomePageView
     },
     {
+      path: '/team',
+      name: 'team',
+      component: teamView
+    },
+    {
       path: '/test',
       name: 'test',
       component: tests
+    },
+    {
+      path: '/edit',
+      name: 'edit',
+      component: editUserView
     }
   ],
 })

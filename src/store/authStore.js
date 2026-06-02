@@ -1,29 +1,22 @@
 import { defineStore } from 'pinia'
 import authApi from '@/api/authApi'
-import { computed, reactive } from 'vue'
+import { computed, ref } from 'vue'
 import router from '@/router'
-import { useStudentStore } from './studentStore'
+import { jwtDecode } from 'jwt-decode'
 
 export const useAuthStore = defineStore('auth', () => {
-  const state = reactive({
-    accessToken: localStorage.getItem('access_token') || null,
-    refreshToken: localStorage.getItem('refresh_token') || null,
-    user: null, // Adicionar quando subir para o vercel JSON.parse(localStorage.getItem('user_data')) || null,
-  })
+  const accessToken = ref(localStorage.getItem('access_token') || null)
+  const refreshToken = ref(localStorage.getItem('refresh_token') || null)
+  const user = ref(null)
 
-  const isAuthenticated = computed(() => !!state.accessToken)
-  const user = computed(() => state.user)
+  const isAuthenticated = computed(() => !!accessToken.value)
 
-  async function login(credentials) {
+  function setUserFromToken(token) {
     try {
-      const response = await authApi.login(credentials)
-      const access = response.data.access
-      const refresh = response.data.refresh
-
-      const payload = JSON.parse(decodeURIComponent(escape(atob(access.split('.')[1]))))
-
-      const userData = {
-        id: payload.user_id,
+      const payload = jwtDecode(token)
+      user.value = {
+        id: payload.aluno_id || payload.professor_id,
+        user_id: payload.user_id,
         name: payload.name,
         username: payload.username,
         email: payload.email,
@@ -32,42 +25,89 @@ export const useAuthStore = defineStore('auth', () => {
         telefone: payload.telefone,
         descricao: payload.descricao,
         imagem_perfil: payload.imagem_perfil,
-        instituicao: payload.instituicao
+        instituicao: payload.instituicao,
       }
+    } catch (e) {
+      user.value = null
+    }
+  }
 
-      state.accessToken = access
-      state.refreshToken = refresh
-      state.user = userData
+if (accessToken.value) {
+  setUserFromToken(accessToken.value)
+  
+  const cache = localStorage.getItem('user_profile_cache')
+  if (cache && user.value) {
+    user.value = { ...user.value, ...JSON.parse(cache) }
+  }
+}
 
-      // Salva no LocalStorage para não deslogar no F5
-      // localStorage.setItem('access_token', access)
-      // localStorage.setItem('refresh_token', refresh)
-      // localStorage.setItem('user_data', JSON.stringify(userData))
-
-      router.push('/test')
+  async function login(credentials) {
+    try {
+      const response = await authApi.login(credentials)
+      const { access, refresh } = response.data
+      accessToken.value = access
+      refreshToken.value = refresh
+      setUserFromToken(access)
+      localStorage.setItem('access_token', access)
+      localStorage.setItem('refresh_token', refresh)
+      router.push('/home-page')
     } catch (error) {
       console.error('Login failed:', error)
       throw error
     }
   }
 
+  async function refreshAccessToken() {
+    try {
+      const rToken = localStorage.getItem('refresh_token')
+      if (!rToken) {
+        console.warn('Nenhum refresh token encontrado no localStorage')
+        throw new Error('No refresh token')
+      }
+
+      const response = await authApi.refresh({ refresh: rToken })
+      const { access } = response.data
+
+      accessToken.value = access
+      localStorage.setItem('access_token', access)
+      setUserFromToken(access)
+
+      return access
+    } catch (e) {
+      console.error('Erro ao atualizar token:', e.response?.data || e.message)
+      logout()
+      throw e
+    }
+  }
+
+  async function refreshUserSession() {
+    return await refreshAccessToken()
+  }
+
+  function updateUserData(newData) {
+    if (user.value) {
+      user.value = { ...user.value, ...newData }
+    }
+  }
+
   function logout() {
-    state.accessToken = null
-    state.refreshToken = null
-    state.user = null
-
-    // localStorage.removeItem('access_token')
-    // localStorage.removeItem('refresh_token')
-    // localStorage.removeItem('user_data')
-
+    accessToken.value = null
+    refreshToken.value = null
+    user.value = null
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     router.push('/')
   }
 
   return {
-    state, // Exportar o state caso precise de acesso direto
+    accessToken,
+    refreshToken,
     isAuthenticated,
     user,
     login,
     logout,
+    refreshAccessToken,
+    refreshUserSession,
+    updateUserData,
   }
 })

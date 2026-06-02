@@ -70,6 +70,7 @@ onMounted(() => {
         placeholder="Nome de usuario" 
         icon="mdi mdi-account-edit" 
         v-model="studentStore.student.username" 
+        required=""
       />
       
       <appButton type="submit">Criar conta</appButton>
