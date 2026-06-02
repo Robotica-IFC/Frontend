@@ -22,11 +22,15 @@ const handleLogin = async () => {
   }
 };
 
-onMounted(() => {
-  // Agora verificamos se o usuário está autenticado pelo token
-  // A store já processou o token e montou o user no F5 antes de chegar aqui
+onMounted(async () => {
   if (authStore.isAuthenticated) {
-    router.push('/home-page');
+    try {
+      await authStore.refreshUserSession();
+      
+      router.push('/home-page');
+    } catch (error) {
+      console.warn("Sessão expirada. Permanecendo na tela de login.");
+    }
   }
 });
 </script>
