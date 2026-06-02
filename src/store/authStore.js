@@ -96,6 +96,7 @@ if (accessToken.value) {
     user.value = null
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
+    localStorage.clear()
     router.push('/')
   }
 
