@@ -3,87 +3,98 @@ import teacherApi from '@/api/teacherApi'
 import { computed, reactive } from 'vue'
 import router from '@/router'
 import imageApi from '@/api/imageApi'
+import { useAuthStore } from './authStore'
 
 export const useTeacherStore = defineStore('teacher', () => {
   const state = reactive({
-    //Estado global que não pode ser alterado diretamente
     teacher: {
       id: null,
-      nome: '',
+      name: '',
       username: '',
       instituicao: '',
       email: '',
       cpf: '',
-      senha: '',
+      password: '',
       telefone: '',
       data_nascimento: '',
       ativo: true,
       email_verificado: true,
-      imagem_perfil: 'e52625ec-f04a-490b-a52b-5d6db97ec88f', //Esse e o attachment key da imagem padrão da minha api alterar quando mudar de maquina, ASS: Luca
+      imagem_perfil: '',
     },
     teachers: [],
+    meUser: null,
   })
 
-  const teacher = computed(() => state.teacher) // O que sera usado nos components
+  const teacher = computed(() => state.teacher)
   const teachers = computed(() => state.teachers)
+  const authStore = useAuthStore()
 
-  // Funções de get
   async function getTeachers() {
     try {
       const response = await teacherApi.getAll()
-
       state.teachers = response.data.results ?? response.data
     } catch (error) {
       console.error(error)
     }
   }
 
-  // Funções de POST
   async function createTeacher() {
     try {
+      // Força a extração apenas do ID (UUID) em formato String
+      const instituicaoId =
+        typeof state.teacher.instituicao === 'object'
+          ? state.teacher.instituicao?.id
+          : state.teacher.instituicao
+
+      const imagemId =
+        typeof state.teacher.imagem_perfil === 'object'
+          ? state.teacher.imagem_perfil?.attachment_key
+          : state.teacher.imagem_perfil
+
+      // Enviamos tudo na raiz, garantindo as PKs limpas
       const response = await teacherApi.create({
-        nome: state.teacher.nome,
+        name: state.teacher.name,
         username: state.teacher.username,
-        instituicao: state.teacher.instituicao,
         email: state.teacher.email,
-        cpf: state.teacher.cpf,
-        senha: state.teacher.senha,
-        telefone: state.teacher.telefone,
-        data_nascimento: state.teacher.data_nascimento,
+        password: state.teacher.password,
         ativo: state.teacher.ativo,
         email_verificado: state.teacher.email_verificado,
-        imagem_perfil: state.teacher.imagem_perfil,
+        cpf: state.teacher.cpf,
+        telefone: state.teacher.telefone,
+        data_nascimento: state.teacher.data_nascimento,
+        instituicao: instituicaoId, // Apenas a String do UUID
+        imagem_perfil: imagemId || null, // Apenas a String do UUID ou null
       })
 
-      alert('Conta criada com sucesso')
+      const credentials = reactive({
+        email: state.teacher.email,
+        password: state.teacher.password,
+      })
+
+      authStore.login(credentials)
     } catch (error) {
-      console.error(error.response?.data || error)
+      // Esse log vai te mostrar no console EXATAMENTE qual campo deu erro
+      console.error('Erro detalhado vindo do servidor:', error.response?.data)
       throw error
     }
   }
 
-  // CRUD de imagem de perfil
-
   async function uploadImage(file) {
     const formData = new FormData()
     formData.append('file', file)
-
     const response = await imageApi.uploadImage(formData)
-
     return response.data
   }
-
-  //Função para criar usuario
 
   async function submit(file) {
     const apenasNumeros = /^\d+$/
 
-    if (!apenasNumeros.test(state.teacher.cpf)) {
+    if (state.teacher.cpf && !apenasNumeros.test(state.teacher.cpf)) {
       alert('O CPF deve conter apenas números!')
       return
     }
 
-    if (!apenasNumeros.test(state.teacher.telefone)) {
+    if (state.teacher.telefone && !apenasNumeros.test(state.teacher.telefone)) {
       alert('O telefone deve conter apenas números!')
       return
     }
@@ -95,31 +106,41 @@ export const useTeacherStore = defineStore('teacher', () => {
       }
 
       await createTeacher()
-      router.push('/test')
+
+      // Limpa o estado voltando aos valores padrão iniciais
+      Object.assign(state.teacher, {
+        id: null,
+        name: '',
+        username: '',
+        instituicao: '',
+        email: '',
+        cpf: '',
+        password: '',
+        telefone: '',
+        data_nascimento: '',
+        ativo: true,
+        email_verificado: true,
+        imagem_perfil: '',
+      })
     } catch (error) {
       console.error('Falha no processo de criação:', error)
-      alert('Falha ao criar conta: ' + (error.response?.data?.detail || error.message))
+      const backendError = error.response?.data
+      let mensagem = 'Falha ao criar conta.'
+
+      if (backendError) {
+        mensagem += ' Verifique os dados: ' + Object.values(backendError).flat().join(', ')
+      }
+      alert(mensagem)
     }
   }
 
   return {
-    // STATE evitar o maximo usar
     state,
-
-    // Usar para listar
     teacher,
     teachers,
-
-    // Funções de get
     getTeachers,
-
-    // Funções de post
     createTeacher,
-
-    // Funções de imagem
     uploadImage,
-
-    // Criação geral do user
     submit,
   }
 })

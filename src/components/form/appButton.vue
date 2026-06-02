@@ -11,13 +11,20 @@ const props = defineProps({
     type: String,
     default: "button",
   },
+  width: {
+    type: String,
+    default: "100%",
+  },
+  font: {
+    type: String,
+  }
 });
 
 </script>
 
 <template>
   <div class="btn">
-    <button :type="props.type" :class="props.variant" @click="emit('click', props.variant)">
+    <button :type="props.type" :class="props.variant" :style="{ width: props.width, fontSize: props.font }" @click="emit('click', props.variant)">
       {{ props.label }}
       <slot />
     </button>
@@ -33,13 +40,14 @@ const props = defineProps({
   text-align: center;
   border: none;
   transition: 0.1s;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .primary {
+  width: 100%;
   border-radius: 8px;
   font-size: 16px;
-  padding: 10px 80px;
+  padding: 10px;
   background-color: var(--principal-claro);
   color: white;
 }
@@ -70,5 +78,29 @@ const props = defineProps({
     background-color: var(--destaque-claro);
     bottom: 0;
     left: 0;
+}
+
+.card{
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 5px 0;
+  background-color: var(--principal-claro);
+  color: white;
+  width: 100px;
+}
+.card:active {
+  transform: scale(0.95);
+  height: auto;
+  background-color: var(--principal-claro);
+  color: var(--fundo-claro);
+}
+.danger{
+  background-color: var(--danger-claro);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-top: 0;
 }
 </style>

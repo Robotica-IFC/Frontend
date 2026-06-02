@@ -21,15 +21,16 @@ const props = defineProps({
   name: String,
   required: {
     type: Boolean,
-    default: false
+    default: false,
   },
   maxlength: Number,
+  list: String,
 })
 
 const value = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
-});
+})
 </script>
 
 <template>
@@ -44,12 +45,12 @@ const value = computed({
       :name="name"
       :type="type"
       :placeholder="placeholder"
-      :value="modelValue"
-      @input="emit('update:modelValue', $event.target.value)"
       :required="required"
       :class="variant"
       :maxlength="props.maxlength"
+      :list="list"
       v-model="value"
+      autocomplete="off"
     />
 
     <slot />
@@ -57,7 +58,6 @@ const value = computed({
 </template>
 
 <style scoped>
-/* Estilos gerais */
 div.input {
   border-bottom: 1px var(--principal-claro) solid;
   display: flex;
@@ -92,7 +92,6 @@ div.input ::placeholder {
   color: var(--principal-claro);
 }
 
-/* Estilos para variant terciary */
 div.input.terciary {
   border: 1px solid var(--principal-claro);
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.586);
@@ -119,7 +118,6 @@ input.terciary {
   font-size: 20px;
 }
 
-/* Foto de perfil */
 div.input.signImage {
   border: none;
   width: 110px;
@@ -134,7 +132,6 @@ div.input.signImage {
   cursor: pointer;
 }
 
-/* esconder input real */
 div.input.signImage input {
   position: absolute;
   opacity: 0;
@@ -143,20 +140,17 @@ div.input.signImage input {
   cursor: pointer;
 }
 
-/* preview da imagem */
 div.input.signImage img.preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* ícone padrão */
 div.input.signImage .mdi-account {
   font-size: 45px;
   color: #555;
 }
 
-/* ícone de câmera */
 div.input.signImage .camera {
   position: absolute;
   bottom: 5px;
@@ -168,14 +162,13 @@ div.input.signImage .camera {
   padding: 6px;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Para Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 </style>

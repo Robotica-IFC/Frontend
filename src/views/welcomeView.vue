@@ -2,12 +2,33 @@
 import appInput from "@/components/form/appInput.vue";
 import appArrow from "@/components/appArrow.vue";
 import appButton from "@/components/form/appButton.vue";
-import { ref } from "vue";
+import { ref, reactive, onMounted } from "vue";
+import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
 
-const password = ref(false)
+const authStore = useAuthStore();
+const showPassword = ref(false);
 
-const passwordValue = ref('')
+const credentials = reactive({
+  email: '',
+  password: ''
+});
+
+const handleLogin = async () => {
+  try {
+    await authStore.login(credentials);
+  } catch (error) {
+    alert("Email ou senha inválidos.");
+  }
+};
+
+onMounted(() => {
+  // Agora verificamos se o usuário está autenticado pelo token
+  // A store já processou o token e montou o user no F5 antes de chegar aqui
+  if (authStore.isAuthenticated) {
+    router.push('/home-page');
+  }
+});
 </script>
 
 <template>
@@ -20,16 +41,37 @@ const passwordValue = ref('')
 
     <h2>Bem-vindo(a) à Robótica!</h2>
 
-    <form>
-      <appInput name="email" style="margin-bottom: 20px;" :placeholder="'E-Mail'" :icon="'mdi mdi-email-outline'"></appInput>
+    <form @submit.prevent="handleLogin">
+      <appInput 
+        v-model="credentials.email" 
+        name="email" 
+        style="margin-bottom: 20px;" 
+        placeholder="E-Mail"
+        icon="mdi mdi-email-outline" 
+      />
 
-      <appInput :type="password ? 'text' : 'password'" name="password" v-model="passwordValue" :placeholder="'Senha'" :icon="'mdi mdi-lock-open'">
-          <span @click="password = !password" :class="password ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"></span>
+      <appInput 
+        v-model="credentials.password" 
+        :type="showPassword ? 'text' : 'password'" 
+        name="password"
+        placeholder="Senha" 
+        icon="mdi mdi-lock-open"
+      >
+        <span 
+          @click="showPassword = !showPassword"
+          :class="showPassword ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"
+        ></span>
       </appInput>
 
       <div class="botao">
-        <appButton variant="primary" label="Entrar"></appButton>
-        <appButton @click="router.push('/change-password')" variant="secondary" label="Esqueceu a senha?" ></appButton>
+        <appButton type="submit" variant="primary" label="Entrar" />
+
+        <appButton 
+          type="button" 
+          @click="router.push('/change-password')" 
+          variant="secondary"
+          label="Esqueceu a senha?" 
+        />
       </div>
     </form>
 
@@ -82,14 +124,14 @@ form span {
   margin-left: 40px;
   color: var(--principal-secundario-claro);
   font-size: 20px;
+  cursor: pointer;
 }
 
 .botao {
   margin-top: 25px;
-}
-
-.footer-text .btn {
-  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .footer-text {

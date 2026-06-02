@@ -15,12 +15,15 @@ import appButton from '../form/appButton.vue';
             conteúdos, acompanhe projetos e interaja com a comunidade de forma simples e dinâmica. </p>
 
         <img src="/img/home/Home-robo.png" alt="robo">
+        
     </div>
 
 </template>
 
 <style scoped>
-
+div{
+    text-align: center;
+}
 h1{
     font-size: 23px;
     text-align: center;

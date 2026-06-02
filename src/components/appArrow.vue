@@ -13,7 +13,7 @@
 
 <style scoped>
 div.arrow{
-    color: var(--principal-secundario-claro);
+    color: var(--principal-claro);
     font-size: 25px;
 }
 
