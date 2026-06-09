@@ -11,7 +11,7 @@
     <header>
         <ul>
             <li><span class="mdi mdi-menu"></span></li>
-            <li><img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo"></li>
+            <li><img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo" @click="router.push('/home-page')"></li>
             <li>
                 <img @click="router.push('/edit')" v-if="authStore.user?.imagem_perfil" class="perfil" :src="authStore.user?.imagem_perfil" :alt="authStore.user?.name">
                 <span v-else class="mdi mdi-account-circle-outline"></span>

@@ -43,7 +43,7 @@ const { user } = storeToRefs(authStore)
       <div class="info-team">
         <h1>Envie solicitações para entrar nas equipes</h1>
         <p>Explore as equipes da Robótica IFC e envie uma solicitação para participar</p>
-        <appButton font="13px">Explorar equipes</appButton>
+        <appButton font="13px" @click="router.push('/team')">Explorar equipes</appButton>
       </div>
     </div>
     <div class="logout">
