@@ -7,6 +7,9 @@ const teamApi = {
   uploadImage(formData) {
     return api.post('media/images/', formData)
   },
+  getOne(id) {
+    return api.get(`/equipes/${id}`)
+  }
 }
 
 export default teamApi

@@ -6,6 +6,7 @@ import tests from '@/views/tests.vue'
 import HomePageView from '@/views/homePageView.vue'
 import teamView from '@/views/teamView.vue'
 import editUserView from '@/views/editUserView.vue'
+import teamDetailsView from '@/views/teamDetailsView.vue'
 
 
 const router = createRouter({
@@ -45,6 +46,12 @@ const router = createRouter({
       path: '/edit',
       name: 'edit',
       component: editUserView
+    },
+    {
+      path: '/team/:id',
+      name: 'teamDetails',
+      component: teamDetailsView,
+      props: true
     }
   ],
 })

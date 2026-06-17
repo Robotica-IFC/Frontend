@@ -11,6 +11,8 @@ export const useTeamStore = defineStore("team", () => {
   const totalPages = ref(1);
   const total = ref(0);
 
+  const actualTeam = ref([])
+
   async function getTeams(page = 1) {
     try {
       loading.value = true;
@@ -25,12 +27,17 @@ export const useTeamStore = defineStore("team", () => {
       total.value = response.data.total;
 
       console.log(totalTeams)
-
     } catch (error) {
       console.error(error);
     } finally {
       loading.value = false;
     }
+  }
+  async function getTeamById(id){
+    actualTeam.value = []
+    const response = await teamApi.getOne(id);
+
+    actualTeam.value = response.data
   }
 
   return {
@@ -40,6 +47,8 @@ export const useTeamStore = defineStore("team", () => {
     totalPages,
     totalTeams,
     total,
+    actualTeam,
     getTeams,
+    getTeamById,
   };
 });
