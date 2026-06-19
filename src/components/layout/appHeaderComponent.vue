@@ -1,9 +1,9 @@
 <script setup>
 import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
-import { useTemplateStore } from "@/store/template";
+// import { useTemplateStore } from "@/store/template";
 
-const templateStore = useTemplateStore();
+// const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 </script>
 
@@ -11,7 +11,7 @@ const authStore = useAuthStore();
   <header>
     <ul>
       <li><span class="mdi mdi-menu"></span></li>
-      <li><img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo" /></li>
+      <li @click="router.push('/home-page')"><img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo" /></li>
       <li>
         <img
           @click="router.push('/edit')"

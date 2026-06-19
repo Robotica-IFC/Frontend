@@ -7,6 +7,7 @@ import HomePageView from '@/views/homePageView.vue'
 import teamView from '@/views/teamView.vue'
 import editUserView from '@/views/editUserView.vue'
 import teamDetailsView from '@/views/teamDetailsView.vue'
+import studentDetailsView from '@/views/studentDetailsView.vue'
 
 
 const router = createRouter({
@@ -52,6 +53,12 @@ const router = createRouter({
       name: 'teamDetails',
       component: teamDetailsView,
       props: true
+    },
+    {
+      path: '/student/:id',
+      name: 'studentDetails',
+      component: studentDetailsView,
+      props: true,
     }
   ],
 })

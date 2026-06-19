@@ -15,15 +15,18 @@ const props = defineProps({
 });
 onMounted(async () => {
   await teamStore.getTeamById(props.id);
-  console.log(teamStore.actualTeam);
 });
+
+function goToStudent(id){
+  router.push({name: 'studentDetails', params: { id }})
+}
 
 const team = computed(() => teamStore.actualTeam);
 </script>
 <template>
   <div class="page">
     <div class="top">
-      <appArrow @back="router.push('/team')"></appArrow>
+      <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent></requestToParticipateComponent>
     </div>
     <div class="info">
@@ -56,7 +59,7 @@ const team = computed(() => teamStore.actualTeam);
       <div class="members">
         <ul class="teachers">
           <li v-for="t in team.professores" :key="t.id">
-          <img class="image-teacher" :src="t.imagem_perfil?.file" alt="">
+          <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user.name">
             <div class="text">
               <h2>Professor: {{ t.user.name }}</h2>
               <h3>
@@ -65,10 +68,16 @@ const team = computed(() => teamStore.actualTeam);
             </div>
           </li>
         </ul>
+        <ul class="students">
+          <li v-for="s in team.alunos" :key="s.id" @click="goToStudent(s.id)">
+            <img :src="s.imagem_perfil.file" :alt="s.user.name">
+            <h2>{{ s.user.name }}</h2>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
-</template>
+</template> 
 <style scoped>
 div.page {
   width: 100%;
@@ -132,31 +141,75 @@ div.info {
 ul.teachers{
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
-  margin-top: 10px;
+  margin-top: 30px;
+  padding-bottom: 10px;
+  gap: 10px;
 
   & li{
-    width: 50%;
+    width: 40%;
     display: flex;
     align-items: center;
     gap: 10px;
+    word-wrap: wrap;
+    padding: 0;
 
     & img{
-      width: 30%;
+      width: 40%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
-
+      border-radius: 50%;
     }
     & h2{
-      font-size: 15px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
     & h3{
-      font-size: 10px;
+      font-size: 8px;
       font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
+}
+
+ul.students{
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--principal-claro);
+  gap: 20px;
+  align-items: center;
+  list-style: none;
+  
+
+& li{
+  width:15%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+
+  &{
+    img{
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    & h2{
+      text-align: center;
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
 }
 </style>

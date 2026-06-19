@@ -8,7 +8,10 @@ const teamApi = {
     return api.post('media/images/', formData)
   },
   getOne(id) {
-    return api.get(`/equipes/${id}`)
+    return api.get(`equipes/${id}`)
+  },
+  getTeamByUserId(id){
+    return api.get(`equipes/usuario/${id}`)
   }
 }
 
