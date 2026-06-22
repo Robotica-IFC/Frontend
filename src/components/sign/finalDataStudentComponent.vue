@@ -30,10 +30,6 @@ function handleFileChange(e) {
 function submit() {
   studentStore.submit(file.value)
 }
-
-onMounted(() => {
-  console.log(templateStore.sign)
-})
 </script>
 
 <template>

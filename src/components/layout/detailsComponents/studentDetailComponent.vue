@@ -19,7 +19,6 @@ function openTeam(id){
 
 onMounted(async () => {
     await studentStore.getStudentById(props.id)
-    console.log(studentStore.actualStudent)
 })
 
 const student = computed(() => studentStore.actualStudent)
