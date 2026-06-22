@@ -30,9 +30,6 @@ function submit() {
   teacherStore.submit(file.value)
 }
 
-onMounted(() => {
-  console.log('Iniciando etapa final do professor')
-})
 </script>
 
 <template>

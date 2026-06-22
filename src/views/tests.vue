@@ -15,7 +15,6 @@ onMounted(async () => {
     await studentStore.getStudents()
     await teacherStore.getTeachers()
     await instituteStore.getInstitutes()
-    console.log(authStore.user)
 })
 </script>
 

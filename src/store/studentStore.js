@@ -154,7 +154,7 @@ export const useStudentStore = defineStore('student', () => {
 
       state.actualStudent = studentData
     } catch (error) {
-      console.log(error)
+      console.error('Erro ao buscar estudante:', error)
     }
   }
 
