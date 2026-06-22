@@ -2,8 +2,13 @@
 import { useTeamStore } from '@/store/teamStore'
 import { onMounted } from 'vue'
 import Pagination from '@/components/paginationComponent.vue'
+import router from '@/router'
 
 const teamStore = useTeamStore()
+
+function openTeam(id){
+  router.push({name: 'teamDetails', params: { id }})
+}
 
 onMounted(() => {
   teamStore.getTeams()
@@ -13,7 +18,7 @@ onMounted(() => {
 <template>
   <div class="content">
     <ul>
-      <li v-for="t in teamStore.teams" :key="t.id">
+      <li v-for="t in teamStore.teams" :key="t.id" @click="openTeam(t.id)">
         <div class="primeiro">
           <div class="img">
             <img

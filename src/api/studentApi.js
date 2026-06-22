@@ -23,7 +23,7 @@ const studentsApi = {
 
     uploadImage(formData) {
         return api.post('media/images/', formData)
-    }
+    },
 }
 
 export default studentsApi

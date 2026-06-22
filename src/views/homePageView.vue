@@ -1,7 +1,7 @@
 <script setup>
 import AppHeaderComponent from '@/components/layout/appHeaderComponent.vue';
-import HomeStartComponent from '@/components/home-page/HomeStartComponent.vue';
-import HomeCardsComponent from '@/components/home-page/HomeCardsComponent.vue';
+import homeStartComponent from '@/components/home-page/homeStartComponent.vue';
+import homeCardsComponent from '@/components/home-page/homeCardsComponent.vue';
 // import panelcomponent from '@/components/layout/panelcomponent.vue';
 
 // import { useTemplateStore } from '@/store/template';
@@ -11,6 +11,6 @@ import HomeCardsComponent from '@/components/home-page/HomeCardsComponent.vue';
 
 <template>
     <AppHeaderComponent></AppHeaderComponent>
-    <HomeStartComponent style="margin-top: 90px;"></HomeStartComponent>
-    <HomeCardsComponent></HomeCardsComponent>
+    <homeStartComponent style="margin-top: 90px;"></homeStartComponent>
+    <homeCardsComponent></homeCardsComponent>
 </template>
