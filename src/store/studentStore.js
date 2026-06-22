@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import studentsApi from '@/api/studentApi'
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import router from '@/router'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
+import { useTeamStore } from './teamStore'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
@@ -23,12 +24,15 @@ export const useStudentStore = defineStore('student', () => {
     },
     students: [],
     meUser: null,
+    actualStudent: [],
   })
 
   const student = computed(() => state.student)
   const students = computed(() => state.students)
+  const actualStudent = computed(() => state.actualStudent)
 
   const authStore = useAuthStore()
+  const teamStore = useTeamStore()
 
   async function getStudents() {
     try {
@@ -131,14 +135,39 @@ export const useStudentStore = defineStore('student', () => {
     }
   }
 
+  // Buscar apenas 1 estudante
+
+  async function getStudentById(id) {
+    try {
+      state.actualStudent = []
+      const response = await studentsApi.getById(id)
+
+      const studentData = response.data
+
+      const userId = studentData.user?.id;
+
+      if(userId){
+        const teamUser = await teamStore.getTeamByUserId(userId)
+
+        studentData.teams = teamUser
+      }
+
+      state.actualStudent = studentData
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return {
     state,
     student,
     students,
+    actualStudent,
     getStudents,
     createStudent,
     uploadImage,
     submit,
     updateStudent,
+    getStudentById,
   }
 })
