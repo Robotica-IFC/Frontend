@@ -94,6 +94,8 @@ export const useStudentStore = defineStore('student', () => {
       if (file) {
         const image = await uploadImage(file)
         state.student.imagem_perfil = image.attachment_key
+      }else {
+        state.student.imagem_perfil = '90e0ddf1-2504-4ba6-a936-457c1a668935'
       }
 
       await createStudent()

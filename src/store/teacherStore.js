@@ -110,6 +110,8 @@ export const useTeacherStore = defineStore('teacher', () => {
       if (file) {
         const image = await uploadImage(file)
         state.teacher.imagem_perfil = image.attachment_key
+      }else {
+        state.teacher.imagem_perfil = '90e0ddf1-2504-4ba6-a936-457c1a668935'
       }
 
       await createTeacher()

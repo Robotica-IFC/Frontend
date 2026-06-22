@@ -49,6 +49,8 @@ export const useInstituteStore = defineStore('institute', () => {
       if (file) {
         const image = await uploadImage(file)
         state.institute.logo = image.attachment_key
+      }else {
+        state.institute.logo = '90e0ddf1-2504-4ba6-a936-457c1a668935'
       }
 
       // Faz o POST no banco de dados
