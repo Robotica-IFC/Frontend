@@ -28,8 +28,6 @@ export const useTeamStore = defineStore("team", () => {
       currentPage.value = response.data.pagina_atual;
       totalPages.value = response.data.paginas;
       total.value = response.data.total;
-
-      console.log(totalTeams)
     } catch (error) {
       console.error(error);
     } finally {

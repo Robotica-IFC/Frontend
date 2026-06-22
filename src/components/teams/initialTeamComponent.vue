@@ -1,6 +1,7 @@
 <script setup>
 import { useTeamStore } from '@/store/teamStore'
 import { onMounted } from 'vue'
+import appHeaderComponent from '../layout/appHeaderComponent.vue';
 
 const teamStore = useTeamStore()
 
@@ -10,7 +11,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <appHeaderComponent></appHeaderComponent>
+  <div style="margin-top: 30px;">
 
     <div class="inicio">
 
