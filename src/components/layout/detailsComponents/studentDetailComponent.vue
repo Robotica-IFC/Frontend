@@ -40,7 +40,6 @@ const student = computed(() => studentStore.actualStudent)
           />
           <div>
             <h1>{{ student.user?.username }}</h1>
-            <h2>{{ student.user?.email }}</h2>
             <h3>{{ student.user?.name }}</h3>
           </div>
         </div>
