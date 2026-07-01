@@ -34,6 +34,7 @@ header {
   width: 100%;
   height: 50px;
   background-color: white;
+  padding: 35px 5px;
   z-index: 1000;
   border-bottom: 1px solid #eee;
 }
