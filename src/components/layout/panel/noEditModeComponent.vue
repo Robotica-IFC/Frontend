@@ -20,6 +20,10 @@ onMounted(async() => {
   teamsUser.value = await teamStore.getTeamByUserId(user.value.user_id)
   console.log(teamsUser)
 })
+
+function openTeam(id){
+  router.push({name: 'teamDetails', params: { id }})
+}
 </script>
 <template>
   <div class="top">
