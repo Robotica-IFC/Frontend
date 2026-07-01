@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import studentsApi from '@/api/studentApi'
 import { computed, reactive, ref } from 'vue'
-import router from '@/router'
+// import router from '@/router'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'

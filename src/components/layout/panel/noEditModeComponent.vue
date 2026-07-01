@@ -18,7 +18,6 @@ const teamsUser = ref(null)
 
 onMounted(async() => {
   teamsUser.value = await teamStore.getTeamByUserId(user.value.user_id)
-  console.log(teamsUser)
 })
 
 function openTeam(id){

@@ -70,7 +70,6 @@ onMounted(() => {
     :totalPages="teamStore.totalPages"
     @change="
       (page) => {
-        console.log('clicou página:', page)
         teamStore.getTeams(page)
       }
     "
