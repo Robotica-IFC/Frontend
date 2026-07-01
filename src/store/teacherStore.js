@@ -4,6 +4,7 @@ import { computed, reactive } from 'vue'
 import router from '@/router'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
+import { useTeamStore } from './teamStore'
 
 export const useTeacherStore = defineStore('teacher', () => {
   const state = reactive({
@@ -23,11 +24,14 @@ export const useTeacherStore = defineStore('teacher', () => {
     },
     teachers: [],
     meUser: null,
+    actualTeacher: null,
   })
 
   const teacher = computed(() => state.teacher)
   const teachers = computed(() => state.teachers)
+  const actualTeacher = computed(() => state.actualTeacher)
   const authStore = useAuthStore()
+  const teamStore = useTeamStore()
 
   async function getTeachers() {
     try {
@@ -173,6 +177,27 @@ export const useTeacherStore = defineStore('teacher', () => {
     }
   }
 
+    async function getTeacherById(id) {
+    try {
+      state.actualStudent = []
+      const response = await teacherApi.getById(id)
+
+      const teacherData = response.data
+
+      const userId = teacherData.user?.id;
+
+      if(userId){
+        const teamUser = await teamStore.getTeamByUserId(userId)
+
+        teacherData.teams = teamUser
+      }
+
+      state.actualTeacher = teacherData
+    } catch (error) {
+      console.error('Erro ao buscar professor:', error)
+    }
+  }
+
   return {
     state,
     teacher,
@@ -182,5 +207,6 @@ export const useTeacherStore = defineStore('teacher', () => {
     uploadImage,
     submit,
     updateTeacher,
+    getTeacherById,
   }
 })
