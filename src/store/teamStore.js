@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
 import teamApi from "@/api/teamApi";
 import { ref } from "vue";
-import { useStudentStore } from "./studentStore";
+// import { useStudentStore } from "./studentStore";
 
 export const useTeamStore = defineStore("team", () => {
   // const studentStore = useStudentStore()
-  
+
   const teams = ref([]);
   const loading = ref(false);
   const totalTeams = ref(0)
