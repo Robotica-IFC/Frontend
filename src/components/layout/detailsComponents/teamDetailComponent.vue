@@ -20,6 +20,9 @@ onMounted(async () => {
 function goToStudent(id){
   router.push({name: 'studentDetails', params: { id }})
 }
+function goToTeacher(id){
+  router.push({name: 'teacherDetails', params: { id }})
+}
 
 const team = computed(() => teamStore.actualTeam);
 </script>
@@ -58,7 +61,7 @@ const team = computed(() => teamStore.actualTeam);
       </ul>
       <div class="members">
         <ul class="teachers">
-          <li v-for="t in team.professores" :key="t.id">
+          <li v-for="t in team.professores" :key="t.id" @click="goToTeacher(t.id)">
           <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user.name">
             <div class="text">
               <h2>Professor: {{ t.user.name }}</h2>

@@ -13,6 +13,5 @@ export const useTemplateStore = defineStore('template', () => {
         changePassword,
         teacherOrStudent,
         panel,
-        sidebar,
     }
 })

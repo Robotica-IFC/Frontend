@@ -202,6 +202,7 @@ export const useTeacherStore = defineStore('teacher', () => {
     state,
     teacher,
     teachers,
+    actualTeacher,
     getTeachers,
     createTeacher,
     uploadImage,

@@ -8,6 +8,7 @@ import teamView from '@/views/teamView.vue'
 import editUserView from '@/views/editUserView.vue'
 import teamDetailsView from '@/views/teamDetailsView.vue'
 import studentDetailsView from '@/views/studentDetailsView.vue'
+import teacherDetailsView from '@/views/teacherDetailsView.vue'
 
 
 const router = createRouter({
@@ -63,7 +64,13 @@ const router = createRouter({
       name: 'studentDetails',
       component: studentDetailsView,
       props: true,
-    }
+    },
+    {
+      path: '/teacher/:id',
+      name: 'teacherDetails',
+      component: teacherDetailsView,
+      props: true,
+    },
   ],
 })
 
