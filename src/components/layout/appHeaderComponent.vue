@@ -1,16 +1,23 @@
 <script setup>
 import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
-// import { useTemplateStore } from "@/store/template";
+import sideBarComponent from "./sideBarComponentComponent.vue";
+import { useTemplateStore } from "@/store/template";
 
-// const templateStore = useTemplateStore();
+const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 </script>
 
 <template>
+  <div 
+    v-if="templateStore.sidebar" 
+    class="sidebar-overlay" 
+    @click="templateStore.sidebar = false"
+  ></div>
+
   <header>
     <ul>
-      <li><span class="mdi mdi-menu"></span></li>
+      <li><span class="mdi mdi-menu" @click="templateStore.sidebar = !templateStore.sidebar"></span></li>
       <li @click="router.push('/home-page')"><img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo" /></li>
       <li>
         <img
@@ -24,6 +31,8 @@ const authStore = useAuthStore();
       </li>
     </ul>
   </header>
+
+  <sideBarComponent v-if="templateStore.sidebar" />
 </template>
 
 <style scoped>
@@ -34,6 +43,7 @@ header {
   width: 100%;
   height: 50px;
   background-color: white;
+  padding: 35px 5px;
   z-index: 1000;
   border-bottom: 1px solid #eee;
 }
@@ -80,5 +90,14 @@ li:last-child {
   border-radius: 50%;
   border: 1px solid black;
   object-fit: cover;
+}
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1001;
 }
 </style>

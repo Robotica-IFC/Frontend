@@ -8,6 +8,7 @@ import teamView from '@/views/teamView.vue'
 import editUserView from '@/views/editUserView.vue'
 import teamDetailsView from '@/views/teamDetailsView.vue'
 import studentDetailsView from '@/views/studentDetailsView.vue'
+import teacherDetailsView from '@/views/teacherDetailsView.vue'
 
 
 const router = createRouter({
@@ -17,16 +18,19 @@ const router = createRouter({
       path: '/',
       name: 'welcome',
       component: welcomeView,
+      meta: { hideHeader: true }
     },
     {
       path: '/sign',
       name: 'sign',
-      component: signView
+      component: signView,
+      meta: { hideHeader: true }
     },
     {
       path: '/change-password',
       name: 'change-password',
-      component: changePasswordView
+      component: changePasswordView,
+      meta: { hideHeader: true }
     },
     {
       path: '/home-page',
@@ -46,7 +50,8 @@ const router = createRouter({
     {
       path: '/edit',
       name: 'edit',
-      component: editUserView
+      component: editUserView,
+      meta: { hideHeader: true }
     },
     {
       path: '/team/:id',
@@ -59,7 +64,13 @@ const router = createRouter({
       name: 'studentDetails',
       component: studentDetailsView,
       props: true,
-    }
+    },
+    {
+      path: '/teacher/:id',
+      name: 'teacherDetails',
+      component: teacherDetailsView,
+      props: true,
+    },
   ],
 })
 
