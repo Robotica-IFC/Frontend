@@ -4,6 +4,9 @@ const teacherApi = {
   getAll() {
     return api.get('professores/')
   },
+  getById(id) {
+    return api.get(`professores/${id}/`)
+  },
 
   create(data) {
     return api.post('professores/', data)

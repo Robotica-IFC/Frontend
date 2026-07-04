@@ -6,6 +6,7 @@ export const useTemplateStore = defineStore('template', () => {
     const changePassword = ref(0);
     const teacherOrStudent = ref(true)
     const panel = ref(true)
+    const sidebar = ref(false)
 
     return {
         sign,

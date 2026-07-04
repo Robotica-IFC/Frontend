@@ -1,7 +1,6 @@
 <script setup>
 import { useTeamStore } from '@/store/teamStore'
 import { onMounted } from 'vue'
-import appHeaderComponent from '../layout/appHeaderComponent.vue';
 
 const teamStore = useTeamStore()
 
@@ -11,7 +10,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <appHeaderComponent></appHeaderComponent>
   <div style="margin-top: 30px;">
 
     <div class="inicio">
@@ -27,7 +25,7 @@ onMounted(() => {
       {{ teamStore.totalTeams || 0 }}
       </p>
       <p v-if="teamStore.totalTeams.length > 1" class="texto-equipe">Equipes registradas</p>
-      <p v-else>Equipe registrada</p>
+      <p v-else>Equipes registrada</p>
     </div>
 
     </div>

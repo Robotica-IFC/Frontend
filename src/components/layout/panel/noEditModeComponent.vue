@@ -5,13 +5,25 @@ import { useTemplateStore } from '@/store/template'
 import router from '@/router'
 import { useAuthStore } from '@/store/authStore'
 import appButton from '@/components/form/appButton.vue'
+import { useTeamStore } from '@/store/teamStore'
+import { onMounted, ref } from 'vue'
 
 const templateStore = useTemplateStore()
 const authStore = useAuthStore()
+const teamStore = useTeamStore()
 
 const { user } = storeToRefs(authStore)
-</script>
 
+const teamsUser = ref(null)
+
+onMounted(async() => {
+  teamsUser.value = await teamStore.getTeamByUserId(user.value.user_id)
+})
+
+function openTeam(id){
+  router.push({name: 'teamDetails', params: { id }})
+}
+</script>
 <template>
   <div class="top">
     <appArrow @back="router.back"></appArrow>
@@ -37,6 +49,18 @@ const { user } = storeToRefs(authStore)
         </div>
         <p class="desc">{{ user?.descricao || 'Sem descrição 😢' }}</p>
       </div>
+    </div>
+    <div class="team" v-if="teamsUser && teamsUser.length > 0">
+      <h1 class="team-title">Minhas equipes:</h1>
+      <ul class="teams">
+        <li v-for="t in teamsUser" :key="t.id" @click="openTeam(t.id)">
+          <img :src="t.image_perfil?.file" :alt="t.nome" />
+          <h2>{{ t.nome }}</h2>
+        </li>
+      </ul>
+    </div>
+    <div class="no-teams" v-else>
+      <h2>{{ user?.name }} não participa de nenhuma equipe</h2>
     </div>
     <div class="equipe-card">
       <span class="mdi mdi-account-multiple-outline"></span>
@@ -177,5 +201,60 @@ img.profile-image {
 }
 .mdi-logout {
   margin-left: 3px;
+}
+.team {
+  margin-top: 30px;
+}
+
+ul.teams {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  gap: 20px;
+  align-items: center;
+  list-style: none;
+
+  & li {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+
+    & img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    & h2 {
+      text-align: center;
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+h1.team-title {
+  font-size: 25px;
+  color: var(--principal-claro);
+}
+
+.no-teams {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px dashed var(--placeholder);
+  border-radius: 10px;
+  text-align: center;
+
+  & h2 {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--placeholder);
+  }
 }
 </style>
