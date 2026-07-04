@@ -86,6 +86,7 @@ div.top {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  margin-top: 30px;
 }
 div.info {
   margin-top: 15px;

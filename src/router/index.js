@@ -17,16 +17,19 @@ const router = createRouter({
       path: '/',
       name: 'welcome',
       component: welcomeView,
+      meta: { hideHeader: true }
     },
     {
       path: '/sign',
       name: 'sign',
-      component: signView
+      component: signView,
+      meta: { hideHeader: true }
     },
     {
       path: '/change-password',
       name: 'change-password',
-      component: changePasswordView
+      component: changePasswordView,
+      meta: { hideHeader: true }
     },
     {
       path: '/home-page',
@@ -46,7 +49,8 @@ const router = createRouter({
     {
       path: '/edit',
       name: 'edit',
-      component: editUserView
+      component: editUserView,
+      meta: { hideHeader: true }
     },
     {
       path: '/team/:id',

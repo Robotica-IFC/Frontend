@@ -85,6 +85,7 @@ const student = computed(() => studentStore.actualStudent)
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 25px;
+  margin-top: 30px;
 }
 
 .mdi {
