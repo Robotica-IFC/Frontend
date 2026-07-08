@@ -5,7 +5,7 @@ const devs = [
     links: {
       github: 'https://github.com/LauraEloysa',
       linkedin: 'https://www.linkedin.com/in/laura-eloysa-87996a2b8/',
-      mailto: 'mailto:lauraeloysad@gmail.com',
+      mailto: 'https://mail.google.com/mail/?view=cm&fs=1&to=lauraeloysad@gmail.com',
     },
     image: '/img/about-us/lauradev.jpeg',
     id: 1
@@ -16,7 +16,7 @@ const devs = [
     links: {
       github: 'https://github.com/LucasFontini1',
       linkedin: 'https://www.linkedin.com/in/lucas-fontini-da-luz-133a3b2b8/',
-      mailto: 'mailto:lucasfontinidaluz@gmail.com',
+      mailto: 'https://mail.google.com/mail/?view=cm&fs=1&to=lucasfontinidaluz@gmail.com',
     },
     image: '/img/about-us/lcsdev.jpeg',
     id: 2
@@ -27,7 +27,7 @@ const devs = [
     links: {
       github: 'https://github.com/mariisbx',
       linkedin: 'linkedinMari',
-      mailto: 'mailto:mariaaparecida.ifc.araquari@gmail.com',
+      mailto: 'https://mail.google.com/mail/?view=cm&fs=1&to=mariaaparecida.ifc.araquari@gmail.com',
     },
     image: '/img/about-us/marimaridev.png',
     id: 3
@@ -66,19 +66,19 @@ const devs = [
             </h2>
             <ul class="links">
               <li>
-                <a :href="d.links.github">
+                <a :href="d.links.github" target="_blank">
                   <span class="mdi mdi-github"></span><span class="name-link">GitHub</span>
                 </a>
               </li>
 
               <li>
-                <a :href="d.links.linkedin">
+                <a :href="d.links.linkedin" target="_blank">
                   <span class="mdi mdi-linkedin"></span><span class="name-link">LinkedIn</span>
                 </a>
               </li>
 
               <li>
-                <a :href="d.links.mailto">
+                <a :href="d.links.mailto" target="_blank">
                   <span class="mdi mdi-gmail"></span><span class="name-link">E-Mail</span>
                 </a>
               </li>
