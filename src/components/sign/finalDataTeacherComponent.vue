@@ -4,7 +4,7 @@ import { useTemplateStore } from '@/store/template'
 import appArrow from '../appArrow.vue'
 import appButton from '../form/appButton.vue'
 import AppInput from '../form/appInput.vue'
-import { onMounted, ref } from 'vue'
+import {  ref } from 'vue'
 import stepComponent from '../stepComponent.vue'
 
 const teacherStore = useTeacherStore() // Alterado para Teacher
