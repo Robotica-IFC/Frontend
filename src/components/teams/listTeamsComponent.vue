@@ -6,8 +6,8 @@ import router from '@/router'
 
 const teamStore = useTeamStore()
 
-function openTeam(id){
-  router.push({name: 'teamDetails', params: { id }})
+function openTeam(id) {
+  router.push({ name: 'teamDetails', params: { id } })
 }
 
 onMounted(() => {
@@ -32,11 +32,14 @@ onMounted(() => {
 
             <p>
               <span class="mdi mdi-account-outline"></span>
-              Líder: {{ t.professores?.[0]?.user?.username || t.professores?.[0]?.user?.name || 'Sem líder' }}
+              Líder:
+              {{
+                t.professores?.[0]?.user?.username || t.professores?.[0]?.user?.name || 'Sem líder'
+              }}
             </p>
 
             <p>
-              <span class="mdi mdi-map-marker" style="color:var(--principal-claro)"></span>
+              <span class="mdi mdi-map-marker" style="color: var(--principal-claro)"></span>
               {{ t.instituicao?.sigla || 'N/A' }} -
               {{ t.instituicao?.cidade || 'Local não informado' }}
             </p>
@@ -54,7 +57,7 @@ onMounted(() => {
           <div class="projetos">
             <p class="projects">
               <span class="mdi mdi-folder-outline"></span>
-              12 projetos
+              {{ t.total_projetos }} projetos
             </p>
             <p v-for="c in t.categorias?.slice(0, 2)" :key="c.id" class="categoria">
               {{ c.nome }}
@@ -65,18 +68,17 @@ onMounted(() => {
       </li>
     </ul>
 
-     <Pagination class="pagination-wrapper "
-    :currentPage="teamStore.currentPage"
-    :totalPages="teamStore.totalPages"
-    @change="
-      (page) => {
-        teamStore.getTeams(page)
-      }
-    "
-  />
-    </div>
-
-
+    <Pagination
+      class="pagination-wrapper"
+      :currentPage="teamStore.currentPage"
+      :totalPages="teamStore.totalPages"
+      @change="
+        (page) => {
+          teamStore.getTeams(page)
+        }
+      "
+    />
+  </div>
 </template>
 <style scoped>
 /* ESTRUTURA */
@@ -209,13 +211,10 @@ p {
   text-align: center;
 }
 
-
 .projetos {
   flex: 1;
   min-width: 0;
-
 }
-
 
 button {
   border: none;
