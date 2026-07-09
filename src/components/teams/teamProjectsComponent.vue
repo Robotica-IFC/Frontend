@@ -18,9 +18,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>Projetos da Equipe</h1>
+  <h1 v-if="projectStore.teamProjects.length > 0">Projetos da Equipe</h1>
 
-  <div class="projects">
+  <div class="projects" v-if="projectStore.teamProjects.length > 0" >
     <article v-for="project in projectStore.teamProjects" :key="project.id">
       <div class="card">
         <div class="image">
