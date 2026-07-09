@@ -29,7 +29,7 @@ const templateStore = useTemplateStore();
         <span class="mdi mdi-account-tie"></span> Professor
       </RouterLink>
 
-      <RouterLink to="/" class="nav-link">
+      <RouterLink to="/about-us" class="nav-link">
         <span class="mdi mdi-information-outline"></span> Sobre Nós
       </RouterLink>
     </nav>
