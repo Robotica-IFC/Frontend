@@ -87,7 +87,6 @@ onMounted(() => {
   margin: 40px auto;
 }
 
-/* CARD */
 .card {
   background: white;
   margin-bottom: 15px;
@@ -98,13 +97,13 @@ onMounted(() => {
   transition: 0.2s;
   display: flex;
   height: 220px;
+  padding: 0px;
 }
 
 .left {
   width: 40%;
   height: 100%;
-  flex-shrink: 0;
-}
+} 
 
 .image {
   width: 100%;
@@ -115,7 +114,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .no-image {
@@ -133,13 +131,28 @@ onMounted(() => {
 }
 
 .rigth {
-  margin: 15px 0 0 10px;
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-width: 0;
 }
 
 .status {
   padding: 3px 10px;
   border-radius: 5px;
   color: #ffff;
+  align-self: flex-start;
+  white-space: nowrap;
 }
 
 .em_andamento {
@@ -154,8 +167,12 @@ onMounted(() => {
 
 h2 {
   font-size: 21px;
-  margin-top: 10px;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 button {
   color: var(--principal-claro);
   border: var(--principal-claro) solid 1px;
@@ -163,12 +180,12 @@ button {
   padding: 5px 20px;
   border-radius: 5px;
 }
+
 .team {
   display: flex;
   flex-direction: column;
   gap: 2px;
   width: 100%;
-  margin-bottom: 10px;
 }
 
 .info-item {
@@ -176,7 +193,12 @@ button {
   align-items: center;
   width: 100%;
   min-width: 0;
+}
+
+.info-item span {
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .info-item .mdi {
@@ -186,7 +208,7 @@ button {
 }
 
 p {
-  margin-bottom: 5px;
+  margin: 0;
 }
 
 .ver-mais{
