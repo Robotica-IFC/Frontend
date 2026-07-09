@@ -17,7 +17,7 @@ const templateStore = useTemplateStore();
         <span class="mdi mdi-account-group"></span> Equipes
       </RouterLink>
 
-      <RouterLink to="/" class="nav-link">
+      <RouterLink to="/projects" class="nav-link">
         <span class="mdi mdi-laptop"></span> Projetos
       </RouterLink>
 

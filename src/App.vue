@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router';
 import appHeaderComponent from "@/components/layout/appHeaderComponent.vue";
+import appFooterComponent from "@/components/layout/appFooterComponent.vue"
 
 // Pega as informações da página que está ativa no momento
 const route = useRoute();
@@ -12,6 +13,8 @@ const route = useRoute();
   <main :class="{ 'no-header': route.meta.hideHeader }">
     <RouterView />
   </main>
+
+  <appFooterComponent></appFooterComponent>
 </template>
 
 <style scoped>

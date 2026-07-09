@@ -2,6 +2,7 @@
 import { defineProps, onMounted, computed } from "vue";
 import appArrow from "@/components/appArrow.vue";
 import requestToParticipateComponent from "@/components/requestToParticipateComponent.vue";
+import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
 import { useTeamStore } from "@/store/teamStore";
 import router from "@/router";
 
@@ -47,7 +48,7 @@ const team = computed(() => teamStore.actualTeam);
             }}
           </h2>
           <!-- <h3>
-          
+
           </h3> -->
         </div>
       </div>
@@ -79,8 +80,11 @@ const team = computed(() => teamStore.actualTeam);
         </ul>
       </div>
     </div>
+
+
+    <teamProjectsComponent :team-id="props.id" />
   </div>
-</template> 
+</template>
 <style scoped>
 div.page {
   width: 100%;
@@ -189,7 +193,7 @@ ul.students{
   gap: 20px;
   align-items: center;
   list-style: none;
-  
+
 
 & li{
   width:15%;

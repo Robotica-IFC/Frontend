@@ -9,8 +9,8 @@ import editUserView from '@/views/editUserView.vue'
 import teamDetailsView from '@/views/teamDetailsView.vue'
 import studentDetailsView from '@/views/studentDetailsView.vue'
 import teacherDetailsView from '@/views/teacherDetailsView.vue'
+import projectsView from '@/views/projectsView.vue'
 import aboutUsView from '@/views/aboutUsView.vue'
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,6 +71,11 @@ const router = createRouter({
       name: 'teacherDetails',
       component: teacherDetailsView,
       props: true,
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: projectsView
     },
     {
       path: '/about-us',
