@@ -12,12 +12,12 @@ const templateStore = useTemplateStore();
       <RouterLink to="/home-page" class="nav-link">
         <span class="mdi mdi-home-variant"></span> Página inicial
       </RouterLink>
-      
+
       <RouterLink to="/team" class="nav-link">
         <span class="mdi mdi-account-group"></span> Equipes
       </RouterLink>
 
-      <RouterLink to="/" class="nav-link">
+      <RouterLink to="/projects" class="nav-link">
         <span class="mdi mdi-laptop"></span> Projetos
       </RouterLink>
 

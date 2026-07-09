@@ -9,6 +9,7 @@ import editUserView from '@/views/editUserView.vue'
 import teamDetailsView from '@/views/teamDetailsView.vue'
 import studentDetailsView from '@/views/studentDetailsView.vue'
 import teacherDetailsView from '@/views/teacherDetailsView.vue'
+import projectsView from '@/views/projectsView.vue'
 
 
 const router = createRouter({
@@ -71,6 +72,11 @@ const router = createRouter({
       component: teacherDetailsView,
       props: true,
     },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: projectsView
+    }
   ],
 })
 

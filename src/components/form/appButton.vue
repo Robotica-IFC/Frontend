@@ -65,6 +65,7 @@ const props = defineProps({
   position: relative;
 }
 
+
 .btn button.primary:active {
   transform: scale(0.95);
   background-color: var(--principal-claro);

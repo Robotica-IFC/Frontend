@@ -47,6 +47,7 @@ onMounted(() => {
   font-weight: 400;
   font-size: 15px;
   margin-top: 10px;
+  width: 85%;
 }
 
 .equipes{

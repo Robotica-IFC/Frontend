@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import teamApi from "@/api/teamApi";
+import projectsApi from "@/api/projectsApi";
 import { ref } from "vue";
 // import { useStudentStore } from "./studentStore";
 
@@ -48,6 +49,27 @@ export const useTeamStore = defineStore("team", () => {
       return response.data
   }
 
+  async function getProjects(page = 1) {
+  try {
+    loading.value = true
+
+    const response = await teamApi.getAll(page)
+
+    teams.value = response.data.items
+
+    for (const team of teams.value) {
+      const projects = await projectsApi.getByTeam(team.id)
+      team.totalProjetos = projects.data.results.length
+    }
+
+    currentPage.value = response.data.pagina_atual
+    totalPages.value = response.data.paginas
+    total.value = response.data.total
+  } finally {
+    loading.value = false
+  }
+}
+
   return {
     teams,
     loading,
@@ -59,5 +81,6 @@ export const useTeamStore = defineStore("team", () => {
     getTeams,
     getTeamById,
     getTeamByUserId,
+    getProjects,
   };
 });
