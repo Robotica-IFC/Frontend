@@ -65,6 +65,7 @@ h1{
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.12);
   transition: 0.2s;
   display: flex;
+  width: 100%;
   height: 120px;
 }
 
@@ -93,6 +94,10 @@ h1{
 .info {
   padding: 20px;
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .no-image .mdi {
@@ -101,10 +106,12 @@ h1{
 }
 
 .status {
-  padding: 2px 15px;
+  padding: 4px 5px;
   border-radius: 5px;
   color: #ffff;
-  font-size:12px
+  font-size:11px;
+  align-self: flex-start;
+  display: -webkit-box;
 }
 
 .em_andamento {
@@ -118,10 +125,20 @@ h1{
 }
 h2{
   font-size: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 p{
   font-size: 12px;
   margin-bottom: 10px;
   margin-top: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

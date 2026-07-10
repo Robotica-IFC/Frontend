@@ -164,7 +164,7 @@ main {
     & li.devv{
       padding: 20px 0px;
       display: flex;
-      gap: 30px;
+      gap: 5px;
       position: relative; 
 
       &::after {
@@ -199,14 +199,14 @@ main {
       }
       & ul.links{
         display: flex;
-        gap: 20px;
+        gap: 10px;
 
         & li a{
           color: black;
           text-decoration: none;
           display: flex;
           gap: 2px;
-          font-size: 15px;
+          font-size: 10px;
           align-items: center;
 
           & span.mdi{
