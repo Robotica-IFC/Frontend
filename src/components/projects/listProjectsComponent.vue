@@ -51,7 +51,7 @@ onMounted(() => {
           <div class="content">
             <h2>{{ project.titulo }}</h2>
 
-            <p>
+            <p class="desc-curta">
               {{ project.desc_curta }}
             </p>
 
@@ -83,7 +83,6 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  width: min(1200px, 95%);
   margin: 40px auto;
 }
 
@@ -93,16 +92,24 @@ onMounted(() => {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #ddd;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.12);
-  transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   height: 220px;
   padding: 0px;
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
 .left {
   width: 40%;
   height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
 } 
 
 .image {
@@ -114,20 +121,28 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  image-rendering: auto;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .image img {
+  transform: scale(1.03);
 }
 
 .no-image {
   width: 100%;
   height: 100%;
-  background: rgba(33, 150, 243, 0.12);
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.08), rgba(33, 150, 243, 0.18));
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .no-image .mdi {
-  font-size: 60px;
+  font-size: 50px;
   color: #2196f3;
+  opacity: 0.85;
 }
 
 .rigth {
@@ -153,6 +168,10 @@ onMounted(() => {
   color: #ffff;
   align-self: flex-start;
   white-space: nowrap;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .em_andamento {
@@ -166,7 +185,7 @@ onMounted(() => {
 }
 
 h2 {
-  font-size: 21px;
+  font-size: 15px;
   margin-top: 5px;
   white-space: nowrap;
   overflow: hidden;
@@ -179,6 +198,7 @@ button {
   background: white;
   padding: 5px 20px;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .team {
@@ -186,6 +206,7 @@ button {
   flex-direction: column;
   gap: 2px;
   width: 100%;
+  font-size: 13px;
 }
 
 .info-item {
@@ -209,6 +230,10 @@ button {
 
 p {
   margin: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ver-mais{
@@ -223,7 +248,7 @@ p {
   border-radius:8px;
   background:var(--principal-claro);
   color:#fff;
-  font-size:16px;
+  font-size:10px;
   font-weight:600;
   cursor:pointer;
   transition:.25s;
