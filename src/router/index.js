@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/store/authStore'
+
 import welcomeView from '@/views/welcomeView.vue'
 import signView from '@/views/signView.vue'
 import changePasswordView from '@/views/changePasswordView.vue'
@@ -64,13 +66,13 @@ const router = createRouter({
       path: '/student/:id',
       name: 'studentDetails',
       component: studentDetailsView,
-      props: true,
+      props: true
     },
     {
       path: '/teacher/:id',
       name: 'teacherDetails',
       component: teacherDetailsView,
-      props: true,
+      props: true
     },
     {
       path: '/projects',
@@ -82,7 +84,24 @@ const router = createRouter({
       name: 'aboutUs',
       component: aboutUsView
     }
-  ],
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  // Importação da store dentro do guard para evitar problemas de ciclo de vida do Pinia
+  const authStore = useAuthStore()
+  const isLoggedIn = authStore.isAuthenticated
+
+  if (!isLoggedIn && to.path !== '/' && to.path !== '/sign' && to.path !== '/change-password') {
+    // Se não estiver logado e tentar acessar rotas privadas, manda para welcome
+    next('/')
+  } else if (isLoggedIn && to.path === '/') {
+    // Se já estiver logado e tentar acessar a welcome, manda para a home-page
+    next('/home-page')
+  } else {
+    // Permite a navegação livremente
+    next()
+  }
 })
 
 export default router
