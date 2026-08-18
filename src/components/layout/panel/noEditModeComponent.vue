@@ -60,7 +60,7 @@ function openTeam(id){
       </ul>
     </div>
     <div class="no-teams" v-else>
-      <h2>{{ user?.name }} não participa de nenhuma equipe</h2>
+      <h2>Você não participa de nenhuma equipe</h2>
     </div>
     <div class="equipe-card">
       <span class="mdi mdi-account-multiple-outline"></span>
