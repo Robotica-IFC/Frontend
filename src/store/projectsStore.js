@@ -43,6 +43,15 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  async function getProjectById(id) {
+    try {
+      const response = await projectApi.getById(id)
+      return response.data
+    } catch(er){
+      console.error(`Erro ao buscar projeto: ${er}`)
+    }
+  }
+
   return {
     projects,
     loading,
@@ -53,5 +62,6 @@ export const useProjectStore = defineStore('project', () => {
     getProjects,
     teamProjects,
     getProjectsByTeam,
+    getProjectById,
   }
 })

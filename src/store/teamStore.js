@@ -5,7 +5,6 @@ import { ref } from "vue";
 // import { useStudentStore } from "./studentStore";
 
 export const useTeamStore = defineStore("team", () => {
-  // const studentStore = useStudentStore()
 
   const teams = ref([]);
   const loading = ref(false);
