@@ -13,6 +13,7 @@ import studentDetailsView from '@/views/studentDetailsView.vue'
 import teacherDetailsView from '@/views/teacherDetailsView.vue'
 import projectsView from '@/views/projectsView.vue'
 import aboutUsView from '@/views/aboutUsView.vue'
+import projectDetailView from '@/views/projectDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,28 +81,36 @@ const router = createRouter({
       component: projectsView
     },
     {
+      path: '/project/:id',
+      name: 'projectDetails',
+      component: projectDetailView,
+      props: true,
+    },
+    {
       path: '/about-us',
       name: 'aboutUs',
       component: aboutUsView
-    }
+    },
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  // Importação da store dentro do guard para evitar problemas de ciclo de vida do Pinia
   const authStore = useAuthStore()
   const isLoggedIn = authStore.isAuthenticated
 
-  if (!isLoggedIn && to.path !== '/' && to.path !== '/sign' && to.path !== '/change-password') {
-    // Se não estiver logado e tentar acessar rotas privadas, manda para welcome
+  // Lista de rotas que QUALQUER UM pode acessar sem estar logado
+  const publicPaths = ['/', '/sign', '/change-password']
+  const isPublicRoute = publicPaths.includes(to.path)
+
+  if (!isLoggedIn && !isPublicRoute) {
+    // 1. Não está logado e tentou acessar rota privada -> manda para o login (raiz)
     next('/')
-  } else if (isLoggedIn && to.path === '/') {
-    // Se já estiver logado e tentar acessar a welcome, manda para a home-page
+  } else if (isLoggedIn && (to.path === '/' || to.path === '/sign')) {
+    // 2. Já está logado e tenta ir para a tela de login ou sign -> manda para a home
     next('/home-page')
   } else {
-    // Permite a navegação livremente
+    // 3. Permite a navegação normalmente
     next()
   }
 })
-
 export default router
