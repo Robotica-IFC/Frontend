@@ -9,6 +9,9 @@ const projectsApi = {
   },
   uploadImage(formData) {
     return api.post('media/images/', formData)
+  },
+  getById(id) {
+    return api.get(`/projetos/${id}`)
   }
 }
 

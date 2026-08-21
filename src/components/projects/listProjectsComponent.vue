@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
+import router from '@/router'
 
 const store = useProjectStore()
 
@@ -9,6 +10,9 @@ const quantidade = ref(4)
 const projetosVisiveis = computed(() => {
   return store.projects.slice(0, quantidade.value)
 })
+function openProject(id) {
+  router.push({ name: 'projectDetails', params: { id } })
+}
 
 function verMais() {
   quantidade.value += 4
@@ -22,7 +26,7 @@ onMounted(() => {
 <template>
   <section class="container">
     <div class="grid">
-      <article class="card" v-for="project in projetosVisiveis" :key="project.id">
+      <article class="card" v-for="project in projetosVisiveis" :key="project.id" @click="openProject(project.id)">
         <div class="left">
           <div class="image">
             <img

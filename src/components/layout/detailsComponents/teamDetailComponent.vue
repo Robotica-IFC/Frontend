@@ -2,7 +2,7 @@
 import { defineProps, onMounted, computed } from "vue";
 import appArrow from "@/components/appArrow.vue";
 import requestToParticipateComponent from "@/components/requestToParticipateComponent.vue";
-import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
+import teamProjectsComponent from "@/components/teams/teamProjectsComponent.vue";
 import { useTeamStore } from "@/store/teamStore";
 import router from "@/router";
 
@@ -18,11 +18,11 @@ onMounted(async () => {
   await teamStore.getTeamById(props.id);
 });
 
-function goToStudent(id){
-  router.push({name: 'studentDetails', params: { id }})
+function goToStudent(id) {
+  router.push({ name: "studentDetails", params: { id } });
 }
-function goToTeacher(id){
-  router.push({name: 'teacherDetails', params: { id }})
+function goToTeacher(id) {
+  router.push({ name: "teacherDetails", params: { id } });
 }
 
 const team = computed(() => teamStore.actualTeam);
@@ -63,7 +63,7 @@ const team = computed(() => teamStore.actualTeam);
       <div class="members">
         <ul class="teachers">
           <li v-for="t in team.professores" :key="t.id" @click="goToTeacher(t.id)">
-          <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user.name">
+            <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user.name" />
             <div class="text">
               <h2>Professor: {{ t.user.name }}</h2>
               <h3>
@@ -74,13 +74,12 @@ const team = computed(() => teamStore.actualTeam);
         </ul>
         <ul class="students">
           <li v-for="s in team.alunos" :key="s.id" @click="goToStudent(s.id)">
-            <img :src="s.imagem_perfil.file" :alt="s.user.name">
+            <img :src="s.imagem_perfil.file" :alt="s.user.name" />
             <h2>{{ s.user.name }}</h2>
           </li>
         </ul>
       </div>
     </div>
-
 
     <teamProjectsComponent :team-id="props.id" />
   </div>
@@ -146,14 +145,14 @@ div.info {
   }
 }
 
-ul.teachers{
+ul.teachers {
   display: flex;
   flex-wrap: wrap;
   margin-top: 30px;
   padding-bottom: 10px;
   gap: 10px;
 
-  & li{
+  & li {
     width: 40%;
     display: flex;
     align-items: center;
@@ -161,13 +160,13 @@ ul.teachers{
     word-wrap: wrap;
     padding: 0;
 
-    & img{
+    & img {
       width: 40%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 50%;
     }
-    & h2{
+    & h2 {
       font-size: 12px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -175,7 +174,7 @@ ul.teachers{
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    & h3{
+    & h3 {
       font-size: 8px;
       font-weight: 400;
       white-space: nowrap;
@@ -185,7 +184,7 @@ ul.teachers{
   }
 }
 
-ul.students{
+ul.students {
   display: flex;
   flex-wrap: wrap;
   padding-top: 10px;
@@ -194,30 +193,29 @@ ul.students{
   align-items: center;
   list-style: none;
 
+  & li {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
 
-& li{
-  width:15%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
+    & {
+      img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border-radius: 50%;
+      }
 
-  &{
-    img{
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    & h2{
-      text-align: center;
-      font-size: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      & h2 {
+        text-align: center;
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
-}
 }
 </style>

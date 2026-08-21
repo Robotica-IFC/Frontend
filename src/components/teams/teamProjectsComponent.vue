@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { defineProps } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
+import router from '@/router'
 
 const projectStore = useProjectStore()
 
@@ -12,6 +13,10 @@ const props = defineProps({
   },
 })
 
+function openProject(id) {
+  router.push({ name: 'projectDetails', params: { id } })
+}
+
 onMounted(() => {
   projectStore.getProjectsByTeam(props.teamId)
 })
@@ -21,7 +26,7 @@ onMounted(() => {
   <h1 v-if="projectStore.teamProjects.length > 0">Projetos da Equipe</h1>
 
   <div class="projects" v-if="projectStore.teamProjects.length > 0" >
-    <article v-for="project in projectStore.teamProjects" :key="project.id">
+    <article v-for="project in projectStore.teamProjects" :key="project.id" @click="openProject(project.id)">
       <div class="card">
         <div class="image">
           <img v-if="project.image_perfil" :src="project.image_perfil.file" :alt="project.titulo" />
