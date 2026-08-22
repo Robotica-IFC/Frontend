@@ -80,7 +80,20 @@ const props = defineProps({
     bottom: 0;
     left: 0;
 }
+.btn button.border {
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid var(--principal-claro);
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 8px;
+    color: var(--principal-claro);
+    background-color: #fff;
+}
+.border:active {
+    transform: scale(0.95);
 
+}
 .card{
   border-radius: 8px;
   font-size: 16px;
