@@ -200,4 +200,40 @@ const visiblePages = computed(() => {
 .go-btn:hover {
   opacity: 0.9;
 }
+
+/* Paginação um pouco maior em telas >= 950px */
+@media (min-width: 950px) {
+  .pagination {
+    gap: 22px;
+    margin: 38px 0;
+  }
+
+  .pages {
+    gap: 12px;
+  }
+
+  .pagination button {
+    padding: 12px 15px;
+    font-size: 16px;
+  }
+
+  .pagination .mdi {
+    font-size: 26px;
+  }
+
+  .dots {
+    font-size: 22px;
+  }
+
+  .go-to {
+    gap: 16px;
+    padding: 13px 18px;
+    border-radius: 16px;
+  }
+
+  .go-btn {
+    padding: 13px 20px !important;
+    font-size: 16px;
+  }
+}
 </style>

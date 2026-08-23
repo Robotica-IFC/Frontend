@@ -84,7 +84,7 @@ div.card {
     .page {
         width: 100%;
         max-width: none;
-        padding: 20px 5%;
+        padding: 20px 10%;
         box-sizing: border-box;
 
         margin: 30px 0;

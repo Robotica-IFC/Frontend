@@ -16,7 +16,7 @@ const router = useRouter()
                 <appButton variant="primary" label="Saiba mais"></appButton>
 
                 <appButton variant="border" class="explorar"
-                label="Explorar projetos" @click="router.push('/team')"></appButton>
+                label="Explorar projetos" @click="router.push('/projects')"></appButton>
         </div>
 
         <p>A Robótica IFC é uma plataforma que conecta aprendizado, projetos e colaboração em um só lugar. Explore
@@ -78,7 +78,7 @@ img {
         max-width: none;
         width: 100%;
         min-height: 50vh;
-        padding: 20px 5%;
+        padding: 20px 10%;
         box-sizing: border-box;
 
         display: flex;

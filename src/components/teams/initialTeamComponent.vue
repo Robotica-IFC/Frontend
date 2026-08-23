@@ -10,7 +10,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div style="margin-top: 30px;">
+  <div class="top" style="margin-top: 50px;">
 
     <div class="inicio">
 
@@ -25,15 +25,16 @@ onMounted(() => {
       {{ teamStore.totalTeams || 0 }}
       </p>
       <p v-if="teamStore.totalTeams.length > 1" class="texto-equipe">Equipes registradas</p>
-      <p v-else>Equipes registrada</p>
+      <p v-else>Equipes registradas</p>
     </div>
 
     </div>
 
+      <img src="/img/team/computer-team.png" alt="computer">
   </div>
 </template>
 
-<style setup>
+<style scoped>
 .inicio{
   display: flex;
   align-items: center;
@@ -64,5 +65,63 @@ onMounted(() => {
 .equipes .numero{
   font-size: 20px;
   font-weight: 600;
+}
+
+img{
+  display: none;
+}
+
+@media (min-width: 950px) {
+  .top {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .inicio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+
+    flex: 1;
+    min-width: 0;
+  }
+
+  img {
+    display: block;
+    width: 35%;
+    max-width: 500px;
+    margin-left: 100px;
+  }
+
+  .text {
+    width: 100%;
+  }
+
+  .text h1 {
+    font-size: 1.8rem;
+  }
+
+  .text p {
+    font-size: 1.3rem;
+    width: 85%;
+  }
+
+  .equipes {
+    display: flex;
+    padding: 10px 30px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .equipes p {
+    font-size: 1.1rem;
+    margin-left: 8px;
+  }
 }
 </style>
