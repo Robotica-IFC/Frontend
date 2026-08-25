@@ -16,12 +16,21 @@ export const useTeamStore = defineStore("team", () => {
 
   const actualTeam = ref([])
 
+  // Define quantos itens buscar por página conforme a largura da tela.
+  // > 950px puxa 6 equipes; abaixo disso, deixa o backend usar o padrão (page_size = 4).
+  function getPageSize() {
+    if (typeof window !== "undefined" && window.innerWidth > 950) {
+      return 6;
+    }
+    return undefined;
+  }
+
   async function getTeams(page = 1) {
     try {
       loading.value = true;
 
-
-      const response = await teamApi.getAll(page);
+      const pageSize = getPageSize();
+      const response = await teamApi.getAll(page, pageSize);
 
       totalTeams.value = response.data.total;
       teams.value = response.data.items;
@@ -52,7 +61,8 @@ export const useTeamStore = defineStore("team", () => {
   try {
     loading.value = true
 
-    const response = await teamApi.getAll(page)
+    const pageSize = getPageSize();
+    const response = await teamApi.getAll(page, pageSize)
 
     teams.value = response.data.items
 

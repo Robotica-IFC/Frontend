@@ -146,4 +146,62 @@ p{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+@media (min-width: 950px) {
+  h1 {
+    font-size: 28px;
+    margin: 50px 0 30px 0;
+  }
+
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  article {
+    width: 100%;
+  }
+
+  .card {
+    flex-direction: column;
+    height: auto;
+    cursor: pointer;
+  }
+  .card:hover {
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  .image {
+    width: 100%;
+    height: 220px;
+  }
+
+  .info {
+    padding: 18px 20px 20px;
+    justify-content: flex-start;
+  }
+
+  .status {
+    order: -1;
+    align-self: flex-start;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: 19px;
+    -webkit-line-clamp: 2;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 13.5px;
+    -webkit-line-clamp: 2;
+    margin-bottom: 12px;
+  }
+}
+
 </style>
