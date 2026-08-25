@@ -143,6 +143,7 @@ img {
         margin-left: 0;
         margin-right: 5%;
         margin-top: 0;
+        object-fit: cover;
     }
 
     .explorar {

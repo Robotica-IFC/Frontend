@@ -101,7 +101,7 @@ div.card {
         max-width: 500px;
         height: 250px;
         box-sizing: border-box;
-
+        justify-content: center;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
