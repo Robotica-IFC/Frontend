@@ -2,11 +2,13 @@
 import { defineProps, onMounted, ref, computed } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
 import { useAuthStore } from '@/store/authStore'
+import { useTemplateStore } from '@/store/template'
 import appButton from '@/components/form/appButton.vue'
 import CreatePostModal from '@/components/posts/CreatePostModal.vue'
 
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
+const templateStore = useTemplateStore()
 
 const actualProject = ref(null)
 const onTheTeam = ref(false)
@@ -52,18 +54,6 @@ const scrollCarousel = (postId, direction) => {
   })
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date)
-}
-
 onMounted(async () => {
   await fetchProject()
 })
@@ -94,7 +84,7 @@ onMounted(async () => {
               <h3 v-else-if="p.professor_criador">Por: {{ p.professor_criador.name }}</h3>
             </div>
           </div>
-          <p class="date">{{ formatDate(p.criado_em) }}</p>
+          <p class="date">{{ templateStore.formatDate(p.criado_em) }}</p>
         </div>
 
         <p class="legenda">{{ p.legenda }}</p>
@@ -198,8 +188,8 @@ ul.posts {
       & img {
         width: 30%;
         object-fit: cover;
-        aspect-ratio: 1 / 1;
         border-radius: 50%;
+        aspect-ratio: 1 / 1;
         border: 1px solid black;
       }
 
@@ -220,7 +210,7 @@ ul.posts {
     & p.legenda {
       white-space: pre-line;
       font-size: 14px;
-      margin: 10px 0;
+      margin: 15px 0;
     }
 
     & div.post-image {
@@ -228,9 +218,10 @@ ul.posts {
       
       & img {
         width: 100%;
-        aspect-ratio: 2 / 1;
         object-fit: cover;
         border-radius: 8px;
+        max-height: 500px;
+        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.205);
       }
     }
 
@@ -244,6 +235,7 @@ ul.posts {
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
         border-radius: 8px;
+        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.205);
         scrollbar-width: none; 
         &::-webkit-scrollbar {
           display: none;
@@ -255,8 +247,8 @@ ul.posts {
 
           & img {
             width: 100%;
-            aspect-ratio: 2 / 1;
             object-fit: cover;
+            aspect-ratio: 2 / 1;
             display: block;
           }
         }

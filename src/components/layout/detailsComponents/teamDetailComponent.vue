@@ -218,4 +218,104 @@ ul.students {
     }
   }
 }
+
+@media (min-width: 950px) {
+    div.page {
+        max-width: none;
+        width: 100vw;
+        padding: 80px 5%;
+        box-sizing: border-box;
+  }
+
+div.top {
+    margin-top: 10px;
+  }
+
+  div.info {
+    margin-top: 25px;
+  }
+
+  div.info div.principal-info {
+    gap: 25px;
+  }
+  div.info div.principal-info img {
+    width: 140px;
+    flex-shrink: 0;
+  }
+  div.info div.principal-info h1 {
+    font-size: 36px;
+  }
+  div.info div.principal-info h2 {
+    font-size: 16px;
+    margin-top: 8px;
+  }
+
+  div.info p.bio {
+    font-size: 15px;
+    max-width: none;
+    margin-top: 15px;
+    line-height: 1.5;
+    font-size: 1.1rem;
+  }
+
+  div.info ul.categories li {
+    font-size: 14px;
+    padding: 5px 25px;
+    margin-top: 15px;
+    margin-bottom: 20px
+  }
+
+  div.members {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  ul.teachers {
+    margin-top: 0;
+    padding-bottom: 0;
+    padding-right: 30px;
+    margin-right: 30px;
+    border-right: 1px solid var(--principal-claro);
+    flex-wrap: wrap;
+  }
+  ul.teachers li {
+    width: auto;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-right: 15px;
+  }
+  ul.teachers li img {
+    width: 90px;
+    flex-shrink: 0;
+  }
+  ul.teachers li h2 {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+  }
+  ul.teachers li h3 {
+    font-size: 10px;
+  }
+
+  ul.students {
+    border-top: none;
+    padding-top: 0;
+    flex-wrap: wrap;
+    gap: 35px;
+  }
+  ul.students li {
+    width: auto;
+    flex-shrink: 0;
+  }
+  ul.students li img {
+    width: 90px;
+    flex-shrink: 0;
+  }
+  ul.students li h2 {
+    font-size: 12px;
+  }
+}
 </style>
