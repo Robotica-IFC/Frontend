@@ -128,16 +128,16 @@ const handleSubmit = async () => {
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center; /* Centraliza verticalmente no mobile e desktop */
   z-index: 999;
+  padding: 16px; /* Evita que o modal encoste nas bordas em telas pequenas */
 }
 
 .modal-content {
   background: #ffffff;
   width: 100%;
   max-width: 500px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-radius: 12px; /* Arredonda todos os cantos */
   padding: 20px;
   display: flex;
   flex-direction: column;
