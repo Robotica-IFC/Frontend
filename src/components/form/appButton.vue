@@ -117,4 +117,13 @@ const props = defineProps({
   font-weight: bold;
   margin-top: 0;
 }
+@media (min-width: 950px) {
+  .primary{
+    cursor: pointer;
+  }
+  .primary:hover{
+    transition: 0.2s;
+    background-color: var(--hover-principal-claro);
+  }
+}
 </style>

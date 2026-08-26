@@ -1,8 +1,28 @@
 <script setup>
 import { useTeamStore } from '@/store/teamStore'
-import { onMounted } from 'vue'
+import { useAuthStore } from '@/store/authStore'
+import { onMounted, computed, ref } from 'vue'
+import appButton from '../form/appButton.vue'
+import createTeamModal from './createTeamModal.vue'
 
 const teamStore = useTeamStore()
+const authStore = useAuthStore()
+
+// Controla a visibilidade do modal
+const showModal = ref(false)
+
+// Verifica se o usuário logado é professor
+const isProfessor = computed(() => {
+  return authStore.user?.tipo?.toLowerCase() === 'professor'
+})
+
+function openModal() {
+  showModal.value = true
+}
+
+function handleTeamCreated() {
+  teamStore.getTeams() // Atualiza a lista e a contagem de equipes após criar
+}
 
 onMounted(() => {
   teamStore.getTeams()
@@ -10,48 +30,66 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="top" style="margin-top: 50px;">
-
+  <div class="top" style="margin-top: 50px">
     <div class="inicio">
+      <div class="text">
+        <h1>Equipes</h1>
+        <p>Conheça as equipes da Robótica IFC, seus membros e os projetos que desenvolvem.</p>
+      </div>
 
-    <div class="text">
-      <h1>Equipes</h1>
-      <p>Conheça as equipes da Robótica IFC, seus membros e os projetos que desenvolvem.</p>
+      <div class="equipes">
+        <p class="numero">
+          <span class="mdi mdi-account-multiple"></span>
+          {{ teamStore.totalTeams || 0 }}
+        </p>
+        <p v-if="teamStore.totalTeams > 1" class="texto-equipe">Equipes registradas</p>
+        <p v-else class="texto-equipe">Equipe registrada</p>
+      </div>
+
+      <!-- Botão Desktop -->
+      <appButton v-if="isProfessor" class="desktop" @click="openModal">
+        Criar Equipe
+      </appButton>
     </div>
 
-    <div class="equipes">
-      <p class="numero">
-      <span class="mdi mdi-account-multiple"></span>
-      {{ teamStore.totalTeams || 0 }}
-      </p>
-      <p v-if="teamStore.totalTeams.length > 1" class="texto-equipe">Equipes registradas</p>
-      <p v-else>Equipes registradas</p>
-    </div>
+    <!-- Botão Mobile -->
+    <appButton v-if="isProfessor" class="mobile" @click="openModal">
+      Criar Equipe
+    </appButton>
 
-    </div>
+    <img src="/img/team/computer-team.png" alt="computer" />
 
-      <img src="/img/team/computer-team.png" alt="computer">
+    <!-- Modal Renderizado Condicionalmente -->
+    <createTeamModal
+      v-if="showModal"
+      @close="showModal = false"
+      @created="handleTeamCreated"
+    />
   </div>
 </template>
 
 <style scoped>
-.inicio{
+.desktop {
+  display: none;
+}
+
+.inicio {
   display: flex;
   align-items: center;
 }
 
-.text h1{
+.text h1 {
   color: var(--principal-claro);
   font-size: 25px;
 }
-.text p{
+.text p {
   font-weight: 400;
   font-size: 15px;
   margin-top: 10px;
   width: 85%;
 }
 
-.equipes{
+.equipes {
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
   text-align: center;
@@ -59,15 +97,15 @@ onMounted(() => {
   padding: 5px 15px;
   margin-left: 1px;
 }
-.equipes .texto-equipe{
+.equipes .texto-equipe {
   font-size: 13px;
 }
-.equipes .numero{
+.equipes .numero {
   font-size: 20px;
   font-weight: 600;
 }
 
-img{
+img {
   display: none;
 }
 
@@ -122,6 +160,12 @@ img{
   .equipes p {
     font-size: 1.1rem;
     margin-left: 8px;
+  }
+  .mobile {
+    display: none;
+  }
+  .desktop {
+    display: block;
   }
 }
 </style>

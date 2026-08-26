@@ -10,6 +10,9 @@ const teamApi = {
 
     return api.get(url)
   },
+  create(payload) {
+    return api.post('equipes/', payload)
+  },
   uploadImage(formData) {
     return api.post('media/images/', formData)
   },
