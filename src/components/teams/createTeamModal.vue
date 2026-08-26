@@ -25,7 +25,7 @@ const selectedCategories = ref([]) // Lista de categorias selecionadas (múltipl
 const form = reactive({
   nome: '',
   descricao: '',
-  alunos: []
+  alunos: [],
 })
 
 onMounted(async () => {
@@ -43,14 +43,14 @@ const categoriasFiltradas = computed(() => {
   return existingCategories.value.filter(
     (cat) =>
       cat.nome.toLowerCase().includes(buscaCategoria.value.toLowerCase()) &&
-      !selectedCategories.value.some((selected) => selected.id === cat.id)
+      !selectedCategories.value.some((selected) => selected.id === cat.id),
   )
 })
 
 // Verifica se a categoria digitada bate exatamente com uma já existente
 const categoriaExata = computed(() => {
   return existingCategories.value.find(
-    (cat) => cat.nome.toLowerCase() === buscaCategoria.value.toLowerCase()
+    (cat) => cat.nome.toLowerCase() === buscaCategoria.value.toLowerCase(),
   )
 })
 
@@ -92,10 +92,10 @@ async function handleCreateCategory() {
   try {
     loading.value = true
     const novaCat = await teamStore.createCategory(buscaCategoria.value)
-    
+
     existingCategories.value.push(novaCat)
     adicionarCategoria(novaCat)
-    
+
     buscaCategoria.value = ''
     newCategory.value = false
   } catch (error) {
@@ -109,16 +109,22 @@ async function handleCreateCategory() {
 function handleFileUpload(event) {
   const file = event.target.files[0]
   if (file) {
+    // Revoga a URL anterior se já existir uma para evitar vazamento de memória
+    if (imagePreview.value) {
+      URL.revokeObjectURL(imagePreview.value)
+    }
     selectedFile.value = file
     imagePreview.value = URL.createObjectURL(file)
   }
 }
 
 function removeImage() {
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
   selectedFile.value = null
   imagePreview.value = null
 }
-
 
 async function handleSubmit() {
   if (!form.nome.trim()) {
@@ -139,9 +145,9 @@ async function handleSubmit() {
         descricao: form.descricao,
         categorias: selectedCategories.value.map((cat) => cat.id),
         // O Django espera uma LISTA de IDs para o campo M2M 'professores'
-        professores: professorId ? [professorId] : []
+        professores: professorId ? [professorId] : [],
       },
-      selectedFile.value
+      selectedFile.value,
     )
 
     emit('created')
@@ -171,7 +177,12 @@ async function handleSubmit() {
           <label>Imagem da Equipe</label>
           <div class="image-upload-wrapper">
             <label for="team-image-input" class="image-preview-container">
-              <img v-if="imagePreview" :src="imagePreview" alt="Preview da Equipe" class="preview-img" />
+              <img
+                v-if="imagePreview"
+                :src="imagePreview"
+                alt="Preview da Equipe"
+                class="preview-img"
+              />
               <div v-else class="upload-placeholder">
                 <i class="mdi mdi-camera-plus-outline"></i>
                 <span>Adicionar Foto</span>
@@ -183,6 +194,7 @@ async function handleSubmit() {
               accept="image/*"
               class="hidden-file-input"
               @change="handleFileUpload"
+              required
             />
             <button
               v-if="imagePreview"
@@ -212,13 +224,11 @@ async function handleSubmit() {
 
           <!-- Badges de Categorias Selecionadas -->
           <div v-if="selectedCategories.length > 0" class="selected-tags-container">
-            <div
-              v-for="cat in selectedCategories"
-              :key="cat.id"
-              class="category-tag"
-            >
+            <div v-for="cat in selectedCategories" :key="cat.id" class="category-tag">
               <span>{{ cat.nome }}</span>
-              <button type="button" class="btn-remove-tag" @click="removerCategoria(cat.id)">&times;</button>
+              <button type="button" class="btn-remove-tag" @click="removerCategoria(cat.id)">
+                &times;
+              </button>
             </div>
           </div>
 
@@ -232,11 +242,7 @@ async function handleSubmit() {
             />
 
             <ul v-if="mostrarDropdown && categoriasFiltradas.length > 0" class="custom-dropdown">
-              <li
-                v-for="cat in categoriasFiltradas"
-                :key="cat.id"
-                @click="adicionarCategoria(cat)"
-              >
+              <li v-for="cat in categoriasFiltradas" :key="cat.id" @click="adicionarCategoria(cat)">
                 <span class="mdi mdi-tag-text-outline"></span>
                 <span class="cat-name">{{ cat.nome }}</span>
               </li>
@@ -269,13 +275,15 @@ async function handleSubmit() {
 
         <div class="form-group">
           <label>Descrição</label>
-          <textarea v-model="form.descricao" rows="3" placeholder="Descrição da equipe..."></textarea>
+          <textarea
+            v-model="form.descricao"
+            rows="3"
+            placeholder="Descrição da equipe..."
+          ></textarea>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" @click="$emit('close')">
-            Cancelar
-          </button>
+          <button type="button" class="btn-cancel" @click="$emit('close')">Cancelar</button>
           <appButton type="submit" :disabled="loading">
             {{ loading ? 'Salvando...' : 'Salvar Equipe' }}
           </appButton>

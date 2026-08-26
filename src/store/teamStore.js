@@ -45,62 +45,69 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   async function createCategory(categoryName) {
-  try {
-    const formattedName = categoryName.trim().toUpperCase()
-    const response = await categoryApi.create(formattedName)
-    return response.data
-  } catch (error) {
-    console.error('Erro ao criar categoria:', error)
-    throw error
+    try {
+      const formattedName = categoryName.trim().toUpperCase()
+      const response = await categoryApi.create(formattedName)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao criar categoria:', error)
+      throw error
+    }
   }
-}
 
   async function getOrCreateCategory(categoryName) {
     const formattedName = categoryName.trim().toUpperCase()
 
-    // 1. Busca categorias existentes
     const response = await categoryApi.getAll()
     const categories = response.data.results || response.data
 
-    // 2. Procura categoria com o mesmo nome (case-insensitive)
     const existingCategory = categories.find((cat) => cat.nome.toUpperCase() === formattedName)
 
     if (existingCategory) {
       return existingCategory.id
     }
 
-    // 3. Se não existir, cria a nova categoria em caixa alta
     const newCategoryResponse = await categoryApi.create(formattedName)
     return newCategoryResponse.data.id
   }
 
-  // Nova action para criar a equipe
-async function createTeam(teamData, imageFile) {
-  try {
-    let uploadedImageId = null
+  // Função dedicada para realizar o upload e retornar o attachment_key
+  async function uploadTeamImage(imageFile) {
+    if (!imageFile) return null
 
-    if (imageFile) {
+    try {
       const formData = new FormData()
       formData.append('file', imageFile)
 
-      const imageResponse = await imageApi.uploadImage(formData)
-      
-      // Captura o attachment_key diretamente como string
-      uploadedImageId = imageResponse.data.attachment_key
+      const response = await imageApi.uploadImage(formData)
+      // Ajuste para garantir que captura a chave, cobrindo variações de resposta do backend
+      console.log(response.data.attachment_key)
+      return response.data?.attachment_key
+    } catch (error) {
+      console.error('Erro ao realizar upload da imagem:', error)
+      throw error
     }
-
-    const payload = {
-      ...teamData,
-      image_perfil: uploadedImageId // Envia apenas a string "29504e87-7c7a-47cf-8029-4a1e20891935"
-    }
-
-    const response = await teamApi.create(payload)
-    return response.data
-  } catch (error) {
-    console.error('Erro ao criar equipe na store:', error)
-    throw error
   }
-}
+
+  // Action de criação atualizada chamando a função de upload
+  async function createTeam(teamData, imageFile) {
+    try {
+      // Chama a função auxiliar para obter a chave do anexo
+      const attachmentKey = await uploadTeamImage(imageFile)
+      console.log(attachmentKey)
+
+      const payload = {
+        ...teamData,
+        image_perfil: attachmentKey // Atribui o resultado retornado
+      }
+
+      const response = await teamApi.create(payload)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao criar equipe na store:', error)
+      throw error
+    }
+  }
 
   async function getTeamById(id) {
     actualTeam.value = []
@@ -144,6 +151,7 @@ async function createTeam(teamData, imageFile) {
     actualTeam,
     getTeams,
     createTeam,
+    uploadTeamImage,
     getTeamById,
     getTeamByUserId,
     getProjects,
