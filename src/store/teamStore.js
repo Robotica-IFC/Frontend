@@ -94,7 +94,6 @@ export const useTeamStore = defineStore('team', () => {
     try {
       // Chama a função auxiliar para obter a chave do anexo
       const attachmentKey = await uploadTeamImage(imageFile)
-      console.log(attachmentKey)
 
       const payload = {
         ...teamData,
