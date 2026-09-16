@@ -1,74 +1,74 @@
 <script setup>
-import { defineProps, onMounted, computed, ref } from "vue";
-import appArrow from "@/components/appArrow.vue";
-import requestToParticipateComponent from "@/components/requestToParticipateComponent.vue";
-import teamProjectsComponent from "@/components/teams/teamProjectsComponent.vue";
-import createProjectModal from "@/components/projects/createProjectModal.vue";
-import { useTeamStore } from "@/store/teamStore";
-import { useProjectStore } from "@/store/projectsStore.js";
-import router from "@/router";
-import AppButton from "@/components/form/appButton.vue";
-import { useAuthStore } from "@/store/authStore";
+import { defineProps, onMounted, computed, ref } from 'vue'
+import appArrow from '@/components/appArrow.vue'
+import requestToParticipateComponent from '@/components/requestToParticipateComponent.vue'
+import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
+import createProjectModal from '@/components/projects/createProjectModal.vue'
+import { useTeamStore } from '@/store/teamStore'
+import { useProjectStore } from '@/store/projectsStore.js'
+import router from '@/router'
+import AppButton from '@/components/form/appButton.vue'
+import { useAuthStore } from '@/store/authStore'
 
-const teamStore = useTeamStore();
-const projectStore = useProjectStore();
-const authStore = useAuthStore();
+const teamStore = useTeamStore()
+const projectStore = useProjectStore()
+const authStore = useAuthStore()
 
-const isModalOpen = ref(false);
+const isModalOpen = ref(false)
 
 const props = defineProps({
   id: {
     type: String,
     required: true,
   },
-});
+})
 
-const team = computed(() => teamStore.actualTeam || {});
+const team = computed(() => teamStore.actualTeam || {})
 
-const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id);
+const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id)
 
 const isTeacherInTeam = computed(() => {
-  if (!team.value.professores || !currentUserId.value) return false;
+  if (!team.value.professores || !currentUserId.value) return false
   return team.value.professores.some(
     (teacher) =>
       teacher.user?.id === currentUserId.value ||
       teacher.id === currentUserId.value ||
-      teacher.user_id === currentUserId.value
-  );
-});
+      teacher.user_id === currentUserId.value,
+  )
+})
 
 const isStudentInTeam = computed(() => {
-  if (!team.value.alunos || !currentUserId.value) return false;
+  if (!team.value.alunos || !currentUserId.value) return false
   return team.value.alunos.some(
     (student) =>
       student.user?.id === currentUserId.value ||
       student.id === currentUserId.value ||
-      student.user_id === currentUserId.value
-  );
-});
+      student.user_id === currentUserId.value,
+  )
+})
 
-const isMemberOfTeam = computed(() => isTeacherInTeam.value || isStudentInTeam.value);
+const isMemberOfTeam = computed(() => isTeacherInTeam.value || isStudentInTeam.value)
 
 onMounted(async () => {
   // 1. Busca os dados da equipe primeiro para poder avaliar os membros
-  await teamStore.getTeamById(props.id, false);
+  await teamStore.getTeamById(props.id, false)
 
   // 2. Se o usuário NÃO for membro da equipe, envia a requisição de visualização
   if (!isMemberOfTeam.value) {
-    await teamStore.incrementView(props.id);
+    await teamStore.incrementView(props.id)
   }
-});
+})
 
 function goToStudent(id) {
-  router.push({ name: "studentDetails", params: { id } });
+  router.push({ name: 'studentDetails', params: { id } })
 }
 
 function goToTeacher(id) {
-  router.push({ name: "teacherDetails", params: { id } });
+  router.push({ name: 'teacherDetails', params: { id } })
 }
 
 async function handleProjectCreated() {
-  await projectStore.getProjectsByTeam(props.id);
+  await projectStore.getProjectsByTeam(props.id)
 }
 </script>
 
@@ -128,9 +128,13 @@ async function handleProjectCreated() {
         </ul>
       </div>
     </div>
-
-    <div v-if="isTeacherInTeam" class="createProject">
-      <AppButton width="auto" @click="isModalOpen = true">Criar projeto</AppButton>
+    <div class="creates">
+      <div v-if="isTeacherInTeam" class="createProject">
+        <AppButton width="auto" @click="isModalOpen = true">Criar projeto</AppButton>
+      </div>
+      <div v-if="isTeacherInTeam" class="createProject">
+        <AppButton width="auto">Criar estoque</AppButton>
+      </div>
     </div>
 
     <div v-if="team.id && isModalOpen" class="project-overlay">
@@ -293,7 +297,6 @@ ul.students {
   justify-content: flex-start;
   margin-top: 20px;
   margin-bottom: 20px;
-  width: 100%;
 }
 
 @media (min-width: 950px) {
@@ -409,5 +412,10 @@ ul.students {
   font-size: 12px;
   font-weight: 400;
   margin-top: 10px;
+}
+.creates{
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 </style>
