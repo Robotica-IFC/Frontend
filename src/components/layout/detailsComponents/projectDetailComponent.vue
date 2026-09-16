@@ -5,6 +5,8 @@ import { useAuthStore } from '@/store/authStore'
 import { useTemplateStore } from '@/store/template'
 import appButton from '@/components/form/appButton.vue'
 import CreatePostModal from '@/components/posts/CreatePostModal.vue'
+import appArrow from '@/components/appArrow.vue'
+import router from '@/router'
 
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
@@ -61,6 +63,7 @@ onMounted(async () => {
 
 <template v-if="actualProject">
   <div class="page" v-if="actualProject">
+    <appArrow style="margin-top: 20px;" @click="router.back()"></appArrow>
     <div class="top">
       <h1>{{ actualProject.titulo }}</h1>
       <p>{{ actualProject.descricao }}</p>
@@ -118,7 +121,7 @@ onMounted(async () => {
 
 <style scoped>
 div.top {
-  margin-top: 30px;
+  margin-top: 10px;
   overflow-wrap: break-word;
   word-break: break-word;
   display: flex;

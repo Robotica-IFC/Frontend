@@ -5,11 +5,13 @@ import requestToParticipateComponent from "@/components/requestToParticipateComp
 import teamProjectsComponent from "@/components/teams/teamProjectsComponent.vue";
 import createProjectModal from "@/components/projects/createProjectModal.vue";
 import { useTeamStore } from "@/store/teamStore";
+import { useProjectStore } from "@/store/projectsStore.js";
 import router from "@/router";
 import AppButton from "@/components/form/appButton.vue";
 import { useAuthStore } from "@/store/authStore";
 
 const teamStore = useTeamStore();
+const projectStore = useProjectStore();
 const authStore = useAuthStore();
 
 const isModalOpen = ref(false);
@@ -20,18 +22,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-onMounted(async () => {
-  await teamStore.getTeamById(props.id);
-});
-
-function goToStudent(id) {
-  router.push({ name: "studentDetails", params: { id } });
-}
-
-function goToTeacher(id) {
-  router.push({ name: "teacherDetails", params: { id } });
-}
 
 const team = computed(() => teamStore.actualTeam || {});
 
@@ -46,6 +36,40 @@ const isTeacherInTeam = computed(() => {
       teacher.user_id === currentUserId.value
   );
 });
+
+const isStudentInTeam = computed(() => {
+  if (!team.value.alunos || !currentUserId.value) return false;
+  return team.value.alunos.some(
+    (student) =>
+      student.user?.id === currentUserId.value ||
+      student.id === currentUserId.value ||
+      student.user_id === currentUserId.value
+  );
+});
+
+const isMemberOfTeam = computed(() => isTeacherInTeam.value || isStudentInTeam.value);
+
+onMounted(async () => {
+  // 1. Busca os dados da equipe primeiro para poder avaliar os membros
+  await teamStore.getTeamById(props.id, false);
+
+  // 2. Se o usuário NÃO for membro da equipe, envia a requisição de visualização
+  if (!isMemberOfTeam.value) {
+    await teamStore.incrementView(props.id);
+  }
+});
+
+function goToStudent(id) {
+  router.push({ name: "studentDetails", params: { id } });
+}
+
+function goToTeacher(id) {
+  router.push({ name: "teacherDetails", params: { id } });
+}
+
+async function handleProjectCreated() {
+  await projectStore.getProjectsByTeam(props.id);
+}
 </script>
 
 <template>
@@ -54,6 +78,7 @@ const isTeacherInTeam = computed(() => {
       <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent></requestToParticipateComponent>
     </div>
+
     <div class="info">
       <div class="principal-info">
         <img :src="team.image_perfil?.file" alt="" class="logo-team" />
@@ -68,16 +93,20 @@ const isTeacherInTeam = computed(() => {
               team.professores?.[0]?.instituicao?.estado
             }}
           </h2>
+          <h3 class="views">Visualizações: {{ team.views }}</h3>
         </div>
       </div>
+
       <p class="bio">
         {{ team.descricao }}
       </p>
+
       <ul class="categories">
         <li v-for="c in team.categorias" :key="c.id">
           {{ c.nome }}
         </li>
       </ul>
+
       <div class="members">
         <ul class="teachers">
           <li v-for="t in team.professores" :key="t.id" @click="goToTeacher(t.id)">
@@ -90,6 +119,7 @@ const isTeacherInTeam = computed(() => {
             </div>
           </li>
         </ul>
+
         <ul class="students">
           <li v-for="s in team.alunos" :key="s.id" @click="goToStudent(s.id)">
             <img :src="s.imagem_perfil?.file" :alt="s.user?.name" />
@@ -103,11 +133,15 @@ const isTeacherInTeam = computed(() => {
       <AppButton width="auto" @click="isModalOpen = true">Criar projeto</AppButton>
     </div>
 
-    <teamProjectsComponent :team-id="props.id" />
-  </div>
+    <div v-if="team.id && isModalOpen" class="project-overlay">
+      <createProjectModal
+        :id="props.id"
+        @close="isModalOpen = false"
+        @created="handleProjectCreated"
+      ></createProjectModal>
+    </div>
 
-  <div v-if="team.id && isModalOpen" class="project-overlay">
-    <createProjectModal :id="team.id" @close="isModalOpen = false"></createProjectModal>
+    <teamProjectsComponent :team-id="props.id" />
   </div>
 </template>
 
@@ -115,15 +149,18 @@ const isTeacherInTeam = computed(() => {
 div.page {
   width: 100%;
 }
+
 div.top {
   width: 100%;
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
 }
+
 div.info {
   margin-top: 15px;
 }
+
 div.info div.principal-info img {
   width: 30%;
   aspect-ratio: 1 / 1;
@@ -131,6 +168,7 @@ div.info div.principal-info img {
   object-fit: cover;
   border: 1px solid var(--principal-claro);
 }
+
 div.info div.principal-info {
   display: flex;
   align-items: center;
@@ -140,6 +178,7 @@ div.info div.principal-info {
     font-size: 25px;
     color: var(--principal-claro);
   }
+
   & h2 {
     font-size: 15px;
     font-weight: 400;
@@ -150,6 +189,7 @@ div.info div.principal-info {
     }
   }
 }
+
 div.info {
   & p.bio {
     font-size: 13px;
@@ -194,6 +234,7 @@ ul.teachers {
       object-fit: cover;
       border-radius: 50%;
     }
+
     & h2 {
       font-size: 12px;
       display: -webkit-box;
@@ -202,6 +243,7 @@ ul.teachers {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     & h3 {
       font-size: 8px;
       font-weight: 400;
@@ -361,5 +403,11 @@ ul.students {
   ul.students li h2 {
     font-size: 12px;
   }
+}
+
+.views {
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 10px;
 }
 </style>

@@ -21,6 +21,9 @@ const teamApi = {
   },
   getTeamByUserId(id){
     return api.get(`equipes/usuario/${id}`)
+  },
+  postView(id) {
+    return api.post(`equipes/${id}/visualizar/`)
   }
 }
 

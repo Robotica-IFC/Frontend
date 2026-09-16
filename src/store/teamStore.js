@@ -97,7 +97,7 @@ export const useTeamStore = defineStore('team', () => {
 
       const payload = {
         ...teamData,
-        image_perfil: attachmentKey // Atribui o resultado retornado
+        image_perfil: attachmentKey, // Atribui o resultado retornado
       }
 
       const response = await teamApi.create(payload)
@@ -112,6 +112,17 @@ export const useTeamStore = defineStore('team', () => {
     actualTeam.value = []
     const response = await teamApi.getOne(id)
     actualTeam.value = response.data
+  }
+  async function incrementView(id) {
+    try {
+      const response = await teamApi.postView(id)
+      if (actualTeam.value && actualTeam.value.id === id) {
+        // Atualiza as views na tela imediatamente sem precisar recarregar tudo
+        actualTeam.value.views = response.data.views
+      }
+    } catch (error) {
+      console.error('Erro ao contabilizar visualização:', error)
+    }
   }
 
   async function getTeamByUserId(id) {
@@ -155,5 +166,6 @@ export const useTeamStore = defineStore('team', () => {
     getTeamByUserId,
     getProjects,
     createCategory,
+    incrementView,
   }
 })
