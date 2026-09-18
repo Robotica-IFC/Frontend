@@ -12,6 +12,9 @@ const projectsApi = {
   },
   getById(id) {
     return api.get(`/projetos/${id}`)
+  },
+  create(payload) {
+    return api.post('projetos/', payload)
   }
 }
 

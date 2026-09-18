@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import projectApi from '@/api/projectsApi'
+import imageApi from '@/api/imageApi'
 
 export const useProjectStore = defineStore('project', () => {
   const projects = ref([])
@@ -47,8 +48,42 @@ export const useProjectStore = defineStore('project', () => {
     try {
       const response = await projectApi.getById(id)
       return response.data
-    } catch(er){
+    } catch (er) {
       console.error(`Erro ao buscar projeto: ${er}`)
+    }
+  }
+
+  // Criação do projeto
+  async function uploadProjectImage(imageFile) {
+    if (!imageFile) return null
+    try {
+      const formData = new FormData()
+      formData.append('file', imageFile)
+      const response = await imageApi.uploadImage(formData)
+      return response.data?.attachment_key
+    } catch (error) {
+      console.error('Erro ao realizar upload da imagem:', error)
+      throw error
+    }
+  }
+
+  async function createProject(projectData, image) {
+    try {
+      let attachmentKey = null
+      if (image) {
+        attachmentKey = await uploadProjectImage(image)
+      }
+
+      const payload = {
+        ...projectData,
+        image_perfil: attachmentKey,
+      }
+
+      const response = await projectApi.create(payload)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao criar projeto:', error)
+      throw error
     }
   }
 
@@ -63,5 +98,6 @@ export const useProjectStore = defineStore('project', () => {
     teamProjects,
     getProjectsByTeam,
     getProjectById,
+    createProject,
   }
 })

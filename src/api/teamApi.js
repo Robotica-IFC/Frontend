@@ -10,6 +10,9 @@ const teamApi = {
 
     return api.get(url)
   },
+  create(payload) {
+    return api.post('equipes/', payload)
+  },
   uploadImage(formData) {
     return api.post('media/images/', formData)
   },
@@ -18,6 +21,9 @@ const teamApi = {
   },
   getTeamByUserId(id){
     return api.get(`equipes/usuario/${id}`)
+  },
+  postView(id) {
+    return api.post(`equipes/${id}/visualizar/`)
   }
 }
 

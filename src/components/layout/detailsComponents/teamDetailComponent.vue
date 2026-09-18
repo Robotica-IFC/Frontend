@@ -1,38 +1,84 @@
 <script setup>
-import { defineProps, onMounted, computed } from "vue";
-import appArrow from "@/components/appArrow.vue";
-import requestToParticipateComponent from "@/components/requestToParticipateComponent.vue";
-import teamProjectsComponent from "@/components/teams/teamProjectsComponent.vue";
-import { useTeamStore } from "@/store/teamStore";
-import router from "@/router";
+import { defineProps, onMounted, computed, ref } from 'vue'
+import appArrow from '@/components/appArrow.vue'
+import requestToParticipateComponent from '@/components/requestToParticipateComponent.vue'
+import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
+import createProjectModal from '@/components/projects/createProjectModal.vue'
+import { useTeamStore } from '@/store/teamStore'
+import { useProjectStore } from '@/store/projectsStore.js'
+import router from '@/router'
+import AppButton from '@/components/form/appButton.vue'
+import { useAuthStore } from '@/store/authStore'
 
-const teamStore = useTeamStore();
+const teamStore = useTeamStore()
+const projectStore = useProjectStore()
+const authStore = useAuthStore()
+
+const isModalOpen = ref(false)
 
 const props = defineProps({
   id: {
     type: String,
     required: true,
   },
-});
+})
+
+const team = computed(() => teamStore.actualTeam || {})
+
+const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id)
+
+const isTeacherInTeam = computed(() => {
+  if (!team.value.professores || !currentUserId.value) return false
+  return team.value.professores.some(
+    (teacher) =>
+      teacher.user?.id === currentUserId.value ||
+      teacher.id === currentUserId.value ||
+      teacher.user_id === currentUserId.value,
+  )
+})
+
+const isStudentInTeam = computed(() => {
+  if (!team.value.alunos || !currentUserId.value) return false
+  return team.value.alunos.some(
+    (student) =>
+      student.user?.id === currentUserId.value ||
+      student.id === currentUserId.value ||
+      student.user_id === currentUserId.value,
+  )
+})
+
+const isMemberOfTeam = computed(() => isTeacherInTeam.value || isStudentInTeam.value)
+
 onMounted(async () => {
-  await teamStore.getTeamById(props.id);
-});
+  // 1. Busca os dados da equipe primeiro para poder avaliar os membros
+  await teamStore.getTeamById(props.id, false)
+
+  // 2. Se o usuário NÃO for membro da equipe, envia a requisição de visualização
+  if (!isMemberOfTeam.value) {
+    await teamStore.incrementView(props.id)
+  }
+})
 
 function goToStudent(id) {
-  router.push({ name: "studentDetails", params: { id } });
-}
-function goToTeacher(id) {
-  router.push({ name: "teacherDetails", params: { id } });
+  router.push({ name: 'studentDetails', params: { id } })
 }
 
-const team = computed(() => teamStore.actualTeam);
+function goToTeacher(id) {
+  router.push({ name: 'teacherDetails', params: { id } })
+}
+
+async function handleProjectCreated() {
+  await projectStore.getProjectsByTeam(props.id)
+}
 </script>
+
 <template>
   <div class="page">
     <div class="top">
       <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent></requestToParticipateComponent>
     </div>
+
     <div class="info">
       <div class="principal-info">
         <img :src="team.image_perfil?.file" alt="" class="logo-team" />
@@ -42,61 +88,83 @@ const team = computed(() => teamStore.actualTeam);
           </h1>
           <h2>
             <span class="mdi mdi-map-marker"></span>
-            {{ team.professores?.[0]?.instituicao.nome }} -
-            {{ team.professores?.[0]?.instituicao.cidade }}/{{
-              team.professores?.[0]?.instituicao.estado
+            {{ team.professores?.[0]?.instituicao?.nome }} -
+            {{ team.professores?.[0]?.instituicao?.cidade }}/{{
+              team.professores?.[0]?.instituicao?.estado
             }}
           </h2>
-          <!-- <h3>
-
-          </h3> -->
+          <h3 class="views">Visualizações: {{ team.views }}</h3>
         </div>
       </div>
+
       <p class="bio">
         {{ team.descricao }}
       </p>
+
       <ul class="categories">
         <li v-for="c in team.categorias" :key="c.id">
           {{ c.nome }}
         </li>
       </ul>
+
       <div class="members">
         <ul class="teachers">
           <li v-for="t in team.professores" :key="t.id" @click="goToTeacher(t.id)">
-            <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user.name" />
+            <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user?.name" />
             <div class="text">
-              <h2>Professor: {{ t.user.name }}</h2>
+              <h2>Professor: {{ t.user?.name }}</h2>
               <h3>
-                {{ t.user.email }}
+                {{ t.user?.email }}
               </h3>
             </div>
           </li>
         </ul>
+
         <ul class="students">
           <li v-for="s in team.alunos" :key="s.id" @click="goToStudent(s.id)">
-            <img :src="s.imagem_perfil.file" :alt="s.user.name" />
-            <h2>{{ s.user.name }}</h2>
+            <img :src="s.imagem_perfil?.file" :alt="s.user?.name" />
+            <h2>{{ s.user?.name }}</h2>
           </li>
         </ul>
       </div>
+    </div>
+    <div class="creates">
+      <div v-if="isTeacherInTeam" class="createProject">
+        <AppButton width="auto" @click="isModalOpen = true">Criar projeto</AppButton>
+      </div>
+      <div v-if="isTeacherInTeam" class="createProject">
+        <AppButton width="auto">Criar estoque</AppButton>
+      </div>
+    </div>
+
+    <div v-if="team.id && isModalOpen" class="project-overlay">
+      <createProjectModal
+        :id="props.id"
+        @close="isModalOpen = false"
+        @created="handleProjectCreated"
+      ></createProjectModal>
     </div>
 
     <teamProjectsComponent :team-id="props.id" />
   </div>
 </template>
+
 <style scoped>
 div.page {
   width: 100%;
 }
+
 div.top {
   width: 100%;
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
 }
+
 div.info {
   margin-top: 15px;
 }
+
 div.info div.principal-info img {
   width: 30%;
   aspect-ratio: 1 / 1;
@@ -104,6 +172,7 @@ div.info div.principal-info img {
   object-fit: cover;
   border: 1px solid var(--principal-claro);
 }
+
 div.info div.principal-info {
   display: flex;
   align-items: center;
@@ -113,6 +182,7 @@ div.info div.principal-info {
     font-size: 25px;
     color: var(--principal-claro);
   }
+
   & h2 {
     font-size: 15px;
     font-weight: 400;
@@ -123,6 +193,7 @@ div.info div.principal-info {
     }
   }
 }
+
 div.info {
   & p.bio {
     font-size: 13px;
@@ -157,8 +228,9 @@ ul.teachers {
     display: flex;
     align-items: center;
     gap: 10px;
-    word-wrap: wrap;
+    word-wrap: break-word;
     padding: 0;
+    cursor: pointer;
 
     & img {
       width: 40%;
@@ -166,6 +238,7 @@ ul.teachers {
       object-fit: cover;
       border-radius: 50%;
     }
+
     & h2 {
       font-size: 12px;
       display: -webkit-box;
@@ -174,6 +247,7 @@ ul.teachers {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     & h3 {
       font-size: 8px;
       font-weight: 400;
@@ -199,35 +273,41 @@ ul.students {
     flex-direction: column;
     justify-content: center;
     gap: 2px;
+    cursor: pointer;
 
-    & {
-      img {
-        width: 100%;
-        aspect-ratio: 1/1;
-        object-fit: cover;
-        border-radius: 50%;
-      }
+    & img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 50%;
+    }
 
-      & h2 {
-        text-align: center;
-        font-size: 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    & h2 {
+      text-align: center;
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
 
+.createProject {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
 @media (min-width: 950px) {
-    div.page {
-        max-width: none;
-        width: 100vw;
-        padding: 80px 5%;
-        box-sizing: border-box;
+  div.page {
+    max-width: none;
+    width: 100vw;
+    padding: 80px 5%;
+    box-sizing: border-box;
   }
 
-div.top {
+  div.top {
     margin-top: 10px;
   }
 
@@ -238,20 +318,22 @@ div.top {
   div.info div.principal-info {
     gap: 25px;
   }
+
   div.info div.principal-info img {
     width: 140px;
     flex-shrink: 0;
   }
+
   div.info div.principal-info h1 {
     font-size: 36px;
   }
+
   div.info div.principal-info h2 {
     font-size: 16px;
     margin-top: 8px;
   }
 
   div.info p.bio {
-    font-size: 15px;
     max-width: none;
     margin-top: 15px;
     line-height: 1.5;
@@ -262,7 +344,7 @@ div.top {
     font-size: 14px;
     padding: 5px 25px;
     margin-top: 15px;
-    margin-bottom: 20px
+    margin-bottom: 20px;
   }
 
   div.members {
@@ -280,6 +362,7 @@ div.top {
     border-right: 1px solid var(--principal-claro);
     flex-wrap: wrap;
   }
+
   ul.teachers li {
     width: auto;
     flex-direction: column;
@@ -288,14 +371,17 @@ div.top {
     flex-shrink: 0;
     margin-right: 15px;
   }
+
   ul.teachers li img {
     width: 90px;
     flex-shrink: 0;
   }
+
   ul.teachers li h2 {
     font-size: 13px;
     -webkit-line-clamp: 2;
   }
+
   ul.teachers li h3 {
     font-size: 10px;
   }
@@ -306,16 +392,30 @@ div.top {
     flex-wrap: wrap;
     gap: 35px;
   }
+
   ul.students li {
     width: auto;
     flex-shrink: 0;
   }
+
   ul.students li img {
     width: 90px;
     flex-shrink: 0;
   }
+
   ul.students li h2 {
     font-size: 12px;
   }
+}
+
+.views {
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 10px;
+}
+.creates{
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 </style>
