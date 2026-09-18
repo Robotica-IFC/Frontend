@@ -1,12 +1,23 @@
 import { defineStore } from 'pinia'
 import storageApi from '@/api/storageApi'
+import { ref } from 'vue'
 
 export const useStorageStore = defineStore('storage', () => {
-  async function createStorage(id) {
+  async function createStorage(equipeId) {
     try {
-      const response = await storageApi.create(id)
+      const payload = {
+        equipe: equipeId
+      }
+
+      const response = await storageApi.create(payload)
+      return response.data
     } catch (error) {
-      console.error(error)
+      console.error('Erro ao criar estoque:', error)
+      throw error
     }
+  }
+
+  return {
+    createStorage,
   }
 })

@@ -9,10 +9,12 @@ import { useProjectStore } from '@/store/projectsStore.js'
 import router from '@/router'
 import AppButton from '@/components/form/appButton.vue'
 import { useAuthStore } from '@/store/authStore'
+import { useStorageStore } from '@/store/storageStore'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
+const storageStore = useStorageStore()
 
 const isModalOpen = ref(false)
 
@@ -70,6 +72,8 @@ function goToTeacher(id) {
 async function handleProjectCreated() {
   await projectStore.getProjectsByTeam(props.id)
 }
+
+function goToStorage(id)
 </script>
 
 <template>
@@ -129,12 +133,12 @@ async function handleProjectCreated() {
       </div>
     </div>
     <div class="creates">
-      <div v-if="isTeacherInTeam" class="createProject">
-        <AppButton width="auto" @click="isModalOpen = true">Criar projeto</AppButton>
-      </div>
-      <div v-if="isTeacherInTeam" class="createProject">
-        <AppButton width="auto">Criar estoque</AppButton>
-      </div>
+      <button v-if="isTeacherInTeam" class="createProject" @click="storageStore.createStorage(team.id)">
+        <span class="mdi mdi-archive"></span> Estoque da equipe
+      </button>
+      <button v-if="isTeacherInTeam" class="createProject" @click="isModalOpen = true">
+        <span class="mdi mdi-plus"></span> Criar projeto
+      </button>
     </div>
 
     <div v-if="team.id && isModalOpen" class="project-overlay">
@@ -291,14 +295,6 @@ ul.students {
     }
   }
 }
-
-.createProject {
-  display: flex;
-  justify-content: flex-start;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
 @media (min-width: 950px) {
   div.page {
     max-width: none;
@@ -413,9 +409,22 @@ ul.students {
   font-weight: 400;
   margin-top: 10px;
 }
-.creates{
+.creates {
+  gap: 10px;
   display: flex;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
+  margin-top: 10px;
+}
+.createProject {
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  background-color: var(--destaque-claro);
+  color: white;
+  border: none;
+  padding: 7px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
 }
 </style>

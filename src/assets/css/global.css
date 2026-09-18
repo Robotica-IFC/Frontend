@@ -35,14 +35,19 @@ footer {
   margin-top: auto;
   padding-bottom: 20px;
 }
-:root{
-    --botao-claro: #2761AA;
-    --fundo-claro: #ffffff;
-    --principal-claro: #003D66;
-    --hover-principal-claro: #00538a;
-    --destaque-claro: #6084B0;
-    --texto-claro: #141414;
-    --placeholder: #9A9A9A;
-    --h2-titulo: #003D66;
-    --danger-claro: #B91C1C;
+:root {
+  --botao-claro: #2761aa;
+  --fundo-claro: #ffffff;
+  --principal-claro: #003d66;
+  --hover-principal-claro: #00538a;
+  --destaque-claro: #6084b0;
+  --texto-claro: #141414;
+  --placeholder: #9a9a9a;
+  --h2-titulo: #003d66;
+  --danger-claro: #b91c1c;
+}
+button:active {
+  transform: scale(0.95);
+  height: auto;
+  transition: 0.1s;
 }
