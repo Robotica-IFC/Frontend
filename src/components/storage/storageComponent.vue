@@ -1,28 +1,31 @@
 <script setup>
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useStorageStore } from '@/store/storageStore'
-import { onMounted, ref } from 'vue'
 import appArrow from '../appArrow.vue'
-import router from '@/router'
-import inDevelopmentComponent from '../inDevelopmentComponent.vue'
+import filterStorageComponent from './filterStorageComponent.vue'
 
 const props = defineProps({
   id: {
-    type: [Number, String], // Aceita String caso a rota envie como string
+    type: [Number, String],
     required: true,
   },
 })
 
+const router = useRouter()
 const storageStore = useStorageStore()
-const storage = ref(null)
+
+const { storage } = storeToRefs(storageStore)
 
 onMounted(async () => {
-  storage.value = await storageStore.getStorageById(props.id)
+  await storageStore.getStorageById(props.id)
 })
 </script>
 
 <template>
   <div class="top">
-    <appArrow @back="router.back"></appArrow>
+    <appArrow @back="router.back()"></appArrow>
   </div>
 
   <div v-if="storage && storage.equipe" class="team-details">
@@ -32,20 +35,17 @@ onMounted(async () => {
       :alt="storage.equipe.nome"
     />
     <img v-else src="/img/Default.webp" alt="Equipe sem imagem" />
+
     <div class="nome">
       <h2>{{ storage.equipe.nome }}</h2>
       <div class="loc">
-        <span class="mdi mdi-map-marker"></span><p>{{ storage.equipe.instituicao.sigla }}</p>
+        <span class="mdi mdi-map-marker"></span>
+        <p>{{ storage.equipe.instituicao.sigla }}</p>
       </div>
     </div>
   </div>
 
-  <div v-else>
-    <p>Carregando estoque...</p>
-  </div>
-
-  <inDevelopmentComponent></inDevelopmentComponent>
-
+  <filterStorageComponent :storage-id="props.id"></filterStorageComponent>
 </template>
 
 <style scoped>
@@ -56,24 +56,24 @@ onMounted(async () => {
   padding: 15px;
 }
 
-.team-details{
+.team-details {
   display: flex;
   align-items: center;
   justify-content: start;
   gap: 10px;
 
-  & img{
+  & img {
     width: 30%;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
   }
 
-  & h2{
+  & h2 {
     font-size: 23px;
     color: var(--principal-claro);
   }
 
-  & .loc{
+  & .loc {
     display: flex;
     align-items: center;
 
@@ -81,7 +81,7 @@ onMounted(async () => {
       font-size: 12px;
     }
 
-    & .mdi{
+    & .mdi {
       color: var(--principal-claro);
       font-size: 17px;
     }
