@@ -26,6 +26,7 @@ const props = defineProps({
 })
 
 const team = computed(() => teamStore.actualTeam || {})
+const storageId = ref(null)
 
 const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id)
 
@@ -73,7 +74,15 @@ async function handleProjectCreated() {
   await projectStore.getProjectsByTeam(props.id)
 }
 
-function goToStorage(id)
+async function goToStorage(id){
+  if (team.value.estoque_id == null){
+    const storageId = await storageStore.createStorage(team.value.id)
+
+    router.push({name: 'storage', params: {id: storageId}})
+  } else {
+    router.push({name: 'storage', params: {id}})
+  }
+}
 </script>
 
 <template>
@@ -133,7 +142,11 @@ function goToStorage(id)
       </div>
     </div>
     <div class="creates">
-      <button v-if="isTeacherInTeam" class="createProject" @click="storageStore.createStorage(team.id)">
+      <button
+        v-if="isTeacherInTeam"
+        class="createProject"
+        @click="goToStorage(team.estoque_id)"
+      >
         <span class="mdi mdi-archive"></span> Estoque da equipe
       </button>
       <button v-if="isTeacherInTeam" class="createProject" @click="isModalOpen = true">
@@ -316,7 +329,7 @@ ul.students {
   }
 
   div.info div.principal-info img {
-    width: 140px;
+    width:x;
     flex-shrink: 0;
   }
 
@@ -328,7 +341,7 @@ ul.students {
     font-size: 16px;
     margin-top: 8px;
   }
-
+ 140p
   div.info p.bio {
     max-width: none;
     margin-top: 15px;

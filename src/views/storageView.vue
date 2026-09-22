@@ -9,5 +9,7 @@ const props = defineProps({
 })
 </script>
 <template>
-  <storageComponent :id="props.id"></storageComponent>
+  <div class="page">
+    <storageComponent :id="props.id"></storageComponent>
+  </div>
 </template>
