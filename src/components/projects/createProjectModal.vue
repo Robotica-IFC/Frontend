@@ -59,8 +59,8 @@ async function handleSubmit() {
     return
   }
 
-  if (form.titulo.length > 20) {
-    errorMessage.value = 'O título deve ter no máximo 20 caracteres.'
+  if (form.titulo.length > 30) {
+    errorMessage.value = 'O título deve ter no máximo 30 caracteres.'
     return
   }
 
@@ -157,11 +157,11 @@ async function handleSubmit() {
             placeholder="Título do projeto (Max: 20 caracteres)"
             icon="mdi mdi-format-title"
             v-model="form.titulo"
-            maxlength="20"
+            maxlength="30"
             required
           />
-          <small class="char-count" :class="{ danger: form.titulo.length > 20 }">
-            {{ form.titulo.length }}/20 caracteres
+          <small class="char-count" :class="{ danger: form.titulo.length > 30 }">
+            {{ form.titulo.length }}/30 caracteres
           </small>
         </div>
 

@@ -9,10 +9,12 @@ import { useProjectStore } from '@/store/projectsStore.js'
 import router from '@/router'
 import AppButton from '@/components/form/appButton.vue'
 import { useAuthStore } from '@/store/authStore'
+import { useStorageStore } from '@/store/storageStore'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
+const storageStore = useStorageStore()
 
 const isModalOpen = ref(false)
 
@@ -24,6 +26,7 @@ const props = defineProps({
 })
 
 const team = computed(() => teamStore.actualTeam || {})
+const storageId = ref(null)
 
 const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id)
 
@@ -69,6 +72,16 @@ function goToTeacher(id) {
 
 async function handleProjectCreated() {
   await projectStore.getProjectsByTeam(props.id)
+}
+
+async function goToStorage(id){
+  if (team.value.estoque_id == null){
+    const storageId = await storageStore.createStorage(team.value.id)
+
+    router.push({name: 'storage', params: {id: storageId}})
+  } else {
+    router.push({name: 'storage', params: {id}})
+  }
 }
 </script>
 
@@ -129,12 +142,16 @@ async function handleProjectCreated() {
       </div>
     </div>
     <div class="creates">
-      <div v-if="isTeacherInTeam" class="createProject">
-        <AppButton width="auto" @click="isModalOpen = true">Criar projeto</AppButton>
-      </div>
-      <div v-if="isTeacherInTeam" class="createProject">
-        <AppButton width="auto">Criar estoque</AppButton>
-      </div>
+      <button
+        v-if="isTeacherInTeam"
+        class="createProject"
+        @click="goToStorage(team.estoque_id)"
+      >
+        <span class="mdi mdi-archive"></span> Estoque da equipe
+      </button>
+      <button v-if="isTeacherInTeam" class="createProject" @click="isModalOpen = true">
+        <span class="mdi mdi-plus"></span> Criar projeto
+      </button>
     </div>
 
     <div v-if="team.id && isModalOpen" class="project-overlay">
@@ -291,14 +308,6 @@ ul.students {
     }
   }
 }
-
-.createProject {
-  display: flex;
-  justify-content: flex-start;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
 @media (min-width: 950px) {
   div.page {
     max-width: none;
@@ -320,7 +329,7 @@ ul.students {
   }
 
   div.info div.principal-info img {
-    width: 140px;
+    width:x;
     flex-shrink: 0;
   }
 
@@ -332,7 +341,7 @@ ul.students {
     font-size: 16px;
     margin-top: 8px;
   }
-
+ 140p
   div.info p.bio {
     max-width: none;
     margin-top: 15px;
@@ -413,9 +422,22 @@ ul.students {
   font-weight: 400;
   margin-top: 10px;
 }
-.creates{
+.creates {
+  gap: 10px;
   display: flex;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
+  margin-top: 10px;
+}
+.createProject {
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  background-color: var(--destaque-claro);
+  color: white;
+  border: none;
+  padding: 7px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
 }
 </style>

@@ -14,6 +14,7 @@ import teacherDetailsView from '@/views/teacherDetailsView.vue'
 import projectsView from '@/views/projectsView.vue'
 import aboutUsView from '@/views/aboutUsView.vue'
 import projectDetailView from '@/views/projectDetailView.vue'
+import storageView from '@/views/storageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -91,6 +92,12 @@ const router = createRouter({
       name: 'aboutUs',
       component: aboutUsView
     },
+    {
+      path: '/storage/:id',
+      name: 'storage',
+      component: storageView,
+      props: true
+    }
   ]
 })
 
