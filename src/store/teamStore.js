@@ -5,9 +5,11 @@ import { useAuthStore } from './authStore'
 import { ref } from 'vue'
 import categoryApi from '@/api/categoryApi'
 import imageApi from '@/api/imageApi'
+import { useStorageStore } from './storageStore'
 
 export const useTeamStore = defineStore('team', () => {
   const authStore = useAuthStore()
+  const storageStore = useStorageStore()
 
   const teams = ref([])
   const loading = ref(false)
@@ -101,6 +103,7 @@ export const useTeamStore = defineStore('team', () => {
       }
 
       const response = await teamApi.create(payload)
+      storageStore.createStorage(response.data.id)
       return response.data
     } catch (error) {
       console.error('Erro ao criar equipe na store:', error)
