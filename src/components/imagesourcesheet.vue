@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const props = defineProps({
   accept: {
@@ -10,48 +10,76 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  facingMode: {
-    type: String,
-    default: 'environment',
-  },
 })
 
 const emit = defineEmits(['select', 'close'])
 
-const cameraInput = ref(null)
+const isMobile = ref(false)
+const fileWasSelected = ref(false)
+const cameraFrontInput = ref(null)
+const cameraBackInput = ref(null)
 const galleryInput = ref(null)
 
-function openCamera() {
-  cameraInput.value.click()
+function detectMobile() {
+  if (typeof navigator === 'undefined') return false
+  const uaMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent)
+  const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false
+  return uaMobile || coarsePointer
+}
+
+function openCameraFront() {
+  cameraFrontInput.value.click()
+}
+
+function openCameraBack() {
+  cameraBackInput.value.click()
 }
 
 function openGallery() {
   galleryInput.value.click()
 }
 
-function handleCameraChange(event) {
-  const file = event.target.files[0]
-  event.target.value = ''
-  if (!file) return
-  emit('select', props.multiple ? [file] : file)
-  emit('close')
+function openGalleryDesktop() {
+  const handleWindowFocus = () => {
+    window.removeEventListener('focus', handleWindowFocus)
+    setTimeout(() => {
+      if (!fileWasSelected.value) {
+        emit('close')
+      }
+    }, 300)
+  }
+  window.addEventListener('focus', handleWindowFocus)
+  galleryInput.value.click()
 }
 
-function handleGalleryChange(event) {
+function handleChange(event) {
   const files = Array.from(event.target.files || [])
   event.target.value = ''
   if (files.length === 0) return
+  fileWasSelected.value = true
   emit('select', props.multiple ? files : files[0])
   emit('close')
 }
+
+onMounted(() => {
+  isMobile.value = detectMobile()
+  if (!isMobile.value) {
+    openGalleryDesktop()
+  }
+})
 </script>
 
 <template>
-  <div class="sheet-backdrop" @click.self="$emit('close')">
+  <div v-if="isMobile" class="sheet-backdrop" @click.self="$emit('close')">
     <div class="sheet-container">
       <div class="sheet-handle"></div>
 
-      <button type="button" class="sheet-option" @click="openCamera">
+      <button type="button" class="sheet-option" @click="openCameraFront">
+        <span class="mdi mdi-camera-account"></span>
+        <span>Tirar Selfie</span>
+      </button>
+
+      <button type="button" class="sheet-option" @click="openCameraBack">
         <span class="mdi mdi-camera-outline"></span>
         <span>Tirar Foto</span>
       </button>
@@ -62,25 +90,33 @@ function handleGalleryChange(event) {
       </button>
 
       <button type="button" class="sheet-cancel" @click="$emit('close')">Cancelar</button>
-
-      <input
-        ref="cameraInput"
-        type="file"
-        :accept="accept"
-        :capture="facingMode"
-        class="hidden-input"
-        @change="handleCameraChange"
-      />
-      <input
-        ref="galleryInput"
-        type="file"
-        :accept="accept"
-        :multiple="multiple"
-        class="hidden-input"
-        @change="handleGalleryChange"
-      />
     </div>
   </div>
+
+  <input
+    ref="cameraFrontInput"
+    type="file"
+    :accept="accept"
+    capture="user"
+    class="hidden-input"
+    @change="handleChange"
+  />
+  <input
+    ref="cameraBackInput"
+    type="file"
+    :accept="accept"
+    capture="environment"
+    class="hidden-input"
+    @change="handleChange"
+  />
+  <input
+    ref="galleryInput"
+    type="file"
+    :accept="accept"
+    :multiple="multiple"
+    class="hidden-input"
+    @change="handleChange"
+  />
 </template>
 
 <style scoped>
