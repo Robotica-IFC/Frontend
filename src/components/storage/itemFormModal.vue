@@ -4,6 +4,7 @@ import { useItemStore } from '@/store/itemStore'
 import { ITEM_CATEGORIES } from '@/constants/itemCategories'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
+import imagesourcesheet from '../imagesourcesheet.vue'
 
 const props = defineProps({
   estoqueId: {
@@ -37,16 +38,15 @@ const form = reactive({
   estoque: props.estoqueId,
 })
 
-function handleFileUpload(event) {
-  const file = event.target.files[0]
-  if (file) {
-    if (selectedFile.value && imagePreview.value) {
-      URL.revokeObjectURL(imagePreview.value)
-    }
-    selectedFile.value = file
-    imagePreview.value = URL.createObjectURL(file)
-    imageRemoved.value = false
+const showImageSheet = ref(false)
+
+function handleFileSelected(file) {
+  if (selectedFile.value && imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
   }
+  selectedFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
+  imageRemoved.value = false
 }
 
 function removeImage() {
@@ -149,20 +149,13 @@ async function handleDelete() {
         <div class="form-group align-center">
           <label>Imagem do Item</label>
           <div class="image-upload-wrapper">
-            <label for="item-image-input" class="image-preview-container">
+            <button type="button" class="image-preview-container" @click="showImageSheet = true">
               <img v-if="imagePreview" :src="imagePreview" alt="Preview do Item" class="preview-img" />
               <div v-else class="upload-placeholder">
-                <span class="mdi mdi-camera-plus-outline"></span>
+                <i class="mdi mdi-camera-plus-outline"></i>
                 <span>Adicionar Foto</span>
               </div>
-            </label>
-            <input
-              id="item-image-input"
-              type="file"
-              accept="image/*"
-              class="hidden-file-input"
-              @change="handleFileUpload"
-            />
+            </button>
             <button
               v-if="imagePreview"
               type="button"
@@ -170,10 +163,17 @@ async function handleDelete() {
               @click="removeImage"
               title="Remover imagem"
             >
-              <span class="mdi mdi-close"></span>
+              <i class="mdi mdi-close"></i>
             </button>
           </div>
         </div>
+
+        <imagesourcesheet
+          v-if="showImageSheet"
+          facing-mode="environment"
+          @select="handleFileSelected"
+          @close="showImageSheet = false"
+        />
 
         <div class="form-group">
           <label>Nome *</label>
@@ -342,6 +342,9 @@ async function handleDelete() {
 .image-preview-container {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  font: inherit;
   border-radius: 50%;
   border: 2px dashed #cbd5e1;
   display: flex;

@@ -4,6 +4,7 @@ import { useTemplateStore } from '@/store/template'
 import appArrow from '../appArrow.vue'
 import appButton from '../form/appButton.vue'
 import AppInput from '../form/appInput.vue'
+import imagesourcesheet from '../imagesourcesheet.vue'
 import { onMounted, ref } from 'vue'
 import stepComponent from '../stepComponent.vue'
 
@@ -13,18 +14,16 @@ const templateStore = useTemplateStore()
 // Imagem padrão (ajuste o caminho conforme sua pasta public)
 const previewImage = ref('/img/default2.jpg') 
 const file = ref(null)
+const showImageSheet = ref(false)
 
 function back() {
   templateStore.sign = 3
 }
 
-function handleFileChange(e) {
-  const selectedFile = e.target.files[0]
-  if (selectedFile) {
-    file.value = selectedFile
-    // Cria o link temporário para visualização imediata
-    previewImage.value = URL.createObjectURL(selectedFile)
-  }
+function handleFileSelected(selectedFile) {
+  file.value = selectedFile
+  // Cria o link temporário para visualização imediata
+  previewImage.value = URL.createObjectURL(selectedFile)
 }
 
 function submit() {
@@ -46,19 +45,12 @@ function submit() {
 
     <form @submit.prevent="submit" class="final">
       <div class="avatar-container">
-        <label for="avatar-input" class="avatar-label">
+        <button type="button" class="avatar-label" @click="showImageSheet = true">
           <img :src="previewImage" alt="Foto de perfil" class="profile-pic" />
           <div class="upload-icon">
             <i class="mdi mdi-camera"></i>
           </div>
-        </label>
-        <input 
-          id="avatar-input" 
-          type="file" 
-          accept="image/*" 
-          @change="handleFileChange" 
-          hidden 
-        />
+        </button>
         <span>Foto de perfil</span>
       </div>
 
@@ -75,6 +67,13 @@ function submit() {
     <div class="bottom">
       <stepComponent :step="3" first="Informações" second="Confirme seu E-Mail" third="Dados finais" />
     </div>
+
+    <imagesourcesheet
+      v-if="showImageSheet"
+      facing-mode="user"
+      @select="handleFileSelected"
+      @close="showImageSheet = false"
+    />
   </div>
 </template>
 
@@ -131,6 +130,11 @@ h2 {
   position: relative;
   cursor: pointer;
   transition: transform 0.2s;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
 }
 
 .avatar-label:active {

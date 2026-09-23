@@ -4,6 +4,7 @@ import { useTeamStore } from '@/store/teamStore'
 import categoryApi from '@/api/categoryApi'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
+import imagesourcesheet from '../imagesourcesheet.vue'
 import { useAuthStore } from '@/store/authStore'
 
 const authStore = useAuthStore()
@@ -14,6 +15,7 @@ const loading = ref(false)
 const errorMessage = ref('')
 const selectedFile = ref(null)
 const imagePreview = ref(null)
+const showImageSheet = ref(false)
 
 // Controle de Categorias
 const existingCategories = ref([])
@@ -105,17 +107,12 @@ async function handleCreateCategory() {
   }
 }
 
-// Manipulação do upload de imagem e preview
-function handleFileUpload(event) {
-  const file = event.target.files[0]
-  if (file) {
-    // Revoga a URL anterior se já existir uma para evitar vazamento de memória
-    if (imagePreview.value) {
-      URL.revokeObjectURL(imagePreview.value)
-    }
-    selectedFile.value = file
-    imagePreview.value = URL.createObjectURL(file)
+function handleFileSelected(file) {
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
   }
+  selectedFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
 }
 
 function removeImage() {
@@ -129,6 +126,11 @@ function removeImage() {
 async function handleSubmit() {
   if (!form.nome.trim()) {
     errorMessage.value = 'O nome da equipe é obrigatório.'
+    return
+  }
+
+  if (!selectedFile.value) {
+    errorMessage.value = 'A imagem da equipe é obrigatória.'
     return
   }
 
@@ -174,9 +176,9 @@ async function handleSubmit() {
 
         <!-- Upload de Imagem Personalizado com Preview -->
         <div class="form-group align-center">
-          <label>Imagem da Equipe</label>
+          <label>Imagem da Equipe *</label>
           <div class="image-upload-wrapper">
-            <label for="team-image-input" class="image-preview-container">
+            <button type="button" class="image-preview-container" @click="showImageSheet = true">
               <img
                 v-if="imagePreview"
                 :src="imagePreview"
@@ -187,15 +189,7 @@ async function handleSubmit() {
                 <i class="mdi mdi-camera-plus-outline"></i>
                 <span>Adicionar Foto</span>
               </div>
-            </label>
-            <input
-              id="team-image-input"
-              type="file"
-              accept="image/*"
-              class="hidden-file-input"
-              @change="handleFileUpload"
-              required
-            />
+            </button>
             <button
               v-if="imagePreview"
               type="button"
@@ -290,6 +284,12 @@ async function handleSubmit() {
         </div>
       </form>
     </div>
+
+    <imagesourcesheet
+      v-if="showImageSheet"
+      @select="handleFileSelected"
+      @close="showImageSheet = false"
+    />
   </div>
 </template>
 
@@ -373,6 +373,9 @@ async function handleSubmit() {
 .image-preview-container {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  font: inherit;
   border-radius: 50%;
   border: 2px dashed #cbd5e1;
   display: flex;

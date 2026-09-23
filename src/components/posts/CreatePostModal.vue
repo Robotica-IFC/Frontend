@@ -2,6 +2,7 @@
 import { ref, defineProps, defineEmits } from 'vue'
 import { usePostStore } from '@/store/postsStore'
 import appButton from '@/components/form/appButton.vue'
+import imagesourcesheet from '../imagesourcesheet.vue'
 
 const props = defineProps({
   projectId: {
@@ -20,22 +21,13 @@ const postStore = usePostStore()
 const legenda = ref('')
 const selectedFiles = ref([])
 const previewUrls = ref([])
-const fileInput = ref(null)
+const showImageSheet = ref(false)
 
-const triggerFileInput = () => {
-  fileInput.value.click()
-}
-
-const handleFileChange = (event) => {
-  const files = Array.from(event.target.files)
-  if (!files.length) return
-
-  files.forEach(file => {
+const handleFilesSelected = (files) => {
+  files.forEach((file) => {
     selectedFiles.value.push(file)
     previewUrls.value.push(URL.createObjectURL(file))
   })
-  
-  event.target.value = ''
 }
 
 const removeImage = (index) => {
@@ -91,16 +83,7 @@ const handleSubmit = async () => {
           </div>
         </div>
 
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          multiple
-          class="hidden-input"
-          @change="handleFileChange"
-        />
-
-        <button class="add-image-btn" @click="triggerFileInput">
+        <button type="button" class="add-image-btn" @click="showImageSheet = true">
           📷 Adicionar Imagens
         </button>
       </div>
@@ -115,6 +98,13 @@ const handleSubmit = async () => {
         </appButton>
       </div>
     </div>
+
+    <imagesourcesheet
+      v-if="showImageSheet"
+      multiple
+      @select="handleFilesSelected"
+      @close="showImageSheet = false"
+    />
   </div>
 </template>
 
@@ -189,10 +179,6 @@ const handleSubmit = async () => {
     font-size: 14px;
     resize: none;
     outline: none;
-  }
-
-  & .hidden-input {
-    display: none;
   }
 
   & .add-image-btn {
