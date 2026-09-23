@@ -89,7 +89,7 @@ async function goToStorage(id){
   <div class="page">
     <div class="top">
       <appArrow @click="router.back()"></appArrow>
-      <requestToParticipateComponent></requestToParticipateComponent>
+      <requestToParticipateComponent v-if="!isMemberOfTeam"></requestToParticipateComponent>
     </div>
 
     <div class="info">
