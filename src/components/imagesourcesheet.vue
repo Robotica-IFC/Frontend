@@ -25,8 +25,7 @@ const emit = defineEmits(['select', 'close'])
 const isMobile = ref(false)
 const processing = ref(false)
 const fileWasSelected = ref(false)
-const cameraFrontInput = ref(null)
-const cameraBackInput = ref(null)
+const cameraInput = ref(null)
 const galleryInput = ref(null)
 
 function detectMobile() {
@@ -36,12 +35,8 @@ function detectMobile() {
   return uaMobile || coarsePointer
 }
 
-function openCameraFront() {
-  cameraFrontInput.value.click()
-}
-
-function openCameraBack() {
-  cameraBackInput.value.click()
+function openCamera() {
+  cameraInput.value.click()
 }
 
 function openGallery() {
@@ -129,12 +124,7 @@ onMounted(() => {
       <template v-else>
         <div class="sheet-handle"></div>
 
-        <button type="button" class="sheet-option" @click="openCameraFront">
-          <span class="mdi mdi-camera-account"></span>
-          <span>Tirar Selfie</span>
-        </button>
-
-        <button type="button" class="sheet-option" @click="openCameraBack">
+        <button type="button" class="sheet-option" @click="openCamera">
           <span class="mdi mdi-camera-outline"></span>
           <span>Tirar Foto</span>
         </button>
@@ -150,18 +140,10 @@ onMounted(() => {
   </div>
 
   <input
-    ref="cameraFrontInput"
+    ref="cameraInput"
     type="file"
     :accept="accept"
     capture="user"
-    class="hidden-input"
-    @change="handleChange"
-  />
-  <input
-    ref="cameraBackInput"
-    type="file"
-    :accept="accept"
-    capture="environment"
     class="hidden-input"
     @change="handleChange"
   />
