@@ -152,7 +152,7 @@ async function handleDelete() {
             <label for="item-image-input" class="image-preview-container">
               <img v-if="imagePreview" :src="imagePreview" alt="Preview do Item" class="preview-img" />
               <div v-else class="upload-placeholder">
-                <i class="mdi mdi-camera-plus-outline"></i>
+                <span class="mdi mdi-camera-plus-outline"></span>
                 <span>Adicionar Foto</span>
               </div>
             </label>
@@ -170,7 +170,7 @@ async function handleDelete() {
               @click="removeImage"
               title="Remover imagem"
             >
-              <i class="mdi mdi-close"></i>
+              <span class="mdi mdi-close"></span>
             </button>
           </div>
         </div>

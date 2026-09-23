@@ -106,13 +106,13 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
     <div class="search-row">
       <div class="search-box">
-        <i class="mdi mdi-magnify"></i>
+        <span class="mdi mdi-magnify"></span>
         <input type="text" v-model="searchQuery" placeholder="Buscar item..." />
       </div>
 
       <div class="category-filter" ref="filterRef">
         <button type="button" class="filter-toggle" @click="toggleCategoryDropdown">
-          <i class="mdi" :class="showCategoryDropdown ? 'mdi-chevron-up' : 'mdi-chevron-down'"></i>
+          <span class="mdi" :class="showCategoryDropdown ? 'mdi-chevron-up' : 'mdi-chevron-down'"></span>
         </button>
 
         <div v-if="showCategoryDropdown" class="dropdown-menu">
@@ -131,7 +131,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     </div>
 
     <button type="button" class="btn-add" @click="openCreateModal">
-      <i class="mdi mdi-pencil-outline"></i>
+      <span class="mdi mdi-pencil-outline"></span>
       Adicionar item
     </button>
 
@@ -141,11 +141,11 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     <div v-for="cat in groupedCategorias" :key="cat.value" class="category-section">
       <button type="button" class="category-header" @click="toggleCollapse(cat.value)">
         <div class="category-title">
-          <i class="mdi" :class="cat.icon"></i>
+          <span class="mdi" :class="cat.icon"></span>
           <h3>{{ cat.label }}</h3>
           <span class="circle small">{{ cat.itens.length }}</span>
         </div>
-        <i class="mdi" :class="collapsedCategories[cat.value] ? 'mdi-chevron-down' : 'mdi-chevron-up'"></i>
+        <span class="mdi" :class="collapsedCategories[cat.value] ? 'mdi-chevron-down' : 'mdi-chevron-up'"></span>
       </button>
 
       <div v-if="!collapsedCategories[cat.value]" class="category-items">
@@ -309,7 +309,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--botao-claro);
+  background: var(--destaque-claro);
   color: #ffffff;
   border: none;
   padding: 10px 18px;
@@ -361,7 +361,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   min-width: 0;
   flex: 1;
 
-  & i {
+  & span.mdi {
     color: var(--principal-claro);
     font-size: 1.2rem;
     flex-shrink: 0;

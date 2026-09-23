@@ -2,8 +2,10 @@
 import { RouterLink } from 'vue-router';
 import { useTemplateStore } from "@/store/template";
 import appButtonComponent from "@/components/form/appButton.vue";
+import { useAuthStore } from '@/store/authStore';
 
 const templateStore = useTemplateStore();
+const authStore = useAuthStore();
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const templateStore = useTemplateStore();
         <span class="mdi mdi-play-box-multiple"></span> Tutoriais
       </RouterLink>
 
-      <RouterLink to="/" class="nav-link">
+      <RouterLink v-if="authStore.user.tipo == 'professor'" to="/" class="nav-link">
         <span class="mdi mdi-account-tie"></span> Professor
       </RouterLink>
 

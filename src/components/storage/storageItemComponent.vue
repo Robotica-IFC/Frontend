@@ -19,17 +19,17 @@ defineEmits(['edit'])
         class="item-img"
       />
       <div v-else class="item-img placeholder">
-        <i class="mdi mdi-image-outline"></i>
+        <span class="mdi mdi-image-outline"></span>
       </div>
       <span class="item-nome">{{ item.nome }}</span>
     </div>
 
     <div class="item-meta">
       <span class="item-qtd">
-        <i class="mdi mdi-package-variant-closed"></i>
+        <span class="mdi mdi-package-variant-closed"></span>
         {{ item.quantidade }} un.
       </span>
-      <i class="mdi mdi-chevron-right"></i>
+      <span class="mdi mdi-chevron-right"></span>
     </div>
   </button>
 </template>
@@ -87,7 +87,6 @@ defineEmits(['edit'])
   color: var(--texto-claro);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .item-meta {
@@ -106,7 +105,7 @@ defineEmits(['edit'])
   display: flex;
   align-items: center;
   gap: 4px;
-  background: var(--botao-claro);
+  background: var(--destaque-claro);
   color: #ffffff;
   padding: 4px 10px;
   border-radius: 20px;
