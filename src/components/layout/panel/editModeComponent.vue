@@ -8,6 +8,7 @@ import { useInstituteStore } from '@/store/instituteStore' // 🟢 Adicionado
 import appArrow from '@/components/appArrow.vue'
 import appButton from '@/components/form/appButton.vue'
 import appInput from '@/components/form/appInput.vue' // 🟢 Adicionado para o form interno
+import imagesourcesheet from '@/components/imagesourcesheet.vue'
 import { useTemplateStore } from '@/store/template'
 import api from '@/api/config'
 import imageApi from '@/api/imageApi'
@@ -27,6 +28,9 @@ const mostrarDropdown = ref(false)
 const buscaInstituicao = ref('')
 const fileInstitute = ref(null)
 const previewImageInstitute = ref('/img/default2.jpg')
+
+const showProfileSheet = ref(false)
+const showInstituteSheet = ref(false)
 
 const formData = ref({
   name: user.value?.name || '',
@@ -95,12 +99,9 @@ function selecionarInstituicao(inst) {
   mostrarDropdown.value = false
 }
 
-function handleFileInstituteChange(e) {
-  const selectedFile = e.target.files[0]
-  if (selectedFile) {
-    fileInstitute.value = selectedFile
-    previewImageInstitute.value = URL.createObjectURL(selectedFile)
-  }
+function handleFileInstituteSelected(file) {
+  fileInstitute.value = file
+  previewImageInstitute.value = URL.createObjectURL(file)
 }
 
 function prepararNovoCadastro() {
@@ -125,15 +126,12 @@ async function handleCreateInstitute() {
   }
 }
 
-function handleFile(event) {
-  const file = event.target.files[0]
-  if (file) {
-    imageFile.value = file
-    if (imagePreview.value.startsWith('blob:')) {
-      URL.revokeObjectURL(imagePreview.value)
-    }
-    imagePreview.value = URL.createObjectURL(file)
+function handleFileSelected(file) {
+  imageFile.value = file
+  if (imagePreview.value.startsWith('blob:')) {
+    URL.revokeObjectURL(imagePreview.value)
   }
+  imagePreview.value = URL.createObjectURL(file)
 }
 
 // --- SALVAMENTO FINAL DO PERFIL ---
@@ -245,13 +243,12 @@ const handleSave = async () => {
     
     <div class="edit-header">
       <div class="image-upload-container">
-        <label for="file-input" class="image-label">
+        <button type="button" class="image-label" @click="showProfileSheet = true">
           <img :src="imagePreview" class="profile-image-edit" />
           <div class="upload-icon-main">
             <span class="mdi mdi-camera"></span>
           </div>
-        </label>
-        <input id="file-input" type="file" @change="handleFile" accept="image/*" hidden />
+        </button>
       </div>
       <p>Toque na foto para alterar</p>
     </div>
@@ -308,17 +305,10 @@ const handleSave = async () => {
         <div class="new-inst" v-if="newInstitute">
           <div class="form-interno">
             <div class="avatar-container">
-              <label for="avatar-input" class="avatar-label">
+              <button type="button" class="avatar-label" @click="showInstituteSheet = true">
                 <img :src="previewImageInstitute" alt="Logo" class="profile-pic-inst" />
                 <div class="upload-icon-inst"><i class="mdi mdi-camera"></i></div>
-              </label>
-              <input
-                id="avatar-input"
-                type="file"
-                accept="image/*"
-                @change="handleFileInstituteChange"
-                hidden
-              />
+              </button>
               <span class="logo-subtext">Logo do instituto</span>
             </div>
 
@@ -381,6 +371,19 @@ const handleSave = async () => {
       {{ loading ? 'Salvando...' : 'Salvar' }}
     </button>
     <appButton width="65%" @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
+
+    <imagesourcesheet
+      v-if="showProfileSheet"
+      facing-mode="user"
+      @select="handleFileSelected"
+      @close="showProfileSheet = false"
+    />
+    <imagesourcesheet
+      v-if="showInstituteSheet"
+      facing-mode="environment"
+      @select="handleFileInstituteSelected"
+      @close="showInstituteSheet = false"
+    />
   </div>
 </template>
 
@@ -425,6 +428,11 @@ const handleSave = async () => {
   display: block;
   width: 100%;
   height: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
 }
 .profile-image-edit {
   width: 100%;
@@ -580,6 +588,11 @@ const handleSave = async () => {
 .avatar-label {
   position: relative;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
 }
 .profile-pic-inst {
   width: 65px;

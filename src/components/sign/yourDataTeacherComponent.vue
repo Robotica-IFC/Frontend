@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import appArrow from '../appArrow.vue'
 import appInput from '../form/appInput.vue'
 import appButton from '../form/appButton.vue'
+import imagesourcesheet from '../imagesourcesheet.vue'
 import { useTemplateStore } from '@/store/template'
 import { useTeacherStore } from '@/store/teacherStore'
 import { useInstituteStore } from '@/store/instituteStore'
@@ -21,6 +22,7 @@ const passwordValue = ref('')
 const passwordValue2 = ref('')
 const previewImage = ref('/img/default2.jpg')
 const file = ref(null)
+const showImageSheet = ref(false)
 
 onMounted(async () => {
   await instituteStore.getInstitutes()
@@ -67,12 +69,9 @@ function selecionarInstituicao(inst) {
   mostrarDropdown.value = false
 }
 
-function handleFileChange(e) {
-  const selectedFile = e.target.files[0]
-  if (selectedFile) {
-    file.value = selectedFile
-    previewImage.value = URL.createObjectURL(selectedFile)
-  }
+function handleFileSelected(selectedFile) {
+  file.value = selectedFile
+  previewImage.value = URL.createObjectURL(selectedFile)
 }
 
 async function handleCreateInstitute() {
@@ -188,17 +187,10 @@ function validacao() {
           <div class="new-inst" v-if="newInstitute">
             <div class="form-interno">
               <div class="avatar-container">
-                <label for="avatar-input" class="avatar-label">
+                <button type="button" class="avatar-label" @click="showImageSheet = true">
                   <img :src="previewImage" alt="Logo" class="profile-pic" />
                   <div class="upload-icon"><i class="mdi mdi-camera"></i></div>
-                </label>
-                <input
-                  id="avatar-input"
-                  type="file"
-                  accept="image/*"
-                  @change="handleFileChange"
-                  hidden
-                />
+                </button>
                 <span>Logo do instituto</span>
               </div>
 
@@ -269,6 +261,13 @@ function validacao() {
       <appButton type="submit">Continuar</appButton>
     </form>
     <div class="bottom"></div>
+
+    <imagesourcesheet
+      v-if="showImageSheet"
+      facing-mode="environment"
+      @select="handleFileSelected"
+      @close="showImageSheet = false"
+    />
   </div>
 </template>
 
@@ -373,6 +372,11 @@ h2 {
 .avatar-label {
   position: relative;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
 }
 .profile-pic {
   width: 70px;
