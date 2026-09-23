@@ -10,11 +10,20 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  maxDimension: {
+    type: Number,
+    default: 1920,
+  },
+  quality: {
+    type: Number,
+    default: 0.85,
+  },
 })
 
 const emit = defineEmits(['select', 'close'])
 
 const isMobile = ref(false)
+const processing = ref(false)
 const fileWasSelected = ref(false)
 const cameraFrontInput = ref(null)
 const cameraBackInput = ref(null)
@@ -52,11 +61,51 @@ function openGalleryDesktop() {
   galleryInput.value.click()
 }
 
-function handleChange(event) {
-  const files = Array.from(event.target.files || [])
+async function loadBitmap(file) {
+  try {
+    return await createImageBitmap(file, { imageOrientation: 'from-image' })
+  } catch (error) {
+    return await createImageBitmap(file)
+  }
+}
+
+async function normalizeImage(file) {
+  try {
+    const bitmap = await loadBitmap(file)
+    const scale = Math.min(1, props.maxDimension / Math.max(bitmap.width, bitmap.height))
+    const width = Math.round(bitmap.width * scale)
+    const height = Math.round(bitmap.height * scale)
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(bitmap, 0, 0, width, height)
+    bitmap.close?.()
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', props.quality))
+    if (!blob) return file
+
+    const baseName = file.name ? file.name.replace(/\.[^.]+$/, '') : 'foto'
+    return new File([blob], `${baseName}.jpg`, { type: 'image/jpeg', lastModified: Date.now() })
+  } catch (error) {
+    console.error('Erro ao processar imagem:', error)
+    return file
+  }
+}
+
+async function handleChange(event) {
+  const rawFiles = Array.from(event.target.files || [])
   event.target.value = ''
-  if (files.length === 0) return
+  if (rawFiles.length === 0) return
+
   fileWasSelected.value = true
+  processing.value = true
+
+  const files = await Promise.all(rawFiles.map((rawFile) => normalizeImage(rawFile)))
+
+  processing.value = false
   emit('select', props.multiple ? files : files[0])
   emit('close')
 }
@@ -70,26 +119,33 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="isMobile" class="sheet-backdrop" @click.self="$emit('close')">
+  <div v-if="isMobile" class="sheet-backdrop" @click.self="!processing && $emit('close')">
     <div class="sheet-container">
-      <div class="sheet-handle"></div>
+      <div v-if="processing" class="sheet-processing">
+        <span class="mdi mdi-loading spin"></span>
+        <span>Preparando imagem...</span>
+      </div>
 
-      <button type="button" class="sheet-option" @click="openCameraFront">
-        <span class="mdi mdi-camera-account"></span>
-        <span>Tirar Selfie</span>
-      </button>
+      <template v-else>
+        <div class="sheet-handle"></div>
 
-      <button type="button" class="sheet-option" @click="openCameraBack">
-        <span class="mdi mdi-camera-outline"></span>
-        <span>Tirar Foto</span>
-      </button>
+        <button type="button" class="sheet-option" @click="openCameraFront">
+          <span class="mdi mdi-camera-account"></span>
+          <span>Tirar Selfie</span>
+        </button>
 
-      <button type="button" class="sheet-option" @click="openGallery">
-        <span class="mdi mdi-image-multiple-outline"></span>
-        <span>{{ multiple ? 'Escolher da Galeria' : 'Escolher Arquivo' }}</span>
-      </button>
+        <button type="button" class="sheet-option" @click="openCameraBack">
+          <span class="mdi mdi-camera-outline"></span>
+          <span>Tirar Foto</span>
+        </button>
 
-      <button type="button" class="sheet-cancel" @click="$emit('close')">Cancelar</button>
+        <button type="button" class="sheet-option" @click="openGallery">
+          <span class="mdi mdi-image-multiple-outline"></span>
+          <span>{{ multiple ? 'Escolher da Galeria' : 'Escolher Arquivo' }}</span>
+        </button>
+
+        <button type="button" class="sheet-cancel" @click="$emit('close')">Cancelar</button>
+      </template>
     </div>
   </div>
 
@@ -187,6 +243,26 @@ onMounted(() => {
   font-family: inherit;
 }
 
+.sheet-processing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--texto-claro, #141414);
+
+  & .mdi {
+    font-size: 1.3rem;
+    color: var(--principal-claro, #003d66);
+  }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
 .hidden-input {
   display: none;
 }
@@ -197,6 +273,12 @@ onMounted(() => {
   }
   to {
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
