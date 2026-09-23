@@ -4,6 +4,7 @@ import { useProjectStore } from '@/store/projectsStore.js'
 import { useTeamStore } from '@/store/teamStore'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
+import imagesourcesheet from '../imagesourcesheet.vue'
 
 const emit = defineEmits(['close', 'created'])
 const projectStore = useProjectStore()
@@ -13,6 +14,7 @@ const loading = ref(false)
 const errorMessage = ref('')
 const selectedFile = ref(null)
 const imagePreview = ref(null)
+const showImageSheet = ref(false)
 
 const props = defineProps({
   id: {
@@ -30,16 +32,12 @@ const form = reactive({
   equipe: props.id,
 })
 
-// Upload e Preview de Imagem
-function handleFileUpload(event) {
-  const file = event.target.files[0]
-  if (file) {
-    if (imagePreview.value) {
-      URL.revokeObjectURL(imagePreview.value)
-    }
-    selectedFile.value = file
-    imagePreview.value = URL.createObjectURL(file)
+function handleFileSelected(file) {
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
   }
+  selectedFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
 }
 
 function removeImage() {
@@ -119,7 +117,7 @@ async function handleSubmit() {
         <div class="form-group align-center">
           <label>Imagem do Projeto</label>
           <div class="image-upload-wrapper">
-            <label for="project-image-input" class="image-preview-container">
+            <button type="button" class="image-preview-container" @click="showImageSheet = true">
               <img
                 v-if="imagePreview"
                 :src="imagePreview"
@@ -130,14 +128,7 @@ async function handleSubmit() {
                 <i class="mdi mdi-camera-plus-outline"></i>
                 <span>Adicionar Foto</span>
               </div>
-            </label>
-            <input
-              id="project-image-input"
-              type="file"
-              accept="image/*"
-              class="hidden-file-input"
-              @change="handleFileUpload"
-            />
+            </button>
             <button
               v-if="imagePreview"
               type="button"
@@ -219,6 +210,12 @@ async function handleSubmit() {
         </div>
       </form>
     </div>
+
+    <imagesourcesheet
+      v-if="showImageSheet"
+      @select="handleFileSelected"
+      @close="showImageSheet = false"
+    />
   </div>
 </template>
 
@@ -345,6 +342,9 @@ async function handleSubmit() {
 .image-preview-container {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  font: inherit;
   border-radius: 50%;
   border: 2px dashed #cbd5e1;
   display: flex;
