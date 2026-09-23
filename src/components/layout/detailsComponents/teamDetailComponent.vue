@@ -143,7 +143,7 @@ async function goToStorage(id){
     </div>
     <div class="creates">
       <button
-        v-if="isTeacherInTeam"
+        v-if="isMemberOfTeam"
         class="createProject"
         @click="goToStorage(team.estoque_id)"
       >
