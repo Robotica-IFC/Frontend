@@ -23,12 +23,16 @@ const authStore = useAuthStore();
         <span class="mdi mdi-laptop"></span> Projetos
       </RouterLink>
 
-      <RouterLink to="/" class="nav-link">
+      <RouterLink to="/tutorials" class="nav-link">
         <span class="mdi mdi-play-box-multiple"></span> Tutoriais
       </RouterLink>
 
-      <RouterLink v-if="authStore.user.tipo == 'professor'" to="/" class="nav-link">
+      <RouterLink v-if="authStore.user.tipo == 'professor'" to="/teacher" class="nav-link">
         <span class="mdi mdi-account-tie"></span> Professor
+      </RouterLink>
+
+      <RouterLink to="/myTeams" class="nav-link">
+        <span class="mdi mdi-account-group-outline"></span> Meus times
       </RouterLink>
 
       <RouterLink to="/about-us" class="nav-link">

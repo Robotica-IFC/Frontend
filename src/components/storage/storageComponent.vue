@@ -66,6 +66,7 @@ onMounted(async () => {
     width: 30%;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
+    object-fit: cover;
   }
 
   & h2 {
