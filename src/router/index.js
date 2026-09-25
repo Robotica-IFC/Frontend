@@ -15,6 +15,9 @@ import projectsView from '@/views/projectsView.vue'
 import aboutUsView from '@/views/aboutUsView.vue'
 import projectDetailView from '@/views/projectDetailView.vue'
 import storageView from '@/views/storageView.vue'
+import myTeamsView from '@/views/myTeamsView.vue'
+import TutorialView from '@/views/tutorialView.vue'
+import TeacherView from '@/views/teacherView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -97,7 +100,24 @@ const router = createRouter({
       name: 'storage',
       component: storageView,
       props: true
-    }
+    },
+    {
+      path: '/myTeams',
+      name: 'myTeams',
+      component: myTeamsView,
+    },
+    {
+      path: '/tutorials',
+      name: 'tutorials',
+      component: TutorialView,
+      meta: { hideHeader: true }
+    },
+    {
+      path: '/teacher',
+      name: 'teacher',
+      component: TeacherView,
+      meta: { hideHeader: true }
+    },
   ]
 })
 
