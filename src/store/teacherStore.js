@@ -5,6 +5,7 @@ import router from '@/router'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
+import { useTemplateStore } from './template'
 
 export const useTeacherStore = defineStore('teacher', () => {
   const state = reactive({
@@ -32,6 +33,7 @@ export const useTeacherStore = defineStore('teacher', () => {
   const actualTeacher = computed(() => state.actualTeacher)
   const authStore = useAuthStore()
   const teamStore = useTeamStore()
+  const templateStore = useTemplateStore()
 
   async function getTeachers() {
     try {
@@ -134,6 +136,8 @@ export const useTeacherStore = defineStore('teacher', () => {
         email_verificado: true,
         imagem_perfil: '',
       })
+      templateStore.sign = 0
+    
     } catch (error) {
       console.error('Falha no processo de criação:', error)
       const backendError = error.response?.data

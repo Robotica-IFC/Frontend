@@ -102,7 +102,7 @@ function validacao() {
   }
   teacherStore.teacher.password = passwordValue.value
   templateStore.teacherOrStudent = true
-  templateStore.sign = 5
+  templateStore.sign = 6
 }
 </script>
 
