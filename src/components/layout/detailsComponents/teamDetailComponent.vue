@@ -10,6 +10,7 @@ import router from '@/router'
 import AppButton from '@/components/form/appButton.vue'
 import { useAuthStore } from '@/store/authStore'
 import { useStorageStore } from '@/store/storageStore'
+import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
@@ -90,6 +91,7 @@ async function goToStorage(id){
     <div class="top">
       <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent v-if="!isMemberOfTeam"></requestToParticipateComponent>
+      <exitTeamComponent v-if="isMemberOfTeam" :teamId="props.id"></exitTeamComponent>
     </div>
 
     <div class="info">

@@ -24,6 +24,9 @@ const teamApi = {
   },
   postView(id) {
     return api.post(`equipes/${id}/visualizar/`)
+  },
+  exitTeam(id) {
+    return api.post(`equipes/${id}/sair/`)
   }
 }
 
