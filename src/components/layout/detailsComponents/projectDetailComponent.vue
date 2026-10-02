@@ -76,7 +76,7 @@ onMounted(async () => {
       </appButton>
     </div>
 
-    <ul class="posts">
+    <ul class="posts"> // Transformar em componente de post, para reaproveitar em outros lugares
       <li v-for="p in reversedPosts" :key="p.id">
         <div class="post-header">
           <div class="post-header-left">

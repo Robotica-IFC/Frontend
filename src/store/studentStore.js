@@ -5,6 +5,7 @@ import { computed, reactive, ref } from 'vue'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
+import { useTemplateStore } from './template'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
@@ -33,6 +34,7 @@ export const useStudentStore = defineStore('student', () => {
 
   const authStore = useAuthStore()
   const teamStore = useTeamStore()
+  const templateStore = useTemplateStore()
 
   async function getStudents() {
     try {
@@ -112,6 +114,8 @@ export const useStudentStore = defineStore('student', () => {
         descricao: '',
         imagem_perfil: null,
       })
+
+      templateStore.sign = 0
     } catch (error) {
       console.error('Falha no processo de criação:', error)
       const backendError = error.response?.data

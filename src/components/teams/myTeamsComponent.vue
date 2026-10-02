@@ -98,6 +98,9 @@ function goToTeam(id) {
       </li>
     </ul>
   </div>
+  <p v-else-if="teamsUser" class="empty-teams">
+    Você ainda não participa de nenhuma equipe.
+  </p>
 </template>
 
 <style scoped>
@@ -149,6 +152,16 @@ div.static {
 
 .teams {
   padding: 0 15px;
+}
+
+.empty-teams {
+  margin: 0 15px;
+  padding: 20px 16px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  color: #555;
+  font-size: 14px;
+  text-align: center;
 }
 
 .t {
