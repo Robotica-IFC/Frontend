@@ -154,6 +154,16 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
+  async function exitTeam(id) {
+    try {
+      const response = await teamApi.exitTeam(id)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao sair da equipe:', error)
+      throw error
+    }
+  }
+
   return {
     teams,
     loading,
@@ -170,5 +180,6 @@ export const useTeamStore = defineStore('team', () => {
     getProjects,
     createCategory,
     incrementView,
+    exitTeam,
   }
 })
