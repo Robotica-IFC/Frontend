@@ -329,7 +329,7 @@ ul.students {
   }
 
   div.info div.principal-info img {
-    width:x;
+    width: 15%;
     flex-shrink: 0;
   }
 
@@ -341,7 +341,6 @@ ul.students {
     font-size: 16px;
     margin-top: 8px;
   }
- 140p
   div.info p.bio {
     max-width: none;
     margin-top: 15px;
