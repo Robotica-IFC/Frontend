@@ -1,13 +1,13 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/store/authStore'
 import { useStudentStore } from '@/store/studentStore'
 import { useTeacherStore } from '@/store/teacherStore'
-import { useInstituteStore } from '@/store/instituteStore' // 🟢 Adicionado
+import { useInstituteStore } from '@/store/instituteStore'
 import appArrow from '@/components/appArrow.vue'
 import appButton from '@/components/form/appButton.vue'
-import appInput from '@/components/form/appInput.vue' // 🟢 Adicionado para o form interno
+import appInput from '@/components/form/appInput.vue'
 import imagesourcesheet from '@/components/imagesourcesheet.vue'
 import { useTemplateStore } from '@/store/template'
 import api from '@/api/config'
@@ -16,7 +16,7 @@ import imageApi from '@/api/imageApi'
 const authStore = useAuthStore()
 const studentStore = useStudentStore()
 const teacherStore = useTeacherStore()
-const instituteStore = useInstituteStore() // 🟢 Adicionado
+const instituteStore = useInstituteStore()
 
 const { user } = storeToRefs(authStore)
 const loading = ref(false)
@@ -42,16 +42,31 @@ const formData = ref({
 
 const imagePreview = ref(user.value?.imagem_perfil || '')
 
+// Fecha a edição e volta para o perfil (usado pelo X, clique fora e Esc)
+function closeEdit() {
+  useTemplateStore().panel = true
+}
+
+function handleKeydown(e) {
+  if (e.key === 'Escape') closeEdit()
+}
+
 onMounted(async () => {
+  window.addEventListener('keydown', handleKeydown)
+
   // Carrega a lista global de institutos ao abrir a edição
   await instituteStore.getInstitutes()
-  
+
   // Inicializa o texto de busca caso o professor já tenha uma instituição vinculada
   if (user.value?.tipo === 'professor' && user.value?.instituicao) {
     buscaInstituicao.value = typeof user.value.instituicao === 'object'
       ? user.value.instituicao.nome
       : user.value.instituicao
   }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 
 // --- LÓGICA DE BUSCA E FILTRO DE INSTITUTOS ---
@@ -163,14 +178,14 @@ const handleSave = async () => {
     if (imageFile.value) {
       try {
         const imageFormData = new FormData();
-        imageFormData.append('file', imageFile.value); 
+        imageFormData.append('file', imageFile.value);
 
         const imageResponse = await imageApi.uploadImage(imageFormData);
         uploadedImageKey = imageResponse.data?.id || imageResponse.data?.attachment_key;
         backendImageUrl = imageResponse.data?.url || imageResponse.data?.image || imageResponse.data?.file;
-        
+
         if (uploadedImageKey) {
-          profilePayload.imagem_perfil = uploadedImageKey; 
+          profilePayload.imagem_perfil = uploadedImageKey;
         }
       } catch (imgError) {
         console.error("Erro no upload da imagem:", imgError);
@@ -236,159 +251,176 @@ const handleSave = async () => {
 </script>
 
 <template>
-  <div class="page">
-    <div class="top">
-      <appArrow @back="useTemplateStore().panel = true"></appArrow>
-    </div>
-    
-    <div class="edit-header">
-      <div class="image-upload-container">
-        <button type="button" class="image-label" @click="showProfileSheet = true">
-          <img :src="imagePreview" class="profile-image-edit" />
-          <div class="upload-icon-main">
-            <span class="mdi mdi-camera"></span>
-          </div>
-        </button>
-      </div>
-      <p>Toque na foto para alterar</p>
-    </div>
+  <div class="modal-backdrop" @click.self="closeEdit()">
+    <div class="page">
+      <!-- X de fechar: aparece só no desktop -->
+      <button type="button" class="close-btn" @click="closeEdit()">&times;</button>
 
-    <form class="edit-form" @submit.prevent>
-      <div class="input-group">
-        <label>Nome Completo</label>
-        <input v-model="formData.name" type="text" placeholder="Seu nome" />
+      <div class="top">
+        <appArrow @back="useTemplateStore().panel = true"></appArrow>
       </div>
 
-      <div class="input-group">
-        <label>Username</label>
-        <input v-model="formData.username" type="text" placeholder="@usuario" />
-      </div>
-
-      <div class="input-group">
-        <label>Telefone</label>
-        <input v-model="formData.telefone" type="text" placeholder="Apenas números" />
-      </div>
-
-      <div v-if="user?.tipo === 'professor'" class="input-group inst-container">
-        <label>Instituição</label>
-        <div class="search-box">
-          <input
-            v-model="buscaInstituicao"
-            type="text"
-            placeholder="Pesquisar Instituto / Escola"
-            @focus="mostrarDropdown = true"
-            @input="handleSearchInput"
-          />
-
-          <ul v-if="mostrarDropdown && institutosFiltrados.length > 0" class="custom-dropdown">
-            <li
-              v-for="inst in institutosFiltrados"
-              :key="inst.id"
-              @click="selecionarInstituicao(inst)"
-            >
-              <span class="mdi mdi-school-outline"></span>
-              <div class="inst-info">
-                <span class="inst-name">{{ inst.nome }}</span>
-                <span class="inst-loc">{{ inst.cidade }} - {{ inst.estado }}</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <div v-if="mostrarBotaoNovo" class="not-found-box">
-          <p>Não encontrou sua escola?</p>
-          <button type="button" @click="prepararNovoCadastro" class="btn-novo">
-            + Cadastrar Nova
+      <div class="edit-header">
+        <div class="image-upload-container">
+          <button type="button" class="image-label" @click="showProfileSheet = true">
+            <img v-if="imagePreview" :src="imagePreview" class="profile-image-edit" />
+            <div v-else class="profile-image-edit placeholder">
+              <span class="mdi mdi-account-circle"></span>
+            </div>
+            <div class="upload-icon-main">
+              <span class="mdi mdi-camera"></span>
+            </div>
           </button>
         </div>
+        <p>Toque na foto para alterar</p>
+      </div>
 
-        <div class="new-inst" v-if="newInstitute">
-          <div class="form-interno">
-            <div class="avatar-container">
-              <button type="button" class="avatar-label" @click="showInstituteSheet = true">
-                <img :src="previewImageInstitute" alt="Logo" class="profile-pic-inst" />
-                <div class="upload-icon-inst"><i class="mdi mdi-camera"></i></div>
-              </button>
-              <span class="logo-subtext">Logo do instituto</span>
-            </div>
-
-            <div class="sub-input-group">
-              <appInput
-                placeholder="Nome do instituto"
-                icon="mdi mdi-town-hall"
-                v-model="instituteStore.state.institute.nome"
-              />
-            </div>
-            <div class="sub-input-group">
-              <appInput
-                placeholder="Sigla (Ex: USP)"
-                icon="mdi mdi-label-outline"
-                v-model="instituteStore.state.institute.sigla"
-              />
-            </div>
-
-            <div class="input-row">
-              <label><span class="mdi mdi-map-marker-radius"></span></label>
-              <select v-model="instituteStore.state.institute.estado" class="app-select">
-                <option value="" disabled selected>Estado</option>
-                <option
-                  v-for="estado in instituteStore.state.estadosBrasil"
-                  :key="estado"
-                  :value="estado"
-                >
-                  {{ estado }}
-                </option>
-              </select>
-            </div>
-
-            <div class="sub-input-group">
-              <appInput
-                placeholder="Cidade"
-                icon="mdi mdi-city"
-                v-model="instituteStore.state.institute.cidade"
-              />
-            </div>
-            <appButton type="button" @click="handleCreateInstitute">Salvar e selecionar</appButton>
-          </div>
+      <form class="edit-form" @submit.prevent>
+        <div class="input-group">
+          <label>Nome Completo</label>
+          <input v-model="formData.name" type="text" placeholder="Seu nome" />
         </div>
 
-        <p v-if="instituicaoExata && !newInstitute" class="selected-msg">
-          <i class="mdi mdi-check-circle"></i> Instituição vinculada
-        </p>
-      </div>
+        <div class="input-group">
+          <label>Username</label>
+          <input v-model="formData.username" type="text" placeholder="@usuario" />
+        </div>
 
-      <div class="input-group">
-        <label>Descrição (Bio)</label>
-        <textarea
-          v-model="formData.descricao"
-          rows="4"
-          placeholder="Conte um pouco sobre você..."
-        ></textarea>
-      </div>
-    </form>
+        <div class="input-group">
+          <label>Telefone</label>
+          <input v-model="formData.telefone" type="text" placeholder="Apenas números" />
+        </div>
 
-    <button class="save-btn" @click="handleSave" :disabled="loading">
-      {{ loading ? 'Salvando...' : 'Salvar' }}
-    </button>
-    <appButton width="65%" @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
+        <div v-if="user?.tipo === 'professor'" class="input-group inst-container">
+          <label>Instituição</label>
+          <div class="search-box">
+            <input
+              v-model="buscaInstituicao"
+              type="text"
+              placeholder="Pesquisar Instituto / Escola"
+              @focus="mostrarDropdown = true"
+              @input="handleSearchInput"
+            />
 
-    <imagesourcesheet
-      v-if="showProfileSheet"
-      facing-mode="user"
-      @select="handleFileSelected"
-      @close="showProfileSheet = false"
-    />
-    <imagesourcesheet
-      v-if="showInstituteSheet"
-      facing-mode="environment"
-      @select="handleFileInstituteSelected"
-      @close="showInstituteSheet = false"
-    />
+            <ul v-if="mostrarDropdown && institutosFiltrados.length > 0" class="custom-dropdown">
+              <li
+                v-for="inst in institutosFiltrados"
+                :key="inst.id"
+                @click="selecionarInstituicao(inst)"
+              >
+                <span class="mdi mdi-school-outline"></span>
+                <div class="inst-info">
+                  <span class="inst-name">{{ inst.nome }}</span>
+                  <span class="inst-loc">{{ inst.cidade }} - {{ inst.estado }}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div v-if="mostrarBotaoNovo" class="not-found-box">
+            <p>Não encontrou sua escola?</p>
+            <button type="button" @click="prepararNovoCadastro" class="btn-novo">
+              + Cadastrar Nova
+            </button>
+          </div>
+
+          <div class="new-inst" v-if="newInstitute">
+            <div class="form-interno">
+              <div class="avatar-container">
+                <button type="button" class="avatar-label" @click="showInstituteSheet = true">
+                  <img :src="previewImageInstitute" alt="Logo" class="profile-pic-inst" />
+                  <div class="upload-icon-inst"><i class="mdi mdi-camera"></i></div>
+                </button>
+                <span class="logo-subtext">Logo do instituto</span>
+              </div>
+
+              <div class="sub-input-group">
+                <appInput
+                  placeholder="Nome do instituto"
+                  icon="mdi mdi-town-hall"
+                  v-model="instituteStore.state.institute.nome"
+                />
+              </div>
+              <div class="sub-input-group">
+                <appInput
+                  placeholder="Sigla (Ex: USP)"
+                  icon="mdi mdi-label-outline"
+                  v-model="instituteStore.state.institute.sigla"
+                />
+              </div>
+
+              <div class="input-row">
+                <label><span class="mdi mdi-map-marker-radius"></span></label>
+                <select v-model="instituteStore.state.institute.estado" class="app-select">
+                  <option value="" disabled selected>Estado</option>
+                  <option
+                    v-for="estado in instituteStore.state.estadosBrasil"
+                    :key="estado"
+                    :value="estado"
+                  >
+                    {{ estado }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="sub-input-group">
+                <appInput
+                  placeholder="Cidade"
+                  icon="mdi mdi-city"
+                  v-model="instituteStore.state.institute.cidade"
+                />
+              </div>
+              <appButton type="button" @click="handleCreateInstitute">Salvar e selecionar</appButton>
+            </div>
+          </div>
+
+          <p v-if="instituicaoExata && !newInstitute" class="selected-msg">
+            <i class="mdi mdi-check-circle"></i> Instituição vinculada
+          </p>
+        </div>
+
+        <div class="input-group">
+          <label>Descrição (Bio)</label>
+          <textarea
+            v-model="formData.descricao"
+            rows="4"
+            placeholder="Conte um pouco sobre você..."
+          ></textarea>
+        </div>
+      </form>
+
+      <button class="save-btn" @click="handleSave" :disabled="loading">
+        {{ loading ? 'Salvando...' : 'Salvar' }}
+      </button>
+      <appButton width="65%" @click="useTemplateStore().panel = true" variant="danger">Cancelar</appButton>
+
+      <imagesourcesheet
+        v-if="showProfileSheet"
+        facing-mode="user"
+        @select="handleFileSelected"
+        @close="showProfileSheet = false"
+      />
+      <imagesourcesheet
+        v-if="showInstituteSheet"
+        facing-mode="environment"
+        @select="handleFileInstituteSelected"
+        @close="showInstituteSheet = false"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* Mantendo seus estilos originais intactos */
+/* no mobile o backdrop não interfere no layout */
+.modal-backdrop {
+  display: contents;
+}
+
+/* o X só aparece no desktop */
+.close-btn {
+  display: none;
+}
+
 .top {
   display: flex;
   justify-content: space-between;
@@ -442,6 +474,14 @@ const handleSave = async () => {
   border: 2px solid #ddd;
   transition: opacity 0.2s;
 }
+.profile-image-edit.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--destaque-claro);
+  color: white;
+  font-size: 60px;
+}
 .image-upload-container:hover .profile-image-edit {
   opacity: 0.8;
 }
@@ -486,7 +526,7 @@ const handleSave = async () => {
   resize: none;
 }
 
-/* 🟢 ESTILOS INJETADOS DA BUSCA E DO MINI-FORM DE INSTITUTOS */
+/* ESTILOS DA BUSCA E DO MINI-FORM DE INSTITUTOS */
 .inst-container {
   position: relative;
 }
@@ -650,5 +690,83 @@ const handleSave = async () => {
   text-align: center;
   margin-top: 5px;
   font-weight: bold;
+}
+
+/* ========== DESKTOP: vira modal ========== */
+@media (min-width: 950px) {
+  .modal-backdrop {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+
+  .page {
+    position: relative;
+    width: 90%;
+    max-width: 640px;
+    max-height: 92vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 32px;
+    gap: 22px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  /* troca a seta de voltar pelo X */
+  .top {
+    display: none;
+  }
+
+  .close-btn {
+    display: block;
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #334155;
+  }
+
+  .close-btn:hover {
+    color: var(--principal-claro);
+  }
+
+  .image-upload-container {
+    width: 130px;
+    height: 130px;
+  }
+
+  /* formulário em 2 colunas */
+  .edit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* instituição (com o mini-formulário) e bio ocupam a linha toda */
+  .inst-container,
+  .input-group:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .input-group textarea {
+    min-height: 110px;
+  }
+
+  .save-btn {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
 }
 </style>

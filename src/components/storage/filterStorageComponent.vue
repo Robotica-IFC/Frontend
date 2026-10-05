@@ -386,4 +386,92 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   margin-top: 8px;
   margin-bottom: 16px;
 }
+
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  .storage-wrapper {
+    width: 80%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 40px 60px;
+    gap: 15px;
+  }
+
+  .top-storage {
+    gap: 12px;
+  }
+
+  .title h2 {
+    font-size: 1.8rem;
+  }
+
+  .circle {
+    width: 32px;
+    font-size: 16px;
+  }
+
+  .top-storage p {
+    font-size: 1rem;
+  }
+
+  .search-row {
+    gap: 14px;
+  }
+
+  .search-box {
+    padding: 12px 18px;
+  }
+
+  .search-box input {
+    font-size: 1rem;
+  }
+
+  .filter-toggle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .btn-add {
+    padding: 12px 22px;
+    font-size: 0.95rem;
+  }
+
+  .category-header {
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .category-title h3 {
+    font-size: 1.25rem;
+  }
+
+  .category-title span.mdi {
+    font-size: 1.4rem;
+  }
+
+  .circle.small {
+    width: 24px;
+    font-size: 13px;
+  }
+
+  /* itens em grade de 2 colunas */
+  .category-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+/* telas grandes: 3 colunas */
+@media (min-width: 1300px) {
+  .storage-wrapper {
+    max-width: 1300px;
+  }
+
+  .category-items {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 </style>

@@ -84,6 +84,8 @@ async function goToStorage(id){
     router.push({name: 'storage', params: {id}})
   }
 }
+
+
 </script>
 
 <template>
@@ -96,7 +98,15 @@ async function goToStorage(id){
 
     <div class="info">
       <div class="principal-info">
-        <img :src="team.image_perfil?.file" alt="" class="logo-team" />
+       <div class="logo-team">
+  <img
+    v-if="team.image_perfil?.file"
+    :src="team.image_perfil.file"
+    alt="Logo da equipe"
+  />
+
+  <span v-else class="mdi mdi-account-group"></span>
+</div>
         <div class="principal-text">
           <h1>
             {{ team.nome }}
@@ -143,7 +153,7 @@ async function goToStorage(id){
         </ul>
       </div>
     </div>
-    <div class="creates">
+    <div class="creates" style="margin-top: 20px">
       <button
         v-if="isMemberOfTeam"
         class="createProject"
@@ -310,11 +320,37 @@ ul.students {
     }
   }
 }
+.logo-team {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--destaque-claro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.logo-team img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+.logo-team .mdi {
+  font-size: 32px;
+  color: white;
+}
+.creates{
+  margin-top: 700px;
+}
 @media (min-width: 950px) {
   div.page {
     max-width: none;
     width: 100vw;
-    padding: 80px 5%;
+    padding: 80px 12%;
     box-sizing: border-box;
   }
 
@@ -441,4 +477,13 @@ ul.students {
   display: flex;
   gap: 10px;
 }
+ .logo-team {
+    width: 150px;
+    height: 150px;
+  }
+
+  .logo-team .mdi {
+    font-size: 42px;
+  }
+
 </style>

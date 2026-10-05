@@ -65,18 +65,22 @@ const visiblePages = computed(() => {
 <template >
 <nav class="pagination" v-if="totalPages > 1">
 
-  <div class="go-to">
+<div class="go-to">
+
+  <div class="page-input-wrapper">
     <appInput
       v-model="pageInput"
       type="number"
       variant="terciary"
       placeholder="1"
     />
-
-    <button class="go-btn" @click="goToPage">
-      Ir
-    </button>
   </div>
+
+  <button class="go-btn" @click="goToPage">
+    Ir
+  </button>
+
+</div>
 
   <div class="pages">
 
@@ -172,6 +176,8 @@ const visiblePages = computed(() => {
 .go-to {
   display: flex;
   align-items: center;
+  justify-content: center;
+
   gap: 12px;
 
   background: var(--fundo-claro);
@@ -185,16 +191,33 @@ const visiblePages = computed(() => {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
+.page-input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+
+  transform: translateY(-7px);
+}
+
 .go-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 40px;
+  min-width: 48px;
+
+  margin: 0 !important;
+  padding: 0 16px !important;
+
   border-radius: 10px !important;
 
-  padding: 10px 16px !important;
-
   background-color: var(--principal-claro) !important;
-
   color: white !important;
 
   font-weight: 600;
+  line-height: 1;
 }
 
 .go-btn:hover {

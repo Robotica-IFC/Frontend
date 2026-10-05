@@ -30,7 +30,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="top" style="margin-top: 50px">
+  <div class="top" style="margin-top: 100px">
     <div class="inicio">
       <div class="text">
         <h1>Equipes</h1>
@@ -69,6 +69,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.top{
+  margin-top: 1000px;
+}
 .desktop {
   display: none;
 }
@@ -82,6 +85,7 @@ onMounted(() => {
   color: var(--principal-claro);
   font-size: 25px;
 }
+
 .text p {
   font-weight: 400;
   font-size: 15px;
@@ -97,9 +101,11 @@ onMounted(() => {
   padding: 5px 15px;
   margin-left: 1px;
 }
+
 .equipes .texto-equipe {
   font-size: 13px;
 }
+
 .equipes .numero {
   font-size: 20px;
   font-weight: 600;
@@ -109,12 +115,14 @@ img {
   display: none;
 }
 
+.mobile {
+  width: 35%;
+}
+
 @media (min-width: 950px) {
   .top {
-    width: 100%;
-    max-width: none;
-    box-sizing: border-box;
-
+    width: 80%;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -125,7 +133,6 @@ img {
     flex-direction: column;
     align-items: flex-start;
     gap: 30px;
-
     flex: 1;
     min-width: 0;
   }
@@ -134,7 +141,7 @@ img {
     display: block;
     width: 35%;
     max-width: 500px;
-    margin-left: 100px;
+    margin-left: 60px;
   }
 
   .text {
@@ -161,11 +168,14 @@ img {
     font-size: 1.1rem;
     margin-left: 8px;
   }
+
   .mobile {
     display: none;
   }
+
   .desktop {
     display: block;
+    width: 30%;
   }
 }
 </style>

@@ -65,23 +65,54 @@
   transform: translateY(-6px);
 }
 
-@media (max-width: 900px) {
+@media (min-width: 950px) {
   .tudo {
-    flex-direction: column;
-    text-align: center;
-    gap: 30px;
+    position: relative;
+    width: 85%;
+    max-width: 1700px;
+    margin: 50px auto;
+    padding: 25px 0 50px;
+    gap: 50px;
+    border-bottom: none;
   }
 
-  .left p {
-    margin: auto;
+
+  .tudo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    height: 1px;
+    background: #2b2b2b;
+  }
+
+  .left {
+    flex: 1;
   }
 
   .left h1 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    line-height: 1.2;
+    margin-bottom: 32px;
+  }
+
+  .left p {
+    font-size: 1.25rem;
+    font-weight: 300;
+    line-height: 1.25;
+    color: #1f1f1f;
+    max-width: 570px;
+  }
+
+  .right {
+    flex: 0 0 340px;
+    justify-content: center;
   }
 
   .right img {
-    max-width: 320px;
+    max-width: 295px;
   }
 }
 </style>

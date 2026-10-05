@@ -63,8 +63,11 @@ onMounted(async () => {
 
 <template v-if="actualProject">
   <div class="page" v-if="actualProject">
-    <appArrow style="margin-top: 20px;" @click="router.back()"></appArrow>
+
     <div class="top">
+
+    <appArrow style="margin-top: 60px;" @click="router.back()"></appArrow>
+
       <h1>{{ actualProject.titulo }}</h1>
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team">Ver Participantes</appButton>
@@ -76,7 +79,7 @@ onMounted(async () => {
       </appButton>
     </div>
 
-    <ul class="posts"> // Transformar em componente de post, para reaproveitar em outros lugares
+    <ul class="posts">
       <li v-for="p in reversedPosts" :key="p.id">
         <div class="post-header">
           <div class="post-header-left">
@@ -92,7 +95,7 @@ onMounted(async () => {
 
         <p class="legenda">{{ p.legenda }}</p>
 
-        <div class="post-image" v-if="p.images && p.images.length === 1"> 
+        <div class="post-image" v-if="p.images && p.images.length === 1">
           <img :src="p.images[0].url" alt="Imagem do post">
         </div>
 
@@ -161,9 +164,11 @@ ul.posts {
   justify-content: center;
   list-style: none;
 
+
   & li {
     padding-top: 10px;
     padding-bottom: 20px;
+      margin-bottom: 20px;
     border-bottom: 1px solid var(--principal-claro);
 
     &:first-child {
@@ -218,7 +223,7 @@ ul.posts {
 
     & div.post-image {
       width: 100%;
-      
+
       & img {
         width: 100%;
         object-fit: cover;
@@ -239,7 +244,7 @@ ul.posts {
         scroll-behavior: smooth;
         border-radius: 8px;
         box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.205);
-        scrollbar-width: none; 
+        scrollbar-width: none;
         &::-webkit-scrollbar {
           display: none;
         }
@@ -287,6 +292,113 @@ ul.posts {
         }
       }
     }
+  }
+}
+
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  /* coluna central, com largura confortável para leitura */
+  .page {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 40px 40px;
+  }
+
+  div.top {
+    width: 80%;
+    margin: 20px auto;
+    gap: 24px;
+    padding-bottom: 30px;
+  }
+  .action-bar{
+    width: 90%;
+  }
+  div.top h1 {
+    font-size: 2.2rem;
+  }
+
+  div.top p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  div.top .see-team {
+    width: auto;
+    min-width: 200px;
+    align-self: center;
+  }
+
+  .action-bar {
+    margin-top: 25px;
+  }
+
+  ul.posts {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 30px;
+    gap: 30px;
+  }
+
+  /* cada post vira um card */
+  ul.posts li {
+    padding: 24px;
+    background: #fff;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.18);
+  }
+
+  ul.posts li:first-child {
+    padding-top: 24px;
+  }
+
+  ul.posts li:last-child {
+    padding-bottom: 24px;
+  }
+
+  ul.posts li div.post-header div.post-header-left {
+    width: auto;
+    gap: 14px;
+  }
+
+  /* avatar com tamanho fixo (antes era 30% do pai) */
+  ul.posts li div.post-header img {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+  }
+
+  ul.posts li div.post-header .team-name {
+    font-size: 1.05rem;
+  }
+
+  ul.posts li div.post-header h3 {
+    font-size: 0.8rem;
+  }
+
+  ul.posts li div.post-header p {
+    font-size: 0.85rem;
+  }
+
+  ul.posts li p.legenda {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 18px 0;
+  }
+
+  ul.posts li div.post-image img {
+    max-height: 520px;
+  }
+
+  ul.posts li .carousel-wrapper .carousel-container .carousel-item img {
+    aspect-ratio: 16 / 9;
+  }
+
+  ul.posts li .carousel-wrapper .nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
   }
 }
 </style>

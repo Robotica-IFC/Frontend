@@ -28,9 +28,6 @@ function goToTeam(id) {
 </script>
 
 <template>
-  <div class="top">
-    <appArrow @back="router.back()"></appArrow>
-  </div>
 
   <div class="static">
     <div class="left">
