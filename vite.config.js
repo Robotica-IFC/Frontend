@@ -10,8 +10,8 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      workbox:{
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         cleanupOutdatedCaches: true,
         sourcemap: false,
       },
