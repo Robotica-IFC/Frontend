@@ -21,6 +21,16 @@ import TeacherView from '@/views/teacherView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+ scrollBehavior(to, from, savedPosition) {
+  // Quando usa o botão Voltar/Avançar do navegador ou router.back()
+  if (savedPosition) {
+    return savedPosition
+  }
+
+  // Qualquer navegação normal entre páginas começa no topo
+  return { top: 0 }
+},
+
   routes: [
     {
       path: '/',
@@ -139,5 +149,7 @@ router.beforeEach((to, from, next) => {
     // 3. Permite a navegação normalmente
     next()
   }
+
+
 })
 export default router

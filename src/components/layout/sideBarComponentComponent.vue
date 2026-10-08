@@ -10,6 +10,9 @@ const authStore = useAuthStore();
 
 <template>
   <aside class="sidebar">
+    <!-- X de fechar: aparece só no desktop -->
+    <button type="button" class="close-x" @click="templateStore.sidebar = false">&times;</button>
+
     <nav class="sidebar-nav">
       <RouterLink to="/home-page" class="nav-link">
         <span class="mdi mdi-home-variant"></span> Página inicial
@@ -27,7 +30,7 @@ const authStore = useAuthStore();
         <span class="mdi mdi-play-box-multiple"></span> Tutoriais
       </RouterLink>
 
-      <RouterLink v-if="authStore.user.tipo == 'professor'" to="/teacher" class="nav-link">
+      <RouterLink v-if="authStore.user?.tipo == 'professor'" to="/teacher" class="nav-link">
         <span class="mdi mdi-account-tie"></span> Professor
       </RouterLink>
 
@@ -91,6 +94,11 @@ const authStore = useAuthStore();
   font-size: 24px;
   color: #1e3a8a;
   cursor: pointer;
+}
+
+/* o X só aparece no desktop */
+.close-x {
+  display: none;
 }
 
 .sidebar-nav {
@@ -185,5 +193,86 @@ const authStore = useAuthStore();
 
 .toggle-checkbox:checked + .toggle-label::after {
   transform: translateX(20px);
+}
+
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  .sidebar {
+    left: auto;
+    right: 0;
+    width: 290px;
+    padding-top: 0;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .close-x {
+    display: block;
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .sidebar-nav {
+    padding: 60px 20px 0;
+    gap: 6px;
+  }
+
+  .nav-link {
+    gap: 14px;
+    padding: 8px 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--botao-claro, #2761aa);
+  }
+
+  .nav-link:hover {
+    background-color: #f1f5f9;
+  }
+
+  /* ícone branco dentro do círculo azul */
+  .nav-link span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--botao-claro, #2761aa);
+    color: #ffffff;
+    font-size: 19px;
+  }
+
+  .nav-link.router-link-exact-active {
+    background-color: #dbeafe;
+    color: var(--botao-claro, #2761aa);
+  }
+
+  .nav-link.router-link-exact-active span {
+    color: #ffffff;
+  }
+
+  .sidebar-footer {
+    padding: 18px 20px 24px;
+  }
+
+  .dark-mode-toggle {
+    gap: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--botao-claro, #2761aa);
+  }
+
+  /* o X já fecha, então o botão "Fechar" sai */
+  .close-side {
+    display: none;
+  }
 }
 </style>

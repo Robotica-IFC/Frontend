@@ -582,4 +582,28 @@ async function handleSubmit() {
   border-radius: 6px;
   cursor: pointer;
 }
+
+@media (min-width: 950px) {
+  .modal-container {
+    max-width: 680px;
+  }
+
+  .modal-header {
+    padding: 20px 32px;
+  }
+
+  .modal-body {
+    padding: 32px;
+    gap: 20px;
+  }
+
+  .image-upload-wrapper {
+    width: 130px;
+    height: 130px;
+  }
+
+  .form-group textarea {
+    font-size: 1rem;
+  }
+}
 </style>

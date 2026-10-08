@@ -9,16 +9,26 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  <div 
-    v-if="templateStore.sidebar" 
-    class="sidebar-overlay" 
+  <div
+    v-if="templateStore.sidebar"
+    class="sidebar-overlay"
     @click="templateStore.sidebar = false"
   ></div>
 
   <header>
     <ul>
-      <li><span class="mdi mdi-menu" @click="templateStore.sidebar = !templateStore.sidebar"></span></li>
-      <li @click="router.push('/home-page')"><img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo" /></li>
+      <li>
+        <span
+          class="mdi mdi-menu"
+          @click="templateStore.sidebar = !templateStore.sidebar"
+        ></span>
+      </li>
+      <li @click="router.push('/home-page')">
+        <picture>
+          <source media="(min-width: 950px)" srcset="/img/logo/Logo-preta.png" />
+          <img class="logo" src="/img/logo/logo-sem-fundo.png" alt="Logo" />
+        </picture>
+      </li>
       <li>
         <img
           @click="router.push('/edit')"
@@ -91,6 +101,7 @@ li:last-child {
   border: 1px solid black;
   object-fit: cover;
 }
+
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -99,5 +110,49 @@ li:last-child {
   height: 100dvh;
   background-color: rgba(0, 0, 0, 0.4);
   z-index: 1001;
+}
+
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  header {
+    padding: 35px 0;
+  }
+
+  ul {
+    padding: 0 40px;
+  }
+
+  /* logo na esquerda */
+  li:nth-child(2) {
+    order: 1;
+    width: auto;
+    flex-grow: 1;
+    justify-content: flex-start;
+    cursor: pointer;
+    align-items: center;
+  }
+
+  .logo {
+    height: 60px;
+    width: auto;
+  }
+
+  /* perfil ao lado do menu */
+  li:last-child {
+    order: 2;
+    width: auto;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+
+  /* menu hambúrguer na direita */
+  li:first-child {
+    order: 3;
+    width: auto;
+    justify-content: flex-end;
+    font-size: 40px;
+    color: var(--principal-claro);
+    cursor: pointer;
+  }
 }
 </style>

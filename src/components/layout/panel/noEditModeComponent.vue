@@ -257,4 +257,120 @@ h1.team-title {
     color: var(--placeholder);
   }
 }
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  .top {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px 40px 0;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 40px 60px;
+    gap: 36px;
+  }
+
+  div.first-data {
+    padding: 10px 0;
+  }
+
+  /* foto com tamanho fixo (antes era 32% do pai) */
+  .name-image {
+    gap: 28px;
+  }
+
+  img.profile-image {
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+  }
+
+  .name-image div {
+    width: auto;
+    min-width: 0;
+  }
+
+  .name-image div h1 {
+    font-size: 2rem;
+  }
+
+  .name-image div h2,
+  .name-image div h3 {
+    font-size: 1rem;
+  }
+
+  .desc {
+    margin-top: 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* equipes */
+  .team {
+    margin-top: 0;
+  }
+
+  h1.team-title {
+    font-size: 1.6rem;
+  }
+
+  ul.teams {
+    gap: 28px;
+    padding-top: 16px;
+  }
+
+  ul.teams li {
+    width: 110px;
+  }
+
+  ul.teams li h2 {
+    font-size: 0.85rem;
+  }
+
+  .no-teams {
+    margin-top: 0;
+  }
+
+  .no-teams h2 {
+    font-size: 1rem;
+  }
+
+  /* card de solicitar entrada */
+  .equipe-card {
+    padding: 24px 28px;
+    align-items: center;
+  }
+
+  .equipe-card span.mdi {
+    font-size: 40px;
+    margin-right: 24px;
+  }
+
+  .equipe-card h1 {
+    font-size: 1.3rem;
+  }
+
+  .equipe-card p {
+    font-size: 1rem;
+    margin: 8px 0 14px;
+  }
+
+  /* botões de sair/excluir lado a lado */
+  .logout {
+    flex-direction: row;
+    gap: 30px;
+  }
+
+  .danger {
+    cursor: pointer;
+  }
+
+  .danger:hover {
+    opacity: 0.8;
+  }
+}
 </style>
