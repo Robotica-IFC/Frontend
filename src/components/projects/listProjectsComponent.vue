@@ -114,7 +114,7 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
-} 
+}
 
 .image {
   width: 100%;
@@ -261,5 +261,127 @@ p {
 .ver-mais button:hover{
   opacity:.9;
   transform:translateY(-2px);
+}
+
+@media (min-width: 950px) {
+  .container {
+    width: 85%;
+    max-width: 1900px;
+    margin: 40px auto;
+    padding: 0 10px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px 40px;
+  }
+
+  /* card vertical: imagem em cima, texto embaixo */
+  .card {
+    flex-direction: column;
+    height: auto;
+    margin-bottom: 0;
+    padding: 15px;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  .left {
+    width: 100%;
+    height: 190px;
+    border-right: none;
+    border-radius: 4px;
+  }
+
+  .rigth {
+    flex: 1;
+    padding: 15px 0 0;
+    gap: 6px;
+  }
+
+  .status {
+    font-size: 12px;
+    padding: 5px 30px;
+    border-radius: 3px;
+  }
+
+  .content {
+    flex: 1;
+    gap: 8px;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 4px 0 0;
+    white-space: normal;
+    color: #1a1a1a;
+  }
+
+  .desc-curta {
+    font-size: 13px;
+    line-height: 1.25;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* equipe e instituição lado a lado */
+  .team {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .info-item {
+    width: auto;
+  }
+
+  .info-item .mdi {
+    font-size: 20px;
+  }
+
+  /* botão + curtidas/comentários */
+  .detalhe {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .detalhe button {
+    flex: 0 0 54%;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .stats {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 10px;
+  }
+
+  .stats .mdi-heart {
+    color: #e11d2e;
+    font-size: 22px;
+  }
+
+  .stats .mdi-comment-outline {
+    font-size: 22px;
+  }
+
+  .stats span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 }
 </style>

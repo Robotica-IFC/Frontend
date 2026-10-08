@@ -88,4 +88,48 @@ onMounted(async () => {
     }
   }
 }
+
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  .top {
+    width: 80%;
+    max-width: 1100px;
+    margin: 60px auto 0 auto;
+    padding: 20px 40px 0;
+  }
+
+  .team-details {
+    width: 80%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px 40px 0;
+    gap: 24px;
+  }
+
+  .team-details img {
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+  }
+
+  .team-details h2 {
+    font-size: 1.8rem;
+  }
+
+  .team-details .loc p {
+    font-size: 1rem;
+  }
+
+  .team-details .loc .mdi {
+    font-size: 22px;
+  }
+}
+
+/* telas grandes: mesma largura do .storage-wrapper */
+@media (min-width: 1300px) {
+  .top,
+  .team-details {
+    max-width: 1300px;
+  }
+}
 </style>

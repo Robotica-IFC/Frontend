@@ -409,4 +409,38 @@ async function handleSubmit() {
   border-radius: 6px;
   cursor: pointer;
 }
+ /* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  .modal-container {
+    max-width: 600px;
+    max-height: 92vh;
+  }
+
+  .modal-header {
+    padding: 16px 28px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .modal-body {
+    padding: 24px 28px;
+    gap: 14px;
+  }
+
+  .image-upload-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .form-group textarea {
+    min-height: 100px;
+  }
+
+  .modal-actions {
+    margin-top: 8px;
+    gap: 12px;
+  }
+}
 </style>

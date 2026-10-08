@@ -1,18 +1,18 @@
 <script setup>
-import { useTeamStore } from '@/store/teamStore'
-import { onMounted } from 'vue'
-import Pagination from '@/components/paginationComponent.vue'
-import router from '@/router'
+import { useTeamStore } from "@/store/teamStore";
+import { onMounted } from "vue";
+import Pagination from "@/components/paginationComponent.vue";
+import router from "@/router";
 
-const teamStore = useTeamStore()
+const teamStore = useTeamStore();
 
 function openTeam(id) {
-  router.push({ name: 'teamDetails', params: { id } })
+  router.push({ name: "teamDetails", params: { id } });
 }
 
 onMounted(() => {
-  teamStore.getTeams()
-})
+  teamStore.getTeams();
+});
 </script>
 
 <template>
@@ -38,14 +38,17 @@ onMounted(() => {
                 {{
                   t.professores?.[0]?.user?.username ||
                   t.professores?.[0]?.user?.name ||
-                  'Sem líder'
+                  "Sem líder"
                 }}
               </p>
 
               <p>
-                <span class="mdi mdi-map-marker" style="color: var(--principal-claro)"></span>
-                {{ t.instituicao?.sigla || 'N/A' }} -
-                {{ t.instituicao?.cidade || 'Local não informado' }}
+                <span
+                  class="mdi mdi-map-marker"
+                  style="color: var(--principal-claro)"
+                ></span>
+                {{ t.instituicao?.sigla || "N/A" }} -
+                {{ t.instituicao?.cidade || "Local não informado" }}
               </p>
 
               <p>
@@ -74,10 +77,15 @@ onMounted(() => {
         <!-- LAYOUT NOVO (>= 950px) -->
         <div class="card-desktop">
           <div class="img-desktop">
-            <img
-              :src="t.image_perfil?.file || 'https://via.placeholder.com/100'"
-              alt="image_equipe"
-            />
+            <div class="img">
+              <img
+                v-if="t.image_perfil?.file"
+                :src="t.image_perfil.file"
+                alt="image_equipe"
+              />
+
+              <span v-else class="mdi mdi-account-group"></span>
+            </div>
           </div>
 
           <h1 class="titulo-desktop">{{ t.nome }}</h1>
@@ -89,13 +97,17 @@ onMounted(() => {
               {{
                 t.professores?.[0]?.user?.username ||
                 t.professores?.[0]?.user?.name ||
-                'Sem líder'
+                "Sem líder"
               }}
             </p>
 
             <p>
-              <span class="mdi mdi-map-marker" style="color: var(--principal-claro)"></span>
-              {{ t.instituicao?.sigla || 'N/A' }} - {{ t.instituicao?.cidade || 'Local não informado' }}
+              <span
+                class="mdi mdi-map-marker"
+                style="color: var(--principal-claro)"
+              ></span>
+              {{ t.instituicao?.sigla || "N/A" }} -
+              {{ t.instituicao?.cidade || "Local não informado" }}
             </p>
 
             <p>
@@ -112,7 +124,11 @@ onMounted(() => {
           <div class="border-desktop"></div>
 
           <div class="categorias" v-if="t.categorias?.length">
-            <p v-for="c in t.categorias?.slice(0, 3)" :key="c.id" class="categoria-desktop">
+            <p
+              v-for="c in t.categorias?.slice(0, 3)"
+              :key="c.id"
+              class="categoria-desktop"
+            >
               {{ c.nome }}
             </p>
           </div>
@@ -128,7 +144,7 @@ onMounted(() => {
       :totalPages="teamStore.totalPages"
       @change="
         (page) => {
-          teamStore.getTeams(page)
+          teamStore.getTeams(page);
         }
       "
     />
@@ -137,16 +153,6 @@ onMounted(() => {
 
 <style scoped>
 /* ESTRUTURA */
-
-.content {
-  min-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
-  padding: 4px 10px;
-}
 
 .pagination-wrapper {
   margin-top: auto;
@@ -206,19 +212,28 @@ li {
 
 /* IMAGEM (layout mobile) */
 .img {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background-color: var(--destaque-claro);
+  overflow: hidden;
 }
 
 .img img {
-  width: 58px;
-  height: 58px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  flex-shrink: 0;
 }
 
+.img .mdi {
+  font-size: 28px;
+  color: white;
+}
 /* TEXTO ESQUERDA (layout mobile) */
 .info {
   flex: 1;
@@ -302,9 +317,11 @@ li {
 /* ============================= */
 @media (min-width: 950px) {
   .content {
-    width: 100%;
+    width: 80%;
     max-width: none;
     box-sizing: border-box;
+    margin: 0 auto;
+    text-align: center;
   }
 
   ul {

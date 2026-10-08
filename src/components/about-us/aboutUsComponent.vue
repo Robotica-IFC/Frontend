@@ -160,12 +160,12 @@ main {
 
   & ul{
     list-style-type: none;
-    
+
     & li.devv{
       padding: 20px 0px;
       display: flex;
       gap: 5px;
-      position: relative; 
+      position: relative;
 
       &::after {
         content: "";
@@ -220,5 +220,127 @@ main {
 
 .blue {
   color: var(--principal-claro);
+}
+
+/* ========== DESKTOP ========== */
+@media (min-width: 950px) {
+  main {
+    width: 100%;
+    max-width: 1100px;
+    margin: 100px auto 0;
+    padding: 0 40px 60px;
+  }
+
+  .top {
+    gap: 40px;
+
+  }
+
+  .top .left {
+    width: 55%;
+  }
+
+  .top h2 {
+    font-size: 2.2rem;
+
+  }
+
+  .top p {
+    font-size: 1.4rem;
+    margin-top: 16px;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+
+    .top .right {
+    width: 45%;
+    max-width: 460px;
+    margin-left: auto;
+    padding: 10px;
+  }
+
+  .top .right .mid-img {
+    width: 50%;
+    height: auto;
+  }
+
+  .top .right .left-img {
+    width: 30%;
+    bottom: -25px;
+    left: 10px;
+  }
+
+  .top .right .right-img {
+    width: 30%;
+    top: -20px;
+    right: 0;
+  }
+
+  .us {
+    margin-top: 40px;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    max-width: 900px;
+  }
+
+  .dev {
+    margin-top: 60px;
+    gap: 30px;
+  }
+
+  .dev h2 {
+    font-size: 1.8rem;
+  }
+
+  /* devs em grade de 3 colunas */
+  .dev ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .dev ul li.devv {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding: 30px 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.18);
+  }
+
+  /* some a linha divisória do mobile */
+  .dev ul li.devv::after {
+    display: none;
+  }
+
+  .dev ul li.devv img {
+    width: 140px;
+  }
+
+  .dev ul li.devv .right-dev {
+    align-items: center;
+    gap: 14px;
+  }
+
+  .dev ul li.devv h2 {
+    font-size: 1.1rem;
+  }
+
+  .dev ul li.devv ul.links {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .dev ul li.devv ul.links li a {
+    font-size: 0.85rem;
+    gap: 4px;
+  }
+
+  .dev ul li.devv ul.links li a span.mdi {
+    font-size: 24px;
+  }
 }
 </style>
