@@ -25,11 +25,19 @@ onMounted(() => {
 <template>
   <h1 v-if="projectStore.teamProjects.length > 0">Projetos da Equipe</h1>
 
-  <div class="projects" v-if="projectStore.teamProjects.length > 0" >
-    <article v-for="project in projectStore.teamProjects" :key="project.id" @click="openProject(project.id)">
+  <div class="projects" v-if="projectStore.teamProjects.length > 0">
+    <article
+      v-for="project in projectStore.teamProjects"
+      :key="project.id"
+      @click="openProject(project.id)"
+    >
       <div class="card">
         <div class="image">
-          <img v-if="project.image_perfil" :src="project.image_perfil.file" :alt="project.titulo" />
+          <img
+            v-if="project.image_perfil"
+            :src="project.image_perfil.url || project.image_perfil.file"
+            :alt="project.titulo"
+          />
 
           <div v-else class="no-image">
             <span class="mdi mdi-robot-outline"></span>
@@ -56,10 +64,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
-h1{
+h1 {
   color: var(--principal-claro);
   font-size: 23px;
-  margin:18px 0;
+  margin: 18px 0;
 }
 .card {
   background: white;
@@ -114,7 +122,7 @@ h1{
   padding: 4px 5px;
   border-radius: 5px;
   color: #ffff;
-  font-size:11px;
+  font-size: 11px;
   align-self: flex-start;
   display: -webkit-box;
 }
@@ -128,7 +136,7 @@ h1{
 .cancelado {
   background: #b91c1c;
 }
-h2{
+h2 {
   font-size: 16px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -136,7 +144,7 @@ h2{
   overflow: hidden;
   text-overflow: ellipsis;
 }
-p{
+p {
   font-size: 12px;
   margin-bottom: 10px;
   margin-top: 5px;
@@ -203,5 +211,4 @@ p{
     margin-bottom: 12px;
   }
 }
-
 </style>

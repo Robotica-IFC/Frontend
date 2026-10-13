@@ -26,12 +26,17 @@ onMounted(() => {
 <template>
   <section class="container">
     <div class="grid">
-      <article class="card" v-for="project in projetosVisiveis" :key="project.id" @click="openProject(project.id)">
+      <article
+        class="card"
+        v-for="project in projetosVisiveis"
+        :key="project.id"
+        @click="openProject(project.id)"
+      >
         <div class="left">
           <div class="image">
             <img
               v-if="project.image_perfil"
-              :src="project.image_perfil.file"
+              :src="project.image_perfil.url || project.image_perfil.file"
               :alt="project.titulo"
             />
 
@@ -97,7 +102,9 @@ onMounted(() => {
   overflow: hidden;
   border: 1px solid #ddd;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   display: flex;
   height: 220px;
   padding: 0px;
@@ -240,27 +247,27 @@ p {
   text-overflow: ellipsis;
 }
 
-.ver-mais{
-  display:flex;
-  justify-content:center;
-  margin-top:30px;
+.ver-mais {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-.ver-mais button{
-  padding:10px 28px;
-  border:none;
-  border-radius:8px;
-  background:var(--principal-claro);
-  color:#fff;
-  font-size:10px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.25s;
+.ver-mais button {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--principal-claro);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
-.ver-mais button:hover{
-  opacity:.9;
-  transform:translateY(-2px);
+.ver-mais button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
 }
 
 @media (min-width: 950px) {

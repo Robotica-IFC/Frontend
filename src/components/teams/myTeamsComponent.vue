@@ -58,8 +58,8 @@ function goToTeam(id) {
         <li v-for="t in teamsUser" :key="t.id" @click="goToTeam(t.id)">
           <!-- Imagem de perfil -->
           <img
-            v-if="t.image_perfil?.file || t.image_perfil?.url"
-            :src="t.image_perfil.file || t.image_perfil.url"
+            v-if="t.image_perfil?.url || t.image_perfil?.file"
+            :src="t.image_perfil.url || t.image_perfil.file"
             :alt="t.nome"
           />
           <img v-else src="/img/Default.webp" alt="Sem imagem" />
@@ -114,9 +114,7 @@ function goToTeam(id) {
         </li>
       </ul>
     </div>
-    <p v-else-if="teamsUser" class="empty-teams">
-      Você ainda não participa de nenhuma equipe.
-    </p>
+    <p v-else-if="teamsUser" class="empty-teams">Você ainda não participa de nenhuma equipe.</p>
   </div>
 </template>
 

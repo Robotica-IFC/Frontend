@@ -16,12 +16,12 @@ const { user } = storeToRefs(authStore)
 
 const teamsUser = ref(null)
 
-onMounted(async() => {
+onMounted(async () => {
   teamsUser.value = await teamStore.getTeamByUserId(user.value.user_id)
 })
 
-function openTeam(id){
-  router.push({name: 'teamDetails', params: { id }})
+function openTeam(id) {
+  router.push({ name: 'teamDetails', params: { id } })
 }
 </script>
 <template>
@@ -54,7 +54,7 @@ function openTeam(id){
       <h1 class="team-title">Minhas equipes:</h1>
       <ul class="teams">
         <li v-for="t in teamsUser" :key="t.id" @click="openTeam(t.id)">
-          <img :src="t.image_perfil?.file" :alt="t.nome" />
+          <img :src="t.image_perfil?.url || t.image_perfil?.file" :alt="t.nome" />
           <h2>{{ t.nome }}</h2>
         </li>
       </ul>

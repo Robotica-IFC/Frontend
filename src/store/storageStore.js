@@ -11,6 +11,16 @@ export const useStorageStore = defineStore('storage', () => {
 
   const storage = computed(() => state.storage)
 
+  async function getStorageByTeamId(equipeId) {
+    try {
+      const response = await storageApi.getStorageByTeamId(equipeId)
+      const results = response.data?.results ?? response.data ?? []
+      return Array.isArray(results) ? (results[0] ?? null) : (results ?? null)
+    } catch (error) {
+      console.error('Erro ao buscar estoque da equipe:', error)
+      return null
+    }
+  }
 
   async function createStorage(equipeId) {
     try {
@@ -21,34 +31,43 @@ export const useStorageStore = defineStore('storage', () => {
       const response = await storageApi.create(payload)
       return response.data.id
     } catch (error) {
+      const duplicateError = Array.isArray(error?.response?.data?.equipe)
+        ? error.response.data.equipe.some((message) =>
+            String(message).toLowerCase().includes('já existe um estoque'),
+          )
+        : false
+
+      if (duplicateError) {
+        const existingStorage = await getStorageByTeamId(equipeId)
+        if (existingStorage?.id) {
+          return existingStorage.id
+        }
+      }
+
       console.error('Erro ao criar estoque:', error)
       throw error
     }
   }
 
-  // async function getStorageByTeamId(id) {  Acho que não sera usado
-  //   try {
-  //     const response = await storageApi.getStorageByTeamId(id)
+  async function getOrCreateStorage(equipeId) {
+    const existingStorage = await getStorageByTeamId(equipeId)
+    if (existingStorage?.id) {
+      return existingStorage.id
+    }
 
-  //     console.log(response.data)
-  //     return response.data
-  //   } catch (err) {
-  //     console.error(err)
-  //   }
-  // }
-
+    return createStorage(equipeId)
+  }
 
   async function getStorageById(id) {
-      try {
-        state.storage = null
+    try {
+      state.storage = null
 
-        const response = await storageApi.getStorageById(id)
+      const response = await storageApi.getStorageById(id)
 
-        state.storage = response.data
-      } 
-      catch(err){
-        console.error(err)
-      }
+      state.storage = response.data
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   function addItem(item) {
@@ -71,7 +90,8 @@ export const useStorageStore = defineStore('storage', () => {
 
   return {
     createStorage,
-    // getStorageByTeamId,
+    getStorageByTeamId,
+    getOrCreateStorage,
     getStorageById,
     addItem,
     updateItemInStorage,

@@ -39,15 +39,8 @@ const teacher = computed(() => teacherStore.actualTeacher)
 <template>
   <div class="modal-backdrop" @click.self="router.back()">
     <div class="page" v-if="teacher && teacher.user">
-
       <!-- X de fechar: aparece só no desktop -->
-      <button
-        type="button"
-        class="close-btn"
-        @click="router.back()"
-      >
-        &times;
-      </button>
+      <button type="button" class="close-btn" @click="router.back()">&times;</button>
 
       <div class="top">
         <appArrow @back="router.back"></appArrow>
@@ -55,22 +48,17 @@ const teacher = computed(() => teacherStore.actualTeacher)
 
       <div class="data">
         <div class="first-data">
-
           <div class="name-image">
-
             <!-- IMAGEM DO PROFESSOR -->
             <div class="profile-image-container">
               <img
-                v-if="teacher.imagem_perfil?.file"
+                v-if="teacher.imagem_perfil?.url || teacher.imagem_perfil?.file"
                 class="profile-image"
-                :src="`${teacher.imagem_perfil.file}?t=${cacheBust}`"
+                :src="`${teacher.imagem_perfil.url || teacher.imagem_perfil.file}?t=${cacheBust}`"
                 :alt="teacher.user?.name"
               />
 
-              <span
-                v-else
-                class="mdi mdi-account-circle profile-placeholder"
-              ></span>
+              <span v-else class="mdi mdi-account-circle profile-placeholder"></span>
             </div>
 
             <div>
@@ -81,53 +69,33 @@ const teacher = computed(() => teacherStore.actualTeacher)
                 {{ teacher.instituicao?.nome || teacher.instituicao || 'Não informada' }}
               </h4>
             </div>
-
           </div>
 
           <p class="desc">
             {{ teacher.descricao || 'Sem descrição 😢' }}
           </p>
-
         </div>
       </div>
 
       <!-- EQUIPES -->
-      <div
-        class="team"
-        v-if="teacher.teams && teacher.teams.length > 0"
-      >
-        <h1 class="team-title">
-          Equipes Orientadas:
-        </h1>
+      <div class="team" v-if="teacher.teams && teacher.teams.length > 0">
+        <h1 class="team-title">Equipes Orientadas:</h1>
 
         <ul class="teams">
-
-          <li
-            v-for="t in teacher.teams"
-            :key="t.id"
-            @click="openTeam(t.id)"
-          >
-
+          <li v-for="t in teacher.teams" :key="t.id" @click="openTeam(t.id)">
             <!-- IMAGEM DA EQUIPE -->
             <div class="team-image">
-
               <img
-                v-if="t.image_perfil?.file"
-                :src="t.image_perfil.file"
+                v-if="t.image_perfil?.url || t.image_perfil?.file"
+                :src="t.image_perfil.url || t.image_perfil.file"
                 :alt="t.nome"
               />
 
-              <span
-                v-else
-                class="mdi mdi-account-multiple-outline"
-              ></span>
-
+              <span v-else class="mdi mdi-account-multiple-outline"></span>
             </div>
 
             <h2>{{ t.nome }}</h2>
-
           </li>
-
         </ul>
       </div>
 
@@ -138,19 +106,16 @@ const teacher = computed(() => teacherStore.actualTeacher)
           não orienta nenhuma equipe no momento.
         </h2>
       </div>
-
     </div>
 
     <!-- CARREGANDO -->
     <div class="loading" v-else>
       <p>Carregando perfil do professor...</p>
     </div>
-
   </div>
 </template>
 
 <style scoped>
-
 /* =========================================
    BACKDROP
 ========================================= */
@@ -373,7 +338,6 @@ ul.teams li h2 {
 ========================================= */
 
 @media (min-width: 950px) {
-
   .modal-backdrop {
     display: flex;
     position: fixed;
@@ -501,5 +465,4 @@ ul.teams li h2 {
     font-size: 0.8rem;
   }
 }
-
 </style>

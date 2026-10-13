@@ -75,17 +75,13 @@ async function handleProjectCreated() {
   await projectStore.getProjectsByTeam(props.id)
 }
 
-async function goToStorage(id){
-  if (team.value.estoque_id == null){
-    const storageId = await storageStore.createStorage(team.value.id)
+async function goToStorage() {
+  const storageId = await storageStore.getOrCreateStorage(team.value.id)
 
-    router.push({name: 'storage', params: {id: storageId}})
-  } else {
-    router.push({name: 'storage', params: {id}})
+  if (storageId) {
+    router.push({ name: 'storage', params: { id: storageId } })
   }
 }
-
-
 </script>
 
 <template>
@@ -98,15 +94,15 @@ async function goToStorage(id){
 
     <div class="info">
       <div class="principal-info">
-       <div class="logo-team">
-  <img
-    v-if="team.image_perfil?.file"
-    :src="team.image_perfil.file"
-    alt="Logo da equipe"
-  />
+        <div class="logo-team">
+          <img
+            v-if="team.image_perfil?.url || team.image_perfil?.file"
+            :src="team.image_perfil.url || team.image_perfil.file"
+            alt="Logo da equipe"
+          />
 
-  <span v-else class="mdi mdi-account-group"></span>
-</div>
+          <span v-else class="mdi mdi-account-group"></span>
+        </div>
         <div class="principal-text">
           <h1>
             {{ team.nome }}
@@ -135,7 +131,11 @@ async function goToStorage(id){
       <div class="members">
         <ul class="teachers">
           <li v-for="t in team.professores" :key="t.id" @click="goToTeacher(t.id)">
-            <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user?.name" />
+            <img
+              class="image-teacher"
+              :src="t.imagem_perfil?.url || t.imagem_perfil?.file"
+              :alt="t.user?.name"
+            />
             <div class="text">
               <h2>Professor: {{ t.user?.name }}</h2>
               <h3>
@@ -147,18 +147,14 @@ async function goToStorage(id){
 
         <ul class="students">
           <li v-for="s in team.alunos" :key="s.id" @click="goToStudent(s.id)">
-            <img :src="s.imagem_perfil?.file" :alt="s.user?.name" />
+            <img :src="s.imagem_perfil?.url || s.imagem_perfil?.file" :alt="s.user?.name" />
             <h2>{{ s.user?.name }}</h2>
           </li>
         </ul>
       </div>
     </div>
     <div class="creates" style="margin-top: 20px">
-      <button
-        v-if="isMemberOfTeam"
-        class="createProject"
-        @click="goToStorage(team.estoque_id)"
-      >
+      <button v-if="isMemberOfTeam" class="createProject" @click="goToStorage()">
         <span class="mdi mdi-archive"></span> Estoque da equipe
       </button>
       <button v-if="isTeacherInTeam" class="createProject" @click="isModalOpen = true">
@@ -343,7 +339,7 @@ ul.students {
   font-size: 32px;
   color: white;
 }
-.creates{
+.creates {
   margin-top: 700px;
 }
 @media (min-width: 950px) {
@@ -477,13 +473,12 @@ ul.students {
   display: flex;
   gap: 10px;
 }
- .logo-team {
-    width: 150px;
-    height: 150px;
-  }
+.logo-team {
+  width: 150px;
+  height: 150px;
+}
 
-  .logo-team .mdi {
-    font-size: 42px;
-  }
-
+.logo-team .mdi {
+  font-size: 42px;
+}
 </style>

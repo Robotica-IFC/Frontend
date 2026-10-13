@@ -1,18 +1,18 @@
 <script setup>
-import { useTeamStore } from "@/store/teamStore";
-import { onMounted } from "vue";
-import Pagination from "@/components/paginationComponent.vue";
-import router from "@/router";
+import { useTeamStore } from '@/store/teamStore'
+import { onMounted } from 'vue'
+import Pagination from '@/components/paginationComponent.vue'
+import router from '@/router'
 
-const teamStore = useTeamStore();
+const teamStore = useTeamStore()
 
 function openTeam(id) {
-  router.push({ name: "teamDetails", params: { id } });
+  router.push({ name: 'teamDetails', params: { id } })
 }
 
 onMounted(() => {
-  teamStore.getTeams();
-});
+  teamStore.getTeams()
+})
 </script>
 
 <template>
@@ -24,7 +24,7 @@ onMounted(() => {
           <div class="primeiro">
             <div class="img">
               <img
-                :src="t.image_perfil?.file || 'https://via.placeholder.com/58'"
+                :src="t.image_perfil?.url || 'https://via.placeholder.com/58'"
                 alt="image_equipe"
               />
             </div>
@@ -38,17 +38,14 @@ onMounted(() => {
                 {{
                   t.professores?.[0]?.user?.username ||
                   t.professores?.[0]?.user?.name ||
-                  "Sem líder"
+                  'Sem líder'
                 }}
               </p>
 
               <p>
-                <span
-                  class="mdi mdi-map-marker"
-                  style="color: var(--principal-claro)"
-                ></span>
-                {{ t.instituicao?.sigla || "N/A" }} -
-                {{ t.instituicao?.cidade || "Local não informado" }}
+                <span class="mdi mdi-map-marker" style="color: var(--principal-claro)"></span>
+                {{ t.instituicao?.sigla || 'N/A' }} -
+                {{ t.instituicao?.cidade || 'Local não informado' }}
               </p>
 
               <p>
@@ -78,11 +75,7 @@ onMounted(() => {
         <div class="card-desktop">
           <div class="img-desktop">
             <div class="img">
-              <img
-                v-if="t.image_perfil?.file"
-                :src="t.image_perfil.file"
-                alt="image_equipe"
-              />
+              <img v-if="t.image_perfil?.url" :src="t.image_perfil.url" alt="image_equipe" />
 
               <span v-else class="mdi mdi-account-group"></span>
             </div>
@@ -95,19 +88,14 @@ onMounted(() => {
               <span class="mdi mdi-account-outline"></span>
               Líder:
               {{
-                t.professores?.[0]?.user?.username ||
-                t.professores?.[0]?.user?.name ||
-                "Sem líder"
+                t.professores?.[0]?.user?.username || t.professores?.[0]?.user?.name || 'Sem líder'
               }}
             </p>
 
             <p>
-              <span
-                class="mdi mdi-map-marker"
-                style="color: var(--principal-claro)"
-              ></span>
-              {{ t.instituicao?.sigla || "N/A" }} -
-              {{ t.instituicao?.cidade || "Local não informado" }}
+              <span class="mdi mdi-map-marker" style="color: var(--principal-claro)"></span>
+              {{ t.instituicao?.sigla || 'N/A' }} -
+              {{ t.instituicao?.cidade || 'Local não informado' }}
             </p>
 
             <p>
@@ -124,11 +112,7 @@ onMounted(() => {
           <div class="border-desktop"></div>
 
           <div class="categorias" v-if="t.categorias?.length">
-            <p
-              v-for="c in t.categorias?.slice(0, 3)"
-              :key="c.id"
-              class="categoria-desktop"
-            >
+            <p v-for="c in t.categorias?.slice(0, 3)" :key="c.id" class="categoria-desktop">
               {{ c.nome }}
             </p>
           </div>
@@ -144,7 +128,7 @@ onMounted(() => {
       :totalPages="teamStore.totalPages"
       @change="
         (page) => {
-          teamStore.getTeams(page);
+          teamStore.getTeams(page)
         }
       "
     />
@@ -446,7 +430,9 @@ li {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
   }
 
   .ver-detalhes:hover {
