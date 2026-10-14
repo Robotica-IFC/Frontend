@@ -87,9 +87,30 @@ div.info {
   font-size: 32px;
   color: white;
 }
+
 .creates {
-  margin-top: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
 }
+
+.createProject {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--destaque-claro);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 @media (min-width: 900px) {
   div.page {
     max-width: none;
