@@ -4,11 +4,4 @@
   </footer>
 </template>
 
-<style scoped>
-footer{
-  background-color: var(--principal-claro)
-}
-img{
-  width: 250px;
-}
-</style>
+<style scoped src="./appFooterComponent.css"></style>

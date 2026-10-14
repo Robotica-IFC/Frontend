@@ -59,38 +59,4 @@ const confirmPasswordValue = ref("");
   </div>
 </template>
 
-<style scoped>
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100%;
-}
-
-.arrow {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-}
-
-img {
-  width: 250px;
-  height: auto;
-  margin-top: -30px;
-}
-
-h2 {
-  font-size: 23px;
-  margin: 30px 0 20px;
-  text-align: center;
-}
-
-.mdi {
-  display: flex;
-  justify-content: right;
-  margin-left: 40px;
-  color: var(--principal-claro);
-  font-size: 20px;
-}
-</style>
+<style scoped src="./resetPasswordComponent.css"></style>

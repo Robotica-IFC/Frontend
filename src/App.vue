@@ -14,13 +14,7 @@ const route = useRoute();
     <RouterView />
   </main>
 
-  <appFooterComponent></appFooterComponent>
+  <appFooterComponent v-if="!route.meta.hideFooter"></appFooterComponent>
 </template>
 
-<style scoped>
-@import url('../src/assets/css/global.css');
-
-.no-header {
-  margin-top: 0;
-}
-</style>
+<style scoped src="./App.css"></style>

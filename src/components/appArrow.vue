@@ -11,19 +11,4 @@
 
 </template>
 
-<style scoped>
-div.arrow{
-    color: var(--principal-claro);
-    font-size: 25px;
-}
-
-div.arrow span{
-    display: inline-block;
-    cursor: pointer;
-}
-
-div.arrow span:active{
-    transform: scale(0.9);
-    color: var(--principal-claro);
-}
-</style>
+<style scoped src="./appArrow.css"></style>

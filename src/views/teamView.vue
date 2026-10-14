@@ -12,22 +12,4 @@ import listTeamsComponent from '@/components/teams/listTeamsComponent.vue'
   </div>
 </template>
 
-<style scoped>
-..page.team-view {
-    width: 100%;
-}
-
-@media (min-width: 950px) {
-    .page.team-view {
-        max-width: none;
-        width: 100%;
-        padding: 20px 0%;
-        box-sizing: border-box;
-    }
-
-    .page.team-view :deep(.top),
-    .page.team-view :deep(.content) {
-        width: 100%;
-    }
-}
-</style>
+<style scoped src="./teamView.css"></style>
