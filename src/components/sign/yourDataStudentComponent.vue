@@ -100,36 +100,4 @@ function validacao() {
   </div>
 </template>
 
-<style scoped>
-.top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.arrow {
-  width: 100%;
-  display: flex;
-}
-
-img {
-  width: 250px;
-  height: auto;
-}
-
-h2 {
-  font-size: 23px;
-  margin: 25px 0 35px;
-  text-align: center;
-}
-
-form span {
-  display: flex;
-  justify-content: right;
-  margin-left: 40px;
-  color: var(--principal-claro);
-  font-size: 20px;
-  cursor: pointer; /* Adicionado para indicar que o ícone do olho é clicável */
-}
-</style>
+<style scoped src="./yourDataStudentComponent.css"></style>

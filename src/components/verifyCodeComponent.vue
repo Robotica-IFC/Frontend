@@ -11,9 +11,4 @@
         <appInput v-if="this" variant="terciary" type="number" maxlength="1"></appInput>
     </div>
 </template>
-<style scoped>
-    div.inputs{
-        display: flex;
-        gap: 10px;
-    }
-</style>
+<style scoped src="./verifyCodeComponent.css"></style>

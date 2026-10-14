@@ -5,24 +5,20 @@ import { useTeamStore } from '@/store/teamStore'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
-
 const emit = defineEmits(['close', 'created'])
 const projectStore = useProjectStore()
 const teamStore = useTeamStore()
-
 const loading = ref(false)
 const errorMessage = ref('')
 const selectedFile = ref(null)
 const imagePreview = ref(null)
 const showImageSheet = ref(false)
-
 const props = defineProps({
   id: {
     type: String,
     required: true,
   },
 })
-
 const form = reactive({
   titulo: '',
   desc_curta: '',
@@ -31,7 +27,6 @@ const form = reactive({
   status: 'EM_ANDAMENTO',
   equipe: props.id,
 })
-
 function handleFileSelected(file) {
   if (imagePreview.value) {
     URL.revokeObjectURL(imagePreview.value)
@@ -39,7 +34,6 @@ function handleFileSelected(file) {
   selectedFile.value = file
   imagePreview.value = URL.createObjectURL(file)
 }
-
 function removeImage() {
   if (imagePreview.value) {
     URL.revokeObjectURL(imagePreview.value)
@@ -47,39 +41,31 @@ function removeImage() {
   selectedFile.value = null
   imagePreview.value = null
 }
-
 async function handleSubmit() {
   errorMessage.value = ''
-
   // Validações de obrigatoriedade e limites de caracteres
   if (!form.titulo.trim()) {
     errorMessage.value = 'O título do projeto é obrigatório.'
     return
   }
-
   if (form.titulo.length > 30) {
     errorMessage.value = 'O título deve ter no máximo 30 caracteres.'
     return
   }
-
   if (form.desc_curta && form.desc_curta.length > 60) {
     errorMessage.value = 'A descrição curta deve ter no máximo 60 caracteres.'
     return
   }
-
   if (!form.descricao || form.descricao.trim().length < 150) {
     errorMessage.value = 'A descrição completa deve ter no mínimo 150 caracteres.'
     return
   }
-
   if (!form.equipe) {
     errorMessage.value = 'Equipe não informada.'
     return
   }
-
   try {
     loading.value = true
-
     const projectData = {
       titulo: form.titulo.trim(),
       desc_curta: form.desc_curta.trim(),
@@ -88,9 +74,7 @@ async function handleSubmit() {
       status: form.status,
       equipe: form.equipe,
     }
-
     await projectStore.createProject(projectData, selectedFile.value)
-
     emit('created')
     emit('close')
   } catch (error) {
@@ -101,7 +85,6 @@ async function handleSubmit() {
   }
 }
 </script>
-
 <template>
   <div class="modal-backdrop" @click.self="$emit('close')">
     <div class="modal-container">
@@ -109,10 +92,8 @@ async function handleSubmit() {
         <h2>Criar Novo Projeto</h2>
         <button class="close-btn" @click="$emit('close')">&times;</button>
       </div>
-
       <form @submit.prevent="handleSubmit" class="modal-body">
         <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
-
         <!-- Upload da Imagem de Perfil do Projeto -->
         <div class="form-group align-center">
           <label>Imagem do Projeto</label>
@@ -140,7 +121,6 @@ async function handleSubmit() {
             </button>
           </div>
         </div>
-
         <!-- Título -->
         <div class="form-group">
           <label>Título *</label>
@@ -155,7 +135,6 @@ async function handleSubmit() {
             {{ form.titulo.length }}/30 caracteres
           </small>
         </div>
-
         <!-- Descrição Curta -->
         <div class="form-group">
           <label>Descrição Curta</label>
@@ -169,7 +148,6 @@ async function handleSubmit() {
             {{ form.desc_curta.length }}/60 caracteres
           </small>
         </div>
-
         <!-- Descrição Completa -->
         <div class="form-group">
           <label>Descrição Completa *</label>
@@ -183,7 +161,6 @@ async function handleSubmit() {
             {{ form.descricao.trim().length }}/150 caracteres mínimos
           </small>
         </div>
-
         <!-- Status -->
         <div class="form-group">
           <label>Status</label>
@@ -192,7 +169,6 @@ async function handleSubmit() {
             <option value="CONCLUIDO">Concluído</option>
           </select>
         </div>
-
         <!-- Sugestão (Checkbox) -->
         <div class="form-group checkbox-group">
           <label class="checkbox-label">
@@ -200,7 +176,6 @@ async function handleSubmit() {
             <span>É uma sugestão?</span>
           </label>
         </div>
-
         <!-- Ações do Modal -->
         <div class="modal-actions">
           <button type="button" class="btn-cancel" @click="$emit('close')">Cancelar</button>
@@ -210,7 +185,6 @@ async function handleSubmit() {
         </div>
       </form>
     </div>
-
     <imagesourcesheet
       v-if="showImageSheet"
       @select="handleFileSelected"
@@ -218,229 +192,4 @@ async function handleSubmit() {
     />
   </div>
 </template>
-
-<style scoped>
-.char-count {
-  font-size: 0.75rem;
-  color: #64748b;
-  text-align: right;
-  margin-top: 2px;
-}
-
-.char-count.danger {
-  color: #ef4444;
-}
-
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-container {
-  background: #ffffff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.modal-body {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.align-center {
-  align-items: center;
-}
-
-.form-group label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #334155;
-}
-
-.form-group textarea {
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  resize: vertical;
-}
-
-.custom-select {
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  background-color: white;
-  color: #334155;
-  outline: none;
-  cursor: pointer;
-}
-
-.checkbox-group {
-  flex-direction: row;
-  align-items: center;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  user-select: none;
-}
-
-.checkbox-label input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-.image-upload-wrapper {
-  position: relative;
-  width: 110px;
-  height: 110px;
-}
-
-.image-preview-container {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font: inherit;
-  border-radius: 50%;
-  border: 2px dashed #cbd5e1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
-  background: #f8fafc;
-}
-
-.preview-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.upload-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #64748b;
-  font-size: 0.75rem;
-  gap: 4px;
-}
-
-.hidden-file-input {
-  display: none;
-}
-
-.btn-remove-image {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.error-msg {
-  color: #ef4444;
-  font-size: 0.875rem;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.btn-cancel {
-  background: transparent;
-  border: 1px solid #cbd5e1;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
- /* ========== DESKTOP ========== */
-@media (min-width: 950px) {
-  .modal-container {
-    max-width: 600px;
-    max-height: 92vh;
-  }
-
-  .modal-header {
-    padding: 16px 28px;
-  }
-
-  .modal-header h2 {
-    font-size: 1.15rem;
-  }
-
-  .modal-body {
-    padding: 24px 28px;
-    gap: 14px;
-  }
-
-  .image-upload-wrapper {
-    width: 100px;
-    height: 100px;
-  }
-
-  .form-group textarea {
-    min-height: 100px;
-  }
-
-  .modal-actions {
-    margin-top: 8px;
-    gap: 12px;
-  }
-}
-</style>
+<style scoped src="./createProjectModal.css"></style>

@@ -22,30 +22,4 @@ const store = useTemplateStore()
     </div>
 </template>
 
-<style scoped>
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100%;
-}
-
-.arrow {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-}
-
-img {
-  width: 260px;
-  height: auto;
-}
-
-h2 {
-    text-align: center;
-    margin: 15px 0;
-    font-size: 23px;
-}
-    
-</style>
+<style scoped src="./checkCodeComponent.css"></style>

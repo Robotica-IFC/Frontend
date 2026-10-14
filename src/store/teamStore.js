@@ -46,6 +46,17 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
+  async function getCategories() {
+    try {
+      const response = await categoryApi.getAll()
+      const categories = response.data.results || response.data || []
+      return categories
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error)
+      throw error
+    }
+  }
+
   async function createCategory(categoryName) {
     try {
       const formattedName = categoryName.trim().toUpperCase()
@@ -178,6 +189,7 @@ export const useTeamStore = defineStore('team', () => {
     getTeamById,
     getTeamByUserId,
     getProjects,
+    getCategories,
     createCategory,
     incrementView,
     exitTeam,
