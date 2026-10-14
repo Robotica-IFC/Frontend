@@ -1,0 +1,82 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.arrow {
+  width: 100%;
+  display: flex;
+}
+.gif-header {
+  width: 250px;
+  height: auto;
+}
+h2 {
+  font-size: 23px;
+  margin: 25px 0 35px;
+  text-align: center;
+}
+.final {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.avatar-label {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+}
+.avatar-label:active {
+  transform: scale(1.05);
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--principal-claro);
+  background-color: #f0f0f0;
+}
+
+.upload-icon {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: var(--principal-claro);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.bottom {
+  margin-top: 40px;
+  width: 100%;
+}

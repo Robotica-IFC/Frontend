@@ -36,19 +36,19 @@ const router = createRouter({
       path: '/',
       name: 'welcome',
       component: welcomeView,
-      meta: { hideHeader: true }
+      meta: { hideHeader: true, hideFooter: true }
     },
     {
       path: '/sign',
       name: 'sign',
       component: signView,
-      meta: { hideHeader: true }
+      meta: { hideHeader: true, hideFooter: true }
     },
     {
       path: '/change-password',
       name: 'change-password',
       component: changePasswordView,
-      meta: { hideHeader: true }
+      meta: { hideHeader: true, hideFooter: true }
     },
     {
       path: '/home-page',

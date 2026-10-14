@@ -13,8 +13,4 @@
     <editModeComponent></editModeComponent>
   </div>
 </template>
-<style scoped>
-  div{
-    width: 100%;
-  }
-</style>
+<style scoped src="./panelcomponent.css"></style>

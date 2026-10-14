@@ -7,10 +7,10 @@ import createProjectModal from '@/components/projects/createProjectModal.vue'
 import { useTeamStore } from '@/store/teamStore'
 import { useProjectStore } from '@/store/projectsStore.js'
 import router from '@/router'
-import AppButton from '@/components/form/appButton.vue'
 import { useAuthStore } from '@/store/authStore'
 import { useStorageStore } from '@/store/storageStore'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
+import membersOfTeamComponent from './membersOfTeamComponent.vue'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
@@ -27,7 +27,6 @@ const props = defineProps({
 })
 
 const team = computed(() => teamStore.actualTeam || {})
-const storageId = ref(null)
 
 const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id)
 
@@ -63,29 +62,17 @@ onMounted(async () => {
   }
 })
 
-function goToStudent(id) {
-  router.push({ name: 'studentDetails', params: { id } })
-}
-
-function goToTeacher(id) {
-  router.push({ name: 'teacherDetails', params: { id } })
-}
-
 async function handleProjectCreated() {
   await projectStore.getProjectsByTeam(props.id)
 }
 
-async function goToStorage(id){
-  if (team.value.estoque_id == null){
-    const storageId = await storageStore.createStorage(team.value.id)
+async function goToStorage() {
+  const storageId = await storageStore.getOrCreateStorage(team.value.id)
 
-    router.push({name: 'storage', params: {id: storageId}})
-  } else {
-    router.push({name: 'storage', params: {id}})
+  if (storageId) {
+    router.push({ name: 'storage', params: { id: storageId } })
   }
 }
-
-
 </script>
 
 <template>
@@ -98,15 +85,15 @@ async function goToStorage(id){
 
     <div class="info">
       <div class="principal-info">
-       <div class="logo-team">
-  <img
-    v-if="team.image_perfil?.file"
-    :src="team.image_perfil.file"
-    alt="Logo da equipe"
-  />
+        <div class="logo-team">
+          <img
+            v-if="team.image_perfil?.url || team.image_perfil?.file"
+            :src="team.image_perfil.url || team.image_perfil.file"
+            alt="Logo da equipe"
+          />
 
-  <span v-else class="mdi mdi-account-group"></span>
-</div>
+          <span v-else class="mdi mdi-account-group"></span>
+        </div>
         <div class="principal-text">
           <h1>
             {{ team.nome }}
@@ -131,34 +118,13 @@ async function goToStorage(id){
           {{ c.nome }}
         </li>
       </ul>
-
-      <div class="members">
-        <ul class="teachers">
-          <li v-for="t in team.professores" :key="t.id" @click="goToTeacher(t.id)">
-            <img class="image-teacher" :src="t.imagem_perfil?.file" :alt="t.user?.name" />
-            <div class="text">
-              <h2>Professor: {{ t.user?.name }}</h2>
-              <h3>
-                {{ t.user?.email }}
-              </h3>
-            </div>
-          </li>
-        </ul>
-
-        <ul class="students">
-          <li v-for="s in team.alunos" :key="s.id" @click="goToStudent(s.id)">
-            <img :src="s.imagem_perfil?.file" :alt="s.user?.name" />
-            <h2>{{ s.user?.name }}</h2>
-          </li>
-        </ul>
-      </div>
+      <membersOfTeamComponent
+        :teachers="team.professores"
+        :students="team.alunos"
+      ></membersOfTeamComponent>
     </div>
     <div class="creates" style="margin-top: 20px">
-      <button
-        v-if="isMemberOfTeam"
-        class="createProject"
-        @click="goToStorage(team.estoque_id)"
-      >
+      <button v-if="isMemberOfTeam" class="createProject" @click="goToStorage()">
         <span class="mdi mdi-archive"></span> Estoque da equipe
       </button>
       <button v-if="isTeacherInTeam" class="createProject" @click="isModalOpen = true">
@@ -178,312 +144,4 @@ async function goToStorage(id){
   </div>
 </template>
 
-<style scoped>
-div.page {
-  width: 100%;
-}
-
-div.top {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-}
-
-div.info {
-  margin-top: 15px;
-}
-
-div.info div.principal-info img {
-  width: 30%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--principal-claro);
-}
-
-div.info div.principal-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  & h1 {
-    font-size: 25px;
-    color: var(--principal-claro);
-  }
-
-  & h2 {
-    font-size: 15px;
-    font-weight: 400;
-    margin-top: 5px;
-
-    & span {
-      color: var(--principal-claro);
-    }
-  }
-}
-
-div.info {
-  & p.bio {
-    font-size: 13px;
-    margin-top: 10px;
-  }
-
-  & ul.categories {
-    display: flex;
-    list-style: none;
-    gap: 10px;
-
-    & li {
-      margin-top: 10px;
-      background-color: var(--principal-claro);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-  }
-}
-
-ul.teachers {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 30px;
-  padding-bottom: 10px;
-  gap: 10px;
-
-  & li {
-    width: 40%;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    word-wrap: break-word;
-    padding: 0;
-    cursor: pointer;
-
-    & img {
-      width: 40%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    & h2 {
-      font-size: 12px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    & h3 {
-      font-size: 8px;
-      font-weight: 400;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-
-ul.students {
-  display: flex;
-  flex-wrap: wrap;
-  padding-top: 10px;
-  border-top: 1px solid var(--principal-claro);
-  gap: 20px;
-  align-items: center;
-  list-style: none;
-
-  & li {
-    width: 15%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    cursor: pointer;
-
-    & img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    & h2 {
-      text-align: center;
-      font-size: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-.logo-team {
-  width: 70px;
-  height: 70px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background-color: var(--destaque-claro);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.logo-team img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-}
-
-.logo-team .mdi {
-  font-size: 32px;
-  color: white;
-}
-.creates{
-  margin-top: 700px;
-}
-@media (min-width: 950px) {
-  div.page {
-    max-width: none;
-    width: 100vw;
-    padding: 80px 12%;
-    box-sizing: border-box;
-  }
-
-  div.top {
-    margin-top: 10px;
-  }
-
-  div.info {
-    margin-top: 25px;
-  }
-
-  div.info div.principal-info {
-    gap: 25px;
-  }
-
-  div.info div.principal-info img {
-    width: 15%;
-    flex-shrink: 0;
-  }
-
-  div.info div.principal-info h1 {
-    font-size: 36px;
-  }
-
-  div.info div.principal-info h2 {
-    font-size: 16px;
-    margin-top: 8px;
-  }
-  div.info p.bio {
-    max-width: none;
-    margin-top: 15px;
-    line-height: 1.5;
-    font-size: 1.1rem;
-  }
-
-  div.info ul.categories li {
-    font-size: 14px;
-    padding: 5px 25px;
-    margin-top: 15px;
-    margin-bottom: 20px;
-  }
-
-  div.members {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
-  }
-
-  ul.teachers {
-    margin-top: 0;
-    padding-bottom: 0;
-    padding-right: 30px;
-    margin-right: 30px;
-    border-right: 1px solid var(--principal-claro);
-    flex-wrap: wrap;
-  }
-
-  ul.teachers li {
-    width: auto;
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
-    flex-shrink: 0;
-    margin-right: 15px;
-  }
-
-  ul.teachers li img {
-    width: 90px;
-    flex-shrink: 0;
-  }
-
-  ul.teachers li h2 {
-    font-size: 13px;
-    -webkit-line-clamp: 2;
-  }
-
-  ul.teachers li h3 {
-    font-size: 10px;
-  }
-
-  ul.students {
-    border-top: none;
-    padding-top: 0;
-    flex-wrap: wrap;
-    gap: 35px;
-  }
-
-  ul.students li {
-    width: auto;
-    flex-shrink: 0;
-  }
-
-  ul.students li img {
-    width: 90px;
-    flex-shrink: 0;
-  }
-
-  ul.students li h2 {
-    font-size: 12px;
-  }
-}
-
-.views {
-  font-size: 12px;
-  font-weight: 400;
-  margin-top: 10px;
-}
-.creates {
-  gap: 10px;
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-}
-.createProject {
-  width: 100%;
-  text-align: left;
-  font-size: 16px;
-  background-color: var(--destaque-claro);
-  color: white;
-  border: none;
-  padding: 7px;
-  border-radius: 10px;
-  display: flex;
-  gap: 10px;
-}
- .logo-team {
-    width: 150px;
-    height: 150px;
-  }
-
-  .logo-team .mdi {
-    font-size: 42px;
-  }
-
-</style>
+<style scoped src="./teamDetailComponent.css"></style>

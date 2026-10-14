@@ -42,33 +42,4 @@ function back() {
     </div>
   </div>
 </template>
-<style scoped>
-.top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.arrow {
-  width: 100%;
-  display: flex;
-}
-
-img {
-  width: 250px;
-  height: auto;
-}
-
-h2 {
-  font-size: 23px;
-  margin: 25px 0 35px;
-  text-align: center;
-}
-
-.page {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-</style>
+<style scoped src="./verifyYourEmailTeacherComponent.css"></style>

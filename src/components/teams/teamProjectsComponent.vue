@@ -25,11 +25,19 @@ onMounted(() => {
 <template>
   <h1 v-if="projectStore.teamProjects.length > 0">Projetos da Equipe</h1>
 
-  <div class="projects" v-if="projectStore.teamProjects.length > 0" >
-    <article v-for="project in projectStore.teamProjects" :key="project.id" @click="openProject(project.id)">
+  <div class="projects" v-if="projectStore.teamProjects.length > 0">
+    <article
+      v-for="project in projectStore.teamProjects"
+      :key="project.id"
+      @click="openProject(project.id)"
+    >
       <div class="card">
         <div class="image">
-          <img v-if="project.image_perfil" :src="project.image_perfil.file" :alt="project.titulo" />
+          <img
+            v-if="project.image_perfil"
+            :src="project.image_perfil.url || project.image_perfil.file"
+            :alt="project.titulo"
+          />
 
           <div v-else class="no-image">
             <span class="mdi mdi-robot-outline"></span>
@@ -55,153 +63,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-h1{
-  color: var(--principal-claro);
-  font-size: 23px;
-  margin:18px 0;
-}
-.card {
-  background: white;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.12);
-  transition: 0.2s;
-  display: flex;
-  width: 100%;
-  height: 120px;
-}
-
-.image {
-  width: 200px;
-  height: 100%;
-  flex-shrink: 0;
-}
-
-.image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.no-image {
-  width: 100%;
-  height: 100%;
-  background: rgba(33, 150, 243, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.info {
-  padding: 20px;
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.no-image .mdi {
-  font-size: 60px;
-  color: #2196f3;
-}
-
-.status {
-  padding: 4px 5px;
-  border-radius: 5px;
-  color: #ffff;
-  font-size:11px;
-  align-self: flex-start;
-  display: -webkit-box;
-}
-
-.em_andamento {
-  background: #003d66;
-}
-.concluido {
-  background: #386641;
-}
-.cancelado {
-  background: #b91c1c;
-}
-h2{
-  font-size: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-p{
-  font-size: 12px;
-  margin-bottom: 10px;
-  margin-top: 5px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@media (min-width: 950px) {
-  h1 {
-    font-size: 28px;
-    margin: 50px 0 30px 0;
-  }
-
-  .projects {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-
-  article {
-    width: 100%;
-  }
-
-  .card {
-    flex-direction: column;
-    height: auto;
-    cursor: pointer;
-  }
-  .card:hover {
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-  }
-
-  .image {
-    width: 100%;
-    height: 220px;
-  }
-
-  .info {
-    padding: 18px 20px 20px;
-    justify-content: flex-start;
-  }
-
-  .status {
-    order: -1;
-    align-self: flex-start;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
-
-  h2 {
-    font-size: 19px;
-    -webkit-line-clamp: 2;
-    margin-bottom: 4px;
-  }
-
-  p {
-    font-size: 13.5px;
-    -webkit-line-clamp: 2;
-    margin-bottom: 12px;
-  }
-}
-
-</style>
+<style scoped src="./teamProjectsComponent.css"></style>

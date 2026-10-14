@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import authApi from '@/api/authApi'
+import api from '@/api/config'
 import { computed, ref } from 'vue'
 import router from '@/router'
 import { jwtDecode } from 'jwt-decode'
@@ -32,14 +33,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-if (accessToken.value) {
-  setUserFromToken(accessToken.value)
-  
-  const cache = localStorage.getItem('user_profile_cache')
-  if (cache && user.value) {
-    user.value = { ...user.value, ...JSON.parse(cache) }
+  if (accessToken.value) {
+    setUserFromToken(accessToken.value)
+
+    const cache = localStorage.getItem('user_profile_cache')
+    if (cache && user.value) {
+      user.value = { ...user.value, ...JSON.parse(cache) }
+    }
   }
-}
 
   async function login(credentials) {
     try {
@@ -84,6 +85,20 @@ if (accessToken.value) {
     return await refreshAccessToken()
   }
 
+  async function updateUserAccount(userId, data) {
+    try {
+      const response = await api.patch(`/usuarios/${userId}/`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      })
+      return response.data
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error)
+      throw error
+    }
+  }
+
   function updateUserData(newData) {
     if (user.value) {
       user.value = { ...user.value, ...newData }
@@ -109,6 +124,7 @@ if (accessToken.value) {
     logout,
     refreshAccessToken,
     refreshUserSession,
+    updateUserAccount,
     updateUserData,
   }
 })
