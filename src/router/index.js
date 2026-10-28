@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 
+import VerifyEmailView from '@/views/verifyEmailView.vue'
 import welcomeView from '@/views/welcomeView.vue'
 import signView from '@/views/signView.vue'
 import changePasswordView from '@/views/changePasswordView.vue'
@@ -21,78 +22,83 @@ import TeacherView from '@/views/teacherView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
- scrollBehavior(to, from, savedPosition) {
-  // Quando usa o botão Voltar/Avançar do navegador ou router.back()
-  if (savedPosition) {
-    return savedPosition
-  }
+  scrollBehavior(to, from, savedPosition) {
+    // Quando usa o botão Voltar/Avançar do navegador ou router.back()
+    if (savedPosition) {
+      return savedPosition
+    }
 
-  // Qualquer navegação normal entre páginas começa no topo
-  return { top: 0 }
-},
+    // Qualquer navegação normal entre páginas começa no topo
+    return { top: 0 }
+  },
 
   routes: [
+    {
+      path: '/verificar-email',
+      component: VerifyEmailView,
+      meta: { hideHeader: true, hideFooter: true },
+    },
     {
       path: '/',
       name: 'welcome',
       component: welcomeView,
-      meta: { hideHeader: true, hideFooter: true }
+      meta: { hideHeader: true, hideFooter: true },
     },
     {
       path: '/sign',
       name: 'sign',
       component: signView,
-      meta: { hideHeader: true, hideFooter: true }
+      meta: { hideHeader: true, hideFooter: true },
     },
     {
       path: '/change-password',
       name: 'change-password',
       component: changePasswordView,
-      meta: { hideHeader: true, hideFooter: true }
+      meta: { hideHeader: true, hideFooter: true },
     },
     {
       path: '/home-page',
       name: 'home-page',
-      component: HomePageView
+      component: HomePageView,
     },
     {
       path: '/team',
       name: 'team',
-      component: teamView
+      component: teamView,
     },
     {
       path: '/test',
       name: 'test',
-      component: tests
+      component: tests,
     },
     {
       path: '/edit',
       name: 'edit',
       component: editUserView,
-      meta: { hideHeader: true }
+      meta: { hideHeader: true },
     },
     {
       path: '/team/:id',
       name: 'teamDetails',
       component: teamDetailsView,
-      props: true
+      props: true,
     },
     {
       path: '/student/:id',
       name: 'studentDetails',
       component: studentDetailsView,
-      props: true
+      props: true,
     },
     {
       path: '/teacher/:id',
       name: 'teacherDetails',
       component: teacherDetailsView,
-      props: true
+      props: true,
     },
     {
       path: '/projects',
       name: 'projects',
-      component: projectsView
+      component: projectsView,
     },
     {
       path: '/project/:id',
@@ -103,13 +109,13 @@ const router = createRouter({
     {
       path: '/about-us',
       name: 'aboutUs',
-      component: aboutUsView
+      component: aboutUsView,
     },
     {
       path: '/storage/:id',
       name: 'storage',
       component: storageView,
-      props: true
+      props: true,
     },
     {
       path: '/myTeams',
@@ -120,15 +126,15 @@ const router = createRouter({
       path: '/tutorials',
       name: 'tutorials',
       component: TutorialView,
-      meta: { hideHeader: true }
+      meta: { hideHeader: true },
     },
     {
       path: '/teacher',
       name: 'teacher',
       component: TeacherView,
-      meta: { hideHeader: true }
+      meta: { hideHeader: true },
     },
-  ]
+  ],
 })
 
 router.beforeEach((to, from, next) => {
@@ -136,7 +142,7 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = authStore.isAuthenticated
 
   // Lista de rotas que QUALQUER UM pode acessar sem estar logado
-  const publicPaths = ['/', '/sign', '/change-password']
+  const publicPaths = ['/', '/sign', '/change-password', '/verificar-email']
   const isPublicRoute = publicPaths.includes(to.path)
 
   if (!isLoggedIn && !isPublicRoute) {
@@ -149,7 +155,5 @@ router.beforeEach((to, from, next) => {
     // 3. Permite a navegação normalmente
     next()
   }
-
-
 })
 export default router

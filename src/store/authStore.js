@@ -9,6 +9,8 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(localStorage.getItem('access_token') || null)
   const refreshToken = ref(localStorage.getItem('refresh_token') || null)
   const user = ref(null)
+  const pendingEmail = ref(sessionStorage.getItem('pending_email') || '')
+  const pendingType = ref(sessionStorage.getItem('pending_type') || 'aluno')
 
   const isAuthenticated = computed(() => !!accessToken.value)
 
@@ -42,6 +44,37 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  function setPendingEmail(email, tipo = 'aluno') {
+    pendingEmail.value = email
+    pendingType.value = tipo
+    sessionStorage.setItem('pending_email', email)
+    sessionStorage.setItem('pending_type', tipo)
+  }
+
+  function clearPendingVerification() {
+    pendingEmail.value = ''
+    sessionStorage.removeItem('pending_email')
+    sessionStorage.removeItem('pending_type')
+  }
+
+  async function verifyEmail(codigo) {
+    if (!pendingEmail.value) throw new Error('Informe o e-mail da conta pendente.')
+    const { data } = await authApi.verifyEmail(pendingEmail.value, codigo)
+    accessToken.value = data.access
+    refreshToken.value = data.refresh
+    localStorage.removeItem('user_profile_cache')
+    localStorage.setItem('access_token', data.access)
+    localStorage.setItem('refresh_token', data.refresh)
+    setUserFromToken(data.access)
+    clearPendingVerification()
+    await router.push('/home-page')
+  }
+
+  async function resendVerificationCode() {
+    if (!pendingEmail.value) throw new Error('Informe o e-mail da conta pendente.')
+    return authApi.resendVerificationCode(pendingEmail.value)
+  }
+
   async function login(credentials) {
     try {
       const response = await authApi.login(credentials)
@@ -53,6 +86,11 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('refresh_token', refresh)
       router.push('/home-page')
     } catch (error) {
+      if (error.response?.data?.code === 'email_not_verified') {
+        setPendingEmail(credentials.email)
+        await router.push('/verificar-email')
+        return
+      }
       console.error('Login failed:', error)
       throw error
     }
@@ -106,6 +144,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    clearPendingVerification()
     accessToken.value = null
     refreshToken.value = null
     user.value = null
@@ -116,6 +155,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
+    pendingEmail,
+    pendingType,
+    setPendingEmail,
+    clearPendingVerification,
+    verifyEmail,
+    resendVerificationCode,
     accessToken,
     refreshToken,
     isAuthenticated,

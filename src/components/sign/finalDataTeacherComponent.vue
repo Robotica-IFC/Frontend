@@ -16,7 +16,7 @@ const file = ref(null)
 const showImageSheet = ref(false)
 
 function back() {
-  templateStore.sign = 3 // Volta para a etapa dos dados
+  templateStore.sign = 2 // Volta para a etapa dos dados
 }
 
 function handleFileSelected(selectedFile) {
@@ -28,7 +28,6 @@ function submit() {
   // Chama o submit do Teacher Store
   teacherStore.submit(file.value)
 }
-
 </script>
 
 <template>
@@ -66,10 +65,10 @@ function submit() {
 
     <div class="bottom">
       <stepComponent
-        :step="3"
+        :step="2"
         first="Informações"
-        second="Confirme seu E-Mail"
-        third="Dados finais"
+        second="Dados finais"
+        third="Confirme seu e-mail"
       />
     </div>
 
