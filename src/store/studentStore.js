@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import studentsApi from '@/api/studentApi'
 import { computed, reactive, ref } from 'vue'
-// import router from '@/router'
+import router from '@/router'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
@@ -59,12 +59,8 @@ export const useStudentStore = defineStore('student', () => {
         imagem_perfil: state.student.imagem_perfil,
       })
 
-      const credentials = reactive({
-        email: state.student.email,
-        password: state.student.password,
-      })
-
-      authStore.login(credentials)
+      authStore.setPendingEmail(state.student.email, 'aluno')
+      await router.push('/verificar-email')
     } catch (error) {
       const errorMsg = error.response?.data
       console.error('Erro detalhado:', errorMsg)
@@ -96,7 +92,7 @@ export const useStudentStore = defineStore('student', () => {
       if (file) {
         const image = await uploadImage(file)
         state.student.imagem_perfil = image.attachment_key
-      }else {
+      } else {
         state.student.imagem_perfil = '8d7c4190-fb43-46e1-a094-6e400c9365b2'
       }
 
@@ -150,9 +146,9 @@ export const useStudentStore = defineStore('student', () => {
 
       const studentData = response.data
 
-      const userId = studentData.user?.id;
+      const userId = studentData.user?.id
 
-      if(userId){
+      if (userId) {
         const teamUser = await teamStore.getTeamByUserId(userId)
 
         studentData.teams = teamUser
