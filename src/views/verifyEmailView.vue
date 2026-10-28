@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onUnmounted, ref } from 'vue'
 import robotImage from '@/assets/gif/acenar.gif'
 import { useAuthStore } from '@/store/authStore'
 const auth = useAuthStore()
@@ -48,10 +48,37 @@ function handleKey(event, index) {
   }
 }
 const loading = ref(false)
+const loadingAction = ref('')
+const remainingSeconds = ref(0)
+let cooldownDeadline = 0
+const cooldownKey = () => `verification_resend_until:${email.value.trim().toLowerCase()}`
+
+function updateCountdown() {
+  remainingSeconds.value = Math.max(0, Math.ceil((cooldownDeadline - Date.now()) / 1000))
+}
+
+function startCooldown() {
+  cooldownDeadline = Date.now() + 60000
+  sessionStorage.setItem(cooldownKey(), String(cooldownDeadline))
+  updateCountdown()
+}
+
+if (email.value) {
+  const savedDeadline = Number(sessionStorage.getItem(cooldownKey()))
+  if (Number.isFinite(savedDeadline) && savedDeadline > 0) {
+    cooldownDeadline = savedDeadline
+    updateCountdown()
+  } else {
+    startCooldown()
+  }
+}
+const countdownInterval = setInterval(updateCountdown, 250)
+onUnmounted(() => clearInterval(countdownInterval))
 const error = ref('')
 const message = ref('')
 
 async function run(action) {
+  if (loading.value || (action === 'resend' && remainingSeconds.value > 0)) return
   error.value = ''
   message.value = ''
   if (!email.value.trim()) {
@@ -60,6 +87,7 @@ async function run(action) {
   }
   auth.setPendingEmail(email.value.trim(), auth.pendingType)
   loading.value = true
+  loadingAction.value = action
   try {
     if (action === 'verify') {
       if (!/^[0-9]{6}$/.test(codigo.value)) {
@@ -69,10 +97,15 @@ async function run(action) {
       await auth.verifyEmail(codigo.value)
     } else {
       await auth.resendVerificationCode()
+      startCooldown()
+      digits.value = Array(6).fill('')
       message.value = 'Se houver uma conta pendente, um código será enviado. Confira também o spam.'
     }
   } catch (err) {
     const data = err.response?.data
+    if (action === 'resend' && err.response?.status === 429 && data?.detail?.includes('60 segundos')) {
+      startCooldown()
+    }
     error.value =
       data?.detail ||
       (data ? Object.values(data).flat().join(' ') : err.message) ||
@@ -85,7 +118,7 @@ async function run(action) {
 
 <template>
   <div class="verification">
-    <section class="verification-card" aria-labelledby="verification-title">
+    <section class="verification-card" aria-labelledby="verification-title" :aria-busy="loading" :inert="loading">
       <RouterLink class="back-link" to="/" aria-label="Voltar para entrar">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
@@ -132,10 +165,15 @@ async function run(action) {
             @focus="$event.target.select()"
           />
         </fieldset>
+        <p class="feedback">
+          Se o e-mail com o código não chegar à caixa de entrada principal, verifique a pasta de spam.
+        </p>
         <p v-if="error" role="alert" class="feedback error">{{ error }}</p>
         <p v-if="message" role="status" class="feedback">{{ message }}</p>
         <div class="actions">
-          <button type="button" :disabled="loading" @click="run('resend')">Reenviar Código</button>
+          <button type="button" :disabled="loading || remainingSeconds > 0" @click="run('resend')">
+            {{ remainingSeconds > 0 ? `Reenviar em ${remainingSeconds}s` : 'Reenviar Código' }}
+          </button>
           <button type="submit" :disabled="loading">
             {{ loading ? 'Aguarde...' : 'Continuar' }}
           </button>
@@ -152,10 +190,58 @@ async function run(action) {
         <li><span class="dot" aria-hidden="true"></span><span>Dados finais</span></li>
       </ol>
     </section>
+    <div v-if="loading" class="loading-overlay" role="status" aria-live="polite">
+      <div class="loading-card">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <p>{{ loadingAction === 'resend' ? 'Enviando seu código...' : 'Verificando seu código...' }}</p>
+        <span>Aguarde um instante.</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #003d6670;
+}
+.loading-card {
+  width: 100%;
+  max-width: 320px;
+  padding: 32px 24px;
+  border-radius: 20px;
+  background: #fff;
+  color: #003d66;
+  text-align: center;
+  box-shadow: 0 12px 40px #0002;
+}
+.loading-card p {
+  margin: 20px 0 8px;
+  font-weight: 600;
+}
+.loading-card > span:last-child {
+  font-size: 14px;
+}
+.loading-spinner {
+  display: inline-block;
+  width: 44px;
+  height: 44px;
+  border: 4px solid #dbe7ef;
+  border-top-color: #003d66;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner { animation: none; }
+}
 .verification {
   min-height: 100dvh;
   display: flex;
@@ -256,7 +342,7 @@ h1 {
 }
 .actions button:disabled {
   opacity: 0.6;
-  cursor: wait;
+  cursor: not-allowed;
 }
 .actions button:focus-visible,
 .back-link:focus-visible {
