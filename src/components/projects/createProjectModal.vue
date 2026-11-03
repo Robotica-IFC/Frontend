@@ -1,13 +1,10 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { onBeforeUnmount, ref, reactive } from 'vue'
 import { useProjectStore } from '@/store/projectsStore.js'
-import { useTeamStore } from '@/store/teamStore'
-import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
 const emit = defineEmits(['close', 'created'])
 const projectStore = useProjectStore()
-const teamStore = useTeamStore()
 const loading = ref(false)
 const errorMessage = ref('')
 const selectedFile = ref(null)
@@ -18,11 +15,15 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  suggestion: {
+    type: Object,
+    default: null,
+  },
 })
 const form = reactive({
-  titulo: '',
-  desc_curta: '',
-  descricao: '',
+  titulo: props.suggestion?.titulo || '',
+  desc_curta: props.suggestion?.descricao?.trim().replace(/\s+/g, ' ').slice(0, 60) || '',
+  descricao: props.suggestion?.descricao || '',
   sugestao: false,
   status: 'EM_ANDAMENTO',
   equipe: props.id,
@@ -42,6 +43,7 @@ function removeImage() {
   imagePreview.value = null
 }
 async function handleSubmit() {
+  if (loading.value) return
   errorMessage.value = ''
   // Validações de obrigatoriedade e limites de caracteres
   if (!form.titulo.trim()) {
@@ -84,16 +86,48 @@ async function handleSubmit() {
     loading.value = false
   }
 }
+
+onBeforeUnmount(() => {
+  if (imagePreview.value) URL.revokeObjectURL(imagePreview.value)
+})
 </script>
 <template>
   <div class="modal-backdrop" @click.self="$emit('close')">
-    <div class="modal-container">
+    <div
+      class="modal-container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-project-heading"
+    >
       <div class="modal-header">
-        <h2>Criar Novo Projeto</h2>
-        <button class="close-btn" @click="$emit('close')">&times;</button>
+        <h2 id="create-project-heading">Criar Novo Projeto</h2>
+        <button
+          type="button"
+          class="close-btn"
+          aria-label="Fechar criação de projeto"
+          :disabled="loading"
+          @click="$emit('close')"
+        >
+          &times;
+        </button>
       </div>
       <form @submit.prevent="handleSubmit" class="modal-body">
         <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
+        <aside v-if="props.suggestion" class="source-suggestion">
+          <h3>A partir da sugestão: {{ props.suggestion.titulo }}</h3>
+          <p>Você pode editar os dados antes de criar o projeto.</p>
+          <ul v-if="props.suggestion.anexos?.length" aria-label="Anexos da sugestão">
+            <li
+              v-for="(attachment, index) in props.suggestion.anexos"
+              :key="attachment.attachment_key"
+            >
+              <a :href="attachment.url" target="_blank" rel="noopener noreferrer">
+                <span class="mdi mdi-file-pdf-box" aria-hidden="true"></span>
+                {{ attachment.description || `Anexo ${index + 1} (PDF)` }}
+              </a>
+            </li>
+          </ul>
+        </aside>
         <!-- Upload da Imagem de Perfil do Projeto -->
         <div class="form-group align-center">
           <label>Imagem do Projeto</label>
@@ -125,10 +159,10 @@ async function handleSubmit() {
         <div class="form-group">
           <label>Título *</label>
           <appInput
-            placeholder="Título do projeto (Max: 20 caracteres)"
+            placeholder="Título do projeto (Max: 30 caracteres)"
             icon="mdi mdi-format-title"
             v-model="form.titulo"
-            maxlength="30"
+            :maxlength="30"
             required
           />
           <small class="char-count" :class="{ danger: form.titulo.length > 30 }">
@@ -142,7 +176,7 @@ async function handleSubmit() {
             placeholder="Resumo do projeto (Max: 60 caracteres)"
             icon="mdi mdi-text-short"
             v-model="form.desc_curta"
-            maxlength="60"
+            :maxlength="60"
           />
           <small class="char-count" :class="{ danger: form.desc_curta.length > 60 }">
             {{ form.desc_curta.length }}/60 caracteres
@@ -178,10 +212,12 @@ async function handleSubmit() {
         </div>
         <!-- Ações do Modal -->
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" @click="$emit('close')">Cancelar</button>
-          <appButton type="submit" :disabled="loading">
+          <button type="button" class="btn-cancel" :disabled="loading" @click="$emit('close')">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-save" :disabled="loading">
             {{ loading ? 'Salvando...' : 'Salvar Projeto' }}
-          </appButton>
+          </button>
         </div>
       </form>
     </div>
