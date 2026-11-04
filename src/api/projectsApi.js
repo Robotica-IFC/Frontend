@@ -13,6 +13,9 @@ const projectsApi = {
   getById(id) {
     return api.get(`/projetos/${id}`)
   },
+  update(id, payload) {
+    return api.patch(`/projetos/${id}/`, payload)
+  },
   create(payload) {
     return api.post('projetos/', payload)
   }
