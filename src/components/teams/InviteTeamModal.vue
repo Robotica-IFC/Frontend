@@ -80,13 +80,133 @@ async function send(person) {
   </div>
 </template>
 <style scoped>
-.overlay{position:fixed;inset:0;background:#0008;z-index:1100;display:flex;justify-content:center;align-items:flex-end}
-.dialog{width:100%;max-height:90dvh;overflow:auto;background:white;color:#003f63;border-radius:20px 20px 0 0;padding:24px;box-sizing:border-box}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px}header h2{font-size:20px;display:flex;align-items:center;gap:8px}
-header>button{border:0;background:none;color:inherit;font-size:24px;cursor:pointer}
-.dialog>p{font-size:13px;color:#476579}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button{flex:1;padding:10px;border:1px solid #00507b;background:white;color:#00507b;border-radius:8px;cursor:pointer}.tabs button.active{background:#00507b;color:white}
-label{display:block;font-weight:600;margin-bottom:8px}.search{position:relative}.search input{width:100%;box-sizing:border-box;padding:12px 38px 12px 12px;border-radius:8px;border:1px solid #acc2d1;font:inherit}.search i{position:absolute;right:13px;top:12px}
-.results{display:grid;gap:8px;margin-top:16px}.person{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px;border:1px solid #d9e4e9;border-radius:10px}.person span{display:grid;gap:4px;min-width:0}.person small{color:#698292}.person button{background:#00507b;color:#fff;border:0;border-radius:7px;padding:9px;cursor:pointer;white-space:nowrap}
-.error{color:#a52323!important}.success{color:#187442!important}
-@media(min-width:768px){.overlay{align-items:center;padding:24px}.dialog{max-width:620px;border-radius:18px;padding:32px}}
+.overlay {
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:1100;
+  display:flex;
+  justify-content:center;
+  align-items:flex-end
+}
+.dialog {
+  width:100%;
+  max-height:90dvh;
+  overflow:auto;
+  background:white;
+  color:#003f63;
+  border-radius:20px 20px 0 0;
+  padding:24px;
+  box-sizing:border-box
+}
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px
+}
+header h2 {
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+header>button {
+  border:0;
+  background:none;
+  color:inherit;
+  font-size:24px;
+  cursor:pointer
+}
+.dialog>p {
+  font-size:13px;
+  color:#476579
+}
+.tabs {
+  display:flex;
+  gap:8px;
+  margin:18px 0
+}
+.tabs button {
+  flex:1;
+  padding:10px;
+  border:1px solid #00507b;
+  background:white;
+  color:#00507b;
+  border-radius:8px;
+  cursor:pointer
+}
+.tabs button.active {
+  background:#00507b;
+  color:white
+}
+label {
+  display:block;
+  font-weight:600;
+  margin-bottom:8px
+}
+.search {
+  position:relative
+}
+.search input {
+  width:100%;
+  box-sizing:border-box;
+  padding:12px 38px 12px 12px;
+  border-radius:8px;
+  border:1px solid #acc2d1;
+  font:inherit
+}
+.search i {
+  position:absolute;
+  right:13px;
+  top:12px
+}
+.results {
+  display:grid;
+  gap:8px;
+  margin-top:16px
+}
+.person {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  border:1px solid #d9e4e9;
+  border-radius:10px
+}
+.person span {
+  display:grid;
+  gap:4px;
+  min-width:0
+}
+.person small {
+  color:#698292
+}
+.person button {
+  background:#00507b;
+  color:#fff;
+  border:0;
+  border-radius:7px;
+  padding:9px;
+  cursor:pointer;
+  white-space:nowrap
+}
+.error {
+  color:#a52323!important
+}
+.success {
+  color:#187442!important
+}
+@media(min-width:768px) {
+  .overlay {
+    align-items:center;
+    padding:24px
+  }
+  .dialog {
+    max-width:620px;
+    border-radius:18px;
+    padding:32px
+  }
+}
 </style>
