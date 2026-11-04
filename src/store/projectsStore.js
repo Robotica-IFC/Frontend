@@ -87,7 +87,15 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  async function updateProject(id, projectData, image = undefined) {
+    const payload = { ...projectData }
+    if (image !== undefined) payload.image_perfil = image ? await uploadProjectImage(image) : null
+    const { data } = await projectApi.update(id, payload)
+    return data
+  }
+
   return {
+    updateProject,
     projects,
     loading,
     currentPage,
