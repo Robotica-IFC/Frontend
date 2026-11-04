@@ -55,15 +55,131 @@ async function remove(id) {
   </div>
 </template>
 <style scoped>
-.comments-overlay{position:fixed;inset:0;background:#0005;backdrop-filter:blur(3px);z-index:1100;display:flex;align-items:flex-end;justify-content:center}
-.comments-panel{background:white;width:100%;max-height:82dvh;min-height:55dvh;border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;color:#092f4b}
-.drag-indicator{width:72px;height:4px;border-radius:4px;background:#d8d8d8;margin:12px auto}
-header{padding:0 20px;display:flex;align-items:center;justify-content:space-between}
-header h2{font-size:17px}header button{border:0;background:none;color:#034467;font-size:22px;cursor:pointer}
-.comment-list{overflow:auto;flex:1;padding:8px 20px}.comment-list article{border-bottom:1px solid #d5e4ec;padding:15px 0;display:flex;justify-content:space-between;gap:12px}
-.comment-content{flex:1;min-width:0}.comment-content strong{color:#004369;font-size:14px}.comment-content time{margin-left:9px;color:#63717e;font-size:12px}.comment-content p{margin:8px 0;overflow-wrap:anywhere;font-size:14px}
-.delete{border:0;background:none;color:#c23945;cursor:pointer}.empty{text-align:center;color:#667b8b}
-.error{color:#b3261e;padding:0 20px}
-form{display:flex;gap:8px;padding:16px 20px;background:#f0f1f2}form input{flex:1;min-width:0;border:0;border-radius:24px;background:white;padding:12px;font:inherit}form button{background:#004369;color:white;border:0;border-radius:50%;width:43px;height:43px;cursor:pointer}form button:disabled{opacity:.5}
-@media(min-width:768px){.comments-overlay{align-items:center;padding:24px}.comments-panel{border-radius:16px;max-width:560px;min-height:520px;max-height:75dvh}}
+.comments-overlay {
+  position:fixed;
+  inset:0;
+  background:#0005;
+  backdrop-filter:blur(3px);
+  z-index:1100;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center
+}
+.comments-panel {
+  background:white;
+  width:100%;
+  max-height:82dvh;
+  min-height:55dvh;
+  border-radius:22px 22px 0 0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  color:#092f4b
+}
+.drag-indicator {
+  width:72px;
+  height:4px;
+  border-radius:4px;
+  background:#d8d8d8;
+  margin:12px auto
+}
+header {
+  padding:0 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between
+}
+header h2 {
+  font-size:17px
+}
+header button {
+  border:0;
+  background:none;
+  color:#034467;
+  font-size:22px;
+  cursor:pointer
+}
+.comment-list {
+  overflow:auto;
+  flex:1;
+  padding:8px 20px
+}
+.comment-list article {
+  border-bottom:1px solid #d5e4ec;
+  padding:15px 0;
+  display:flex;
+  justify-content:space-between;
+  gap:12px
+}
+.comment-content {
+  flex:1;
+  min-width:0
+}
+.comment-content strong {
+  color:#004369;
+  font-size:14px
+}
+.comment-content time {
+  margin-left:9px;
+  color:#63717e;
+  font-size:12px
+}
+.comment-content p {
+  margin:8px 0;
+  overflow-wrap:anywhere;
+  font-size:14px
+}
+.delete {
+  border:0;
+  background:none;
+  color:#c23945;
+  cursor:pointer
+}
+.empty {
+  text-align:center;
+  color:#667b8b
+}
+.error {
+  color:#b3261e;
+  padding:0 20px
+}
+form {
+  display:flex;
+  gap:8px;
+  padding:16px 20px;
+  background:#f0f1f2
+}
+form input {
+  flex:1;
+  min-width:0;
+  border:0;
+  border-radius:24px;
+  background:white;
+  padding:12px;
+  font:inherit
+}
+form button {
+  background:#004369;
+  color:white;
+  border:0;
+  border-radius:50%;
+  width:43px;
+  height:43px;
+  cursor:pointer
+}
+form button:disabled {
+  opacity:.5
+}
+@media(min-width:768px) {
+  .comments-overlay {
+    align-items:center;
+    padding:24px
+  }
+  .comments-panel {
+    border-radius:16px;
+    max-width:560px;
+    min-height:520px;
+    max-height:75dvh
+  }
+}
 </style>
