@@ -5,12 +5,31 @@ import { useAuthStore } from '@/store/authStore'
 import { useTemplateStore } from '@/store/template'
 import appButton from '@/components/form/appButton.vue'
 import CreatePostModal from '@/components/posts/CreatePostModal.vue'
+import PostCommentsSheet from '@/components/posts/PostCommentsSheet.vue'
+import EditPostModal from '@/components/posts/EditPostModal.vue'
+import EditProjectModal from '@/components/projects/EditProjectModal.vue'
+import { usePostStore } from '@/store/postsStore'
 import appArrow from '@/components/appArrow.vue'
 import router from '@/router'
 
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
 const templateStore = useTemplateStore()
+const postStore = usePostStore()
+const selectedComments = ref(null)
+const editingPost = ref(null)
+const editingProject = ref(false)
+const errorMessage = ref('')
+const currentUserId = computed(() => authStore.user?.user_id)
+const canEditProject = computed(() => Boolean(authStore.user?.tipo === 'professor' && actualProject.value?.professores?.some(p => p.user_id === currentUserId.value || p.user?.id === currentUserId.value || p.id === authStore.user?.id)))
+function canEditPost(post) {
+  return Boolean(currentUserId.value && (post.aluno_criador?.user_id === currentUserId.value || post.professor_criador?.user_id === currentUserId.value || post.aluno_criador?.id === authStore.user?.id || post.professor_criador?.id === authStore.user?.id))
+}
+async function toggleLike(post) {
+  errorMessage.value = ''
+  try { await postStore.toggleLike(post) }
+  catch { errorMessage.value = 'Não foi possível atualizar a curtida.' }
+}
 
 const actualProject = ref(null)
 const onTheTeam = ref(false)
@@ -69,6 +88,7 @@ onMounted(async () => {
     <appArrow style="margin-top: 60px;" @click="router.back()"></appArrow>
 
       <h1>{{ actualProject.titulo }}</h1>
+      <button v-if="canEditProject" class="project-edit-control" @click="editingProject = true"><i class="mdi mdi-pencil-outline" /> Editar projeto</button>
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team">Ver Participantes</appButton>
     </div>
@@ -94,6 +114,7 @@ onMounted(async () => {
         </div>
 
         <p class="legenda">{{ p.legenda }}</p>
+        <button v-if="canEditPost(p)" class="post-edit-control" @click="editingPost = p"><i class="mdi mdi-pencil-outline"/> Editar publicação</button>
 
         <div class="post-image" v-if="p.images && p.images.length === 1">
           <img :src="p.images[0].url" alt="Imagem do post">
@@ -110,9 +131,17 @@ onMounted(async () => {
 
           <button class="nav-btn next" @click="scrollCarousel(p.id, 'next')">❯</button>
         </div>
+        <div class="post-actions">
+          <button @click="selectedComments = p" type="button"><i class="mdi mdi-comment-outline" /> {{ p.comentarios?.length || 0 }} comentários</button>
+          <button @click="toggleLike(p)" type="button" :aria-pressed="p.curtiu"><span>{{ p.curtidas || 0 }} curtidas</span><i :class="p.curtiu ? 'mdi mdi-heart' : 'mdi mdi-heart-outline'" /></button>
+        </div>
       </li>
     </ul>
+    <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
 
+    <PostCommentsSheet v-if="selectedComments" :post="selectedComments" @close="selectedComments = null" />
+    <EditPostModal v-if="editingPost" :post="editingPost" @close="editingPost = null" @saved="fetchProject" />
+    <EditProjectModal v-if="editingProject" :project="actualProject" @close="editingProject = false" @saved="fetchProject" />
     <CreatePostModal
       :project-id="props.id"
       :is-open="isModalOpen"
@@ -121,5 +150,13 @@ onMounted(async () => {
     />
   </div>
 </template>
+
+<style scoped>
+.post-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 4px}
+.post-actions button{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:#003f63;font:inherit;font-size:13px;cursor:pointer}
+.post-actions .mdi-heart{color:#df183e}.post-actions i{font-size:21px}
+.post-edit-control,.project-edit-control{background:transparent;color:#004369;border:1px solid #004369;border-radius:6px;padding:8px 12px;font:inherit;cursor:pointer}
+@media(max-width:600px){.post-actions button{font-size:11px}.post-actions i{font-size:18px}}
+</style>
 
 <style scoped src="./projectDetailComponent.css"></style>
