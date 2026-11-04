@@ -19,6 +19,7 @@ const emit = defineEmits(['close', 'created'])
 const postStore = usePostStore()
 
 const legenda = ref('')
+const formatoImagem = ref('RETANGULAR')
 const selectedFiles = ref([])
 const previewUrls = ref([])
 const showImageSheet = ref(false)
@@ -38,6 +39,7 @@ const removeImage = (index) => {
 
 const closeModal = () => {
   legenda.value = ''
+  formatoImagem.value = 'RETANGULAR'
   selectedFiles.value = []
   previewUrls.value.forEach(url => URL.revokeObjectURL(url))
   previewUrls.value = []
@@ -50,6 +52,7 @@ const handleSubmit = async () => {
   try {
     await postStore.createPost({
       legenda: legenda.value,
+      formato_imagem: formatoImagem.value,
       projeto: props.projectId,
       files: selectedFiles.value
     })
@@ -76,6 +79,21 @@ const handleSubmit = async () => {
           rows="4"
         ></textarea>
 
+        <fieldset class="format-selector">
+          <legend>Formato da publicação</legend>
+          <label :class="{ active: formatoImagem === 'QUADRADO' }">
+            <input v-model="formatoImagem" type="radio" value="QUADRADO" name="formato-post"/>
+            <i class="mdi mdi-crop-square" aria-hidden="true"></i> Quadrado (1:1)
+          </label>
+          <label :class="{ active: formatoImagem === 'RETANGULAR' }">
+            <input v-model="formatoImagem" type="radio" value="RETANGULAR" name="formato-post"/>
+            <i class="mdi mdi-crop-landscape" aria-hidden="true"></i> Retangular (16:9)
+          </label>
+        </fieldset>
+        <p class="format-tip">As imagens manterão suas proporções originais dentro do formato escolhido.</p>
+        <div v-if="previewUrls.length" class="post-format-preview" :class="formatoImagem === 'QUADRADO' ? 'is-square' : 'is-wide'">
+          <img :src="previewUrls[0]" alt="Prévia do formato da publicação"/>
+        </div>
         <div v-if="previewUrls.length" class="previews-container">
           <div v-for="(url, index) in previewUrls" :key="index" class="preview-item">
             <img :src="url" alt="Pré-visualização" />
@@ -84,7 +102,7 @@ const handleSubmit = async () => {
         </div>
 
         <button type="button" class="add-image-btn" @click="showImageSheet = true">
-          📷 Adicionar Imagens
+          <i class="mdi mdi-image-plus-outline" aria-hidden="true"></i> Adicionar imagens
         </button>
       </div>
 
