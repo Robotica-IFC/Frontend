@@ -73,6 +73,18 @@ onUnmounted(() => { if (refreshTimer) window.clearInterval(refreshTimer); });
 </template>
 
 <style scoped>
-.notification-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;margin-left:6px;background:#d53b4c;color:#fff;font-size:11px;font-weight:700;border-radius:12px}
+.notification-count {
+  display:inline-grid;
+  place-items:center;
+  min-width:20px;
+  height:20px;
+  padding:0 5px;
+  margin-left:6px;
+  background:#d53b4c;
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  border-radius:12px
+}
 </style>
 <style scoped src="./sideBarComponentComponent.css"></style>
