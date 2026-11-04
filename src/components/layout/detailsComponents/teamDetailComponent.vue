@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useStorageStore } from '@/store/storageStore'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 import membersOfTeamComponent from './membersOfTeamComponent.vue'
+import EditTeamModal from '@/components/teams/EditTeamModal.vue'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
@@ -18,6 +19,7 @@ const authStore = useAuthStore()
 const storageStore = useStorageStore()
 
 const isModalOpen = ref(false)
+const isEditOpen = ref(false)
 
 const props = defineProps({
   id: {
@@ -81,6 +83,7 @@ async function goToStorage() {
       <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent v-if="!isMemberOfTeam"></requestToParticipateComponent>
       <exitTeamComponent v-if="isMemberOfTeam" :teamId="props.id"></exitTeamComponent>
+      <button v-if="isTeacherInTeam" type="button" class="edit-team-btn" @click="isEditOpen = true"><i class="mdi mdi-pencil-outline"/> Editar equipe</button>
     </div>
 
     <div class="info">
@@ -141,7 +144,13 @@ async function goToStorage() {
     </div>
 
     <teamProjectsComponent :team-id="props.id" />
+    <EditTeamModal v-if="isEditOpen" :team="team" @close="isEditOpen = false" @saved="teamStore.getTeamById(props.id)" />
   </div>
 </template>
+
+<style scoped>
+.edit-team-btn{padding:10px 16px;border:1px solid #004369;border-radius:7px;background:white;color:#004369;cursor:pointer;font:inherit;display:flex;align-items:center;gap:8px}
+@media(max-width:650px){.edit-team-btn{font-size:12px;padding:8px}}
+</style>
 
 <style scoped src="./teamDetailComponent.css"></style>
