@@ -175,7 +175,16 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
+  async function updateTeam(id, data, image = undefined) {
+    const payload = { ...data }
+    if (image !== undefined) payload.image_perfil = image ? await uploadTeamImage(image) : null
+    const { data: updated } = await teamApi.update(id, payload)
+    await getTeamById(id)
+    return updated
+  }
+
   return {
+    updateTeam,
     teams,
     loading,
     currentPage,
