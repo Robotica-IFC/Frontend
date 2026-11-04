@@ -1,0 +1,45 @@
+<script setup>
+import { ref } from 'vue'
+import { usePostStore } from '@/store/postsStore'
+const props = defineProps({ post: { type: Object, required: true } })
+const emit = defineEmits(['close', 'saved'])
+const store = usePostStore()
+const legenda = ref(props.post.legenda || '')
+const images = ref(null)
+const error = ref('')
+async function save() {
+  error.value = ''
+  try {
+    await store.updatePost(props.post.id, legenda.value.trim(), images.value)
+    emit('saved')
+    emit('close')
+  } catch { error.value = 'Não foi possível atualizar a publicação.' }
+}
+</script>
+<template>
+  <div class="post-edit-overlay" @click.self="$emit('close')">
+    <section class="post-edit-panel" role="dialog" aria-modal="true" aria-label="Editar publicação">
+      <header><h2>Editar publicação</h2><button @click="$emit('close')" aria-label="Fechar"><i class="mdi mdi-close"/></button></header>
+      <form @submit.prevent="save">
+        <label>Legenda <textarea v-model="legenda" rows="6" placeholder="Escreva sua publicação..." /></label>
+        <label>Substituir imagens (opcional)
+          <input type="file" accept="image/*" multiple @change="images = Array.from($event.target.files)" />
+        </label>
+        <p class="hint">Ao selecionar novas imagens, elas substituirão as imagens anteriores.</p>
+        <p v-if="error" role="alert" class="error">{{ error }}</p>
+        <footer><button type="button" class="secondary" @click="$emit('close')">Cancelar</button><button type="submit" :disabled="store.loading">{{ store.loading ? 'Salvando...' : 'Salvar' }}</button></footer>
+      </form>
+    </section>
+  </div>
+</template>
+<style scoped>
+.post-edit-overlay{position:fixed;inset:0;z-index:1100;background:#0007;display:flex;align-items:flex-end;justify-content:center}
+.post-edit-panel{width:100%;max-height:90dvh;overflow:auto;padding:24px;background:white;border-radius:20px 20px 0 0;color:#004369;box-sizing:border-box}
+header,footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+header button{border:0;background:none;font-size:20px;color:inherit}
+form{display:grid;gap:16px}label{display:grid;gap:8px}
+textarea,input{font:inherit;border:1px solid #a3c3d2;border-radius:8px;padding:12px;width:100%;box-sizing:border-box}
+.hint{font-size:12px;color:#526b7e}.error{color:#b3261e}
+footer button{padding:12px 16px;border-radius:7px;border:1px solid #004369;background:#004369;color:#fff}footer .secondary{background:#fff;color:#004369}
+@media(min-width:768px){.post-edit-overlay{align-items:center;padding:24px}.post-edit-panel{max-width:600px;border-radius:16px}}
+</style>
