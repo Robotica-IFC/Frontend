@@ -111,11 +111,22 @@ onMounted(async () => {
               <h3 v-else-if="p.professor_criador">Por: {{ p.professor_criador.name }}</h3>
             </div>
           </div>
-          <p class="date">{{ templateStore.formatDate(p.criado_em) }}</p>
+          <div class="post-header-actions">
+            <p class="date">{{ templateStore.formatDate(p.criado_em) }}</p>
+            <button
+              v-if="canEditPost(p)"
+              type="button"
+              class="post-edit-icon"
+              aria-label="Editar publicação"
+              title="Editar publicação"
+              @click="editingPost = p"
+            >
+              <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
 
         <p class="legenda">{{ p.legenda }}</p>
-        <button v-if="canEditPost(p)" class="post-edit-control" @click="editingPost = p"><i class="mdi mdi-pencil-outline"/> Editar publicação</button>
 
         <div class="post-image" v-if="p.images && p.images.length === 1">
           <img :src="p.images[0].url" alt="Imagem do post">
@@ -156,8 +167,14 @@ onMounted(async () => {
 .post-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 4px}
 .post-actions button{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:#003f63;font:inherit;font-size:13px;cursor:pointer}
 .post-actions .mdi-heart{color:#df183e}.post-actions i{font-size:21px}
-.post-edit-control,.project-edit-control{background:transparent;color:#004369;border:1px solid #004369;border-radius:6px;padding:8px 12px;font:inherit;cursor:pointer}
-@media(max-width:600px){.post-actions button{font-size:11px}.post-actions i{font-size:18px}}
+.post-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0}
+.post-header-actions .date{margin:0;white-space:nowrap}
+.post-header-actions .post-edit-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 34px;width:34px;height:34px;padding:0;border:1px solid #bfd4e0;border-radius:8px;background:#f4f9fc;color:#004369;cursor:pointer;line-height:1;transition:background .2s,border-color .2s}
+.post-header-actions .post-edit-icon .mdi{font-size:18px;line-height:1}
+.post-header-actions .post-edit-icon:hover{background:#e2f0f8;border-color:#004369}
+.post-header-actions .post-edit-icon:focus-visible{outline:2px solid #004369;outline-offset:2px}
+.project-edit-control{background:transparent;color:#004369;border:1px solid #004369;border-radius:6px;padding:8px 12px;font:inherit;cursor:pointer}
+@media(max-width:600px){.post-actions button{font-size:11px}.post-actions i{font-size:18px}.post-header-actions{gap:5px}.post-header-actions .post-edit-icon{flex-basis:32px;width:32px;height:32px}.post-header-actions .date{font-size:11px}}
 </style>
 
 <style scoped src="./projectDetailComponent.css"></style>
