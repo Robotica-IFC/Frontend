@@ -93,7 +93,7 @@ async function save() {
         </div>
         <h3>Membros da equipe</h3>
         <div class="member-list">
-          <div v-for="aluno in team.alunos.filter(a => students.includes(a.id))" :key="aluno.id" class="member-row">
+          <div v-for="aluno in (team.alunos || []).filter(a => students.includes(a.id))" :key="aluno.id" class="member-row">
             <span>{{ aluno.user?.name || aluno.user?.username }}</span>
             <button type="button" aria-label="Remover aluno" @click="students = students.filter(id => id !== aluno.id)"><i class="mdi mdi-delete-outline"/></button>
           </div>
