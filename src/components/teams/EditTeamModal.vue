@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useTeamStore } from '@/store/teamStore'
 import { useAuthStore } from '@/store/authStore'
+import studentsApi from '@/api/studentApi'
 
 const props = defineProps({ team: { type: Object, required: true } })
 const emit = defineEmits(['close', 'saved'])
@@ -17,6 +18,9 @@ const search = ref('')
 const file = ref(undefined)
 const saving = ref(false)
 const error = ref('')
+const studentSearch = ref('')
+const studentsFound = ref([])
+const searchLoading = ref(false)
 
 watch(() => props.team, (team) => {
   nome.value = team.nome || ''
@@ -28,6 +32,15 @@ watch(() => props.team, (team) => {
 
 store.getCategories().then(data => { allCategories.value = data }).catch(() => {})
 const filtered = computed(() => allCategories.value.filter(c => c.nome.toLowerCase().includes(search.value.toLowerCase())))
+async function findStudents() {
+  if (!studentSearch.value.trim()) { studentsFound.value = []; return }
+  searchLoading.value = true
+  try {
+    const { data } = await studentsApi.search(studentSearch.value)
+    studentsFound.value = (data.results || data.items || data || []).filter(item => !students.value.includes(item.id))
+  } catch { error.value = 'Não foi possível buscar alunos.' }
+  finally { searchLoading.value = false }
+}
 const canEdit = computed(() => {
   const uid = auth.user?.user_id
   return Boolean(uid && props.team.professores?.some(p => p.user?.id === uid))
@@ -78,7 +91,30 @@ async function save() {
             <input type="checkbox" :checked="categories.includes(c.id)" @change="toggleCategory(c.id)" />{{ c.nome }}
           </label>
         </div>
-        <p class="hint">Os membros atuais serão mantidos. O gerenciamento de convites segue o fluxo de convites da equipe.</p>
+        <h3>Membros da equipe</h3>
+        <div class="member-list">
+          <div v-for="aluno in team.alunos.filter(a => students.includes(a.id))" :key="aluno.id" class="member-row">
+            <span>{{ aluno.user?.name || aluno.user?.username }}</span>
+            <button type="button" aria-label="Remover aluno" @click="students = students.filter(id => id !== aluno.id)"><i class="mdi mdi-delete-outline"/></button>
+          </div>
+          <div v-for="aluno in studentsFound.filter(a => students.includes(a.id))" :key="aluno.id" class="member-row">
+            <span>{{ aluno.user?.name || aluno.user?.username }}</span>
+            <button type="button" aria-label="Remover aluno" @click="students = students.filter(id => id !== aluno.id)"><i class="mdi mdi-delete-outline"/></button>
+          </div>
+        </div>
+        <div class="member-search">
+          <label for="student-search">Adicionar aluno</label>
+          <div class="member-search-field">
+            <input id="student-search" v-model="studentSearch" placeholder="Buscar pelo nome" @input="findStudents"/>
+            <i class="mdi mdi-magnify"/>
+          </div>
+          <p v-if="searchLoading">Buscando...</p>
+          <div v-for="aluno in studentsFound.filter(a => !students.includes(a.id))" :key="aluno.id" class="member-row">
+            <span>{{ aluno.user?.name || aluno.user?.username }}</span>
+            <button type="button" :aria-label="'Adicionar ' + aluno.user?.name" @click="students.push(aluno.id)"><i class="mdi mdi-plus"/></button>
+          </div>
+        </div>
+        <p class="hint">Apenas professores da equipe podem salvar alterações. Professores atuais são preservados.</p>
         <p v-if="error" role="alert" class="error">{{ error }}</p>
         <footer>
           <button type="button" class="secondary" @click="$emit('close')">Cancelar</button>
@@ -101,7 +137,12 @@ input:not([type=checkbox]):not([type=file]),textarea{box-sizing:border-box;width
 .avatar-picker>.mdi{font-size:32px}.avatar-picker .mdi-pencil{position:absolute;right:0;bottom:0;font-size:18px;background:white;border-radius:50%;padding:5px}
 .avatar-picker input{display:none}
 .category-list{max-height:140px;overflow:auto;display:flex;flex-wrap:wrap;gap:8px}.category-list label{border:1px solid #b5ccd9;padding:8px;border-radius:8px;display:flex;gap:5px;align-items:center}
-.hint{font-size:12px;color:#547085}.error{color:#b3261e}
+.hint{font-size:12px;color:#547085}
+.member-list,.member-search{display:grid;gap:10px}
+.member-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #cad9e4;padding:8px}
+.member-row button{border:none;background:transparent;color:#004369;font-size:20px;cursor:pointer}
+.member-search-field{position:relative}.member-search-field>.mdi{position:absolute;right:12px;top:12px}
+.error{color:#b3261e}
 footer button{border:1px solid #004369;border-radius:6px;padding:11px 15px;background:#004369;color:#fff;cursor:pointer}footer .secondary{background:#fff;color:#004369}
 @media(min-width:768px){.edit-team-overlay{align-items:center;padding:30px}.edit-team-dialog{max-width:680px;max-height:85dvh;border-radius:18px;padding:32px}}
 </style>
