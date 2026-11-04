@@ -8,6 +8,7 @@ import CreatePostModal from '@/components/posts/CreatePostModal.vue'
 import PostCommentsSheet from '@/components/posts/PostCommentsSheet.vue'
 import EditPostModal from '@/components/posts/EditPostModal.vue'
 import EditProjectModal from '@/components/projects/EditProjectModal.vue'
+import ProjectParticipantsModal from '@/components/layout/detailsComponents/projectParticipantsModal.vue'
 import { usePostStore } from '@/store/postsStore'
 import appArrow from '@/components/appArrow.vue'
 import router from '@/router'
@@ -19,6 +20,7 @@ const postStore = usePostStore()
 const selectedComments = ref(null)
 const editingPost = ref(null)
 const editingProject = ref(false)
+const isParticipantsModalOpen = ref(false)
 const errorMessage = ref('')
 const currentUserId = computed(() => authStore.user?.user_id)
 const canEditProject = computed(() => Boolean(authStore.user?.tipo === 'professor' && actualProject.value?.professores?.some(p => p.user_id === currentUserId.value || p.user?.id === currentUserId.value || p.id === authStore.user?.id)))
@@ -96,7 +98,7 @@ onMounted(async () => {
         </button>
       </div>
       <p>{{ actualProject.descricao }}</p>
-      <appButton :font="'11px'" class="see-team">Ver Participantes</appButton>
+      <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true">Ver Participantes</appButton>
     </div>
 
     <div class="action-bar" v-if="onTheTeam">
@@ -156,6 +158,13 @@ onMounted(async () => {
     </ul>
     <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
 
+    <ProjectParticipantsModal
+      :is-open="isParticipantsModalOpen"
+      :team-name="actualProject.equipe || 'Equipe'"
+      :teachers="actualProject.professores || []"
+      :students="actualProject.alunos || []"
+      @close="isParticipantsModalOpen = false"
+    />
     <PostCommentsSheet v-if="selectedComments" :post="selectedComments" @close="selectedComments = null" />
     <EditPostModal v-if="editingPost" :post="editingPost" @close="editingPost = null" @saved="fetchProject" />
     <EditProjectModal v-if="editingProject" :project="actualProject" @close="editingProject = false" @saved="fetchProject" />
