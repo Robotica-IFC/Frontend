@@ -82,14 +82,19 @@ onMounted(async () => {
 </script>
 
 <template v-if="actualProject">
-  <div class="page" v-if="actualProject">
+  <div class="page project-detail-page" v-if="actualProject">
 
-    <div class="top">
+    <div class="project-intro">
 
-    <appArrow style="margin-top: 60px;" @click="router.back()"></appArrow>
+    <appArrow class="project-back" @click="router.back()"></appArrow>
 
-      <h1>{{ actualProject.titulo }}</h1>
-      <button v-if="canEditProject" class="project-edit-control" @click="editingProject = true"><i class="mdi mdi-pencil-outline" /> Editar projeto</button>
+      <div class="project-heading-row">
+        <h1>{{ actualProject.titulo }}</h1>
+        <button v-if="canEditProject" type="button" class="project-edit-control"
+          aria-label="Editar projeto" title="Editar projeto" @click="editingProject = true">
+          <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
+        </button>
+      </div>
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team">Ver Participantes</appButton>
     </div>
@@ -101,7 +106,7 @@ onMounted(async () => {
     </div>
 
     <ul class="posts">
-      <li v-for="p in reversedPosts" :key="p.id">
+      <li v-for="p in reversedPosts" :key="p.id" class="post-card" :class="p.formato_imagem === 'QUADRADO' ? 'post-square' : 'post-wide'">
         <div class="post-header">
           <div class="post-header-left">
             <img :src="actualProject.equipe_image" :alt="actualProject.equipe">
@@ -128,16 +133,16 @@ onMounted(async () => {
 
         <p class="legenda">{{ p.legenda }}</p>
 
-        <div class="post-image" v-if="p.images && p.images.length === 1">
-          <img :src="p.images[0].url" alt="Imagem do post">
+        <div class="post-image post-media" v-if="p.images && p.images.length === 1">
+          <img :src="p.images[0].url" alt="Imagem do post" loading="lazy">
         </div>
 
-        <div class="carousel-wrapper" v-else-if="p.images && p.images.length > 1">
+        <div class="carousel-wrapper post-media" v-else-if="p.images && p.images.length > 1">
           <button class="nav-btn prev" @click="scrollCarousel(p.id, 'prev')">❮</button>
 
           <div class="carousel-container" :id="`carousel-${p.id}`">
             <div v-for="(img, index) in p.images" :key="index" class="carousel-item">
-              <img :src="img.url" :alt="`Imagem ${index + 1}`">
+              <img :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy">
             </div>
           </div>
 
