@@ -160,12 +160,70 @@ async function goToStorage() {
 </template>
 
 <style scoped>
-.team-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.edit-team-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;padding:0;border:1px solid #bed4e0;border-radius:8px;background:#f3f9fc;color:#004369;cursor:pointer;font-size:18px}
-.edit-team-btn:hover{background:#e1eff7}.edit-team-btn:focus-visible,.invite-team-btn:focus-visible{outline:2px solid #004369;outline-offset:2px}
-.members-title-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 10px}.members-title-bar h3{color:#004369;font-size:18px}
-.invite-team-btn{display:flex;align-items:center;gap:7px;background:#004369;color:white;border:0;border-radius:8px;padding:10px 14px;font:inherit;font-size:14px;cursor:pointer}
-@media(max-width:650px){.edit-team-btn{width:32px;height:32px;flex-basis:32px;font-size:17px}.invite-team-btn{font-size:12px;padding:9px 11px}}
+.team-title-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap
+}
+.edit-team-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  padding:0;
+  border:1px solid #bed4e0;
+  border-radius:8px;
+  background:#f3f9fc;
+  color:#004369;
+  cursor:pointer;
+  font-size:18px
+}
+.edit-team-btn:hover {
+  background:#e1eff7
+}
+.edit-team-btn:focus-visible,.invite-team-btn:focus-visible {
+  outline:2px solid #004369;
+  outline-offset:2px
+}
+.members-title-bar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:22px 0 10px
+}
+.members-title-bar h3 {
+  color:#004369;
+  font-size:18px
+}
+.invite-team-btn {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:#004369;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:10px 14px;
+  font:inherit;
+  font-size:14px;
+  cursor:pointer
+}
+@media(max-width:650px) {
+  .edit-team-btn {
+    width:32px;
+    height:32px;
+    flex-basis:32px;
+    font-size:17px
+  }
+  .invite-team-btn {
+    font-size:12px;
+    padding:9px 11px
+  }
+}
 </style>
 
 <style scoped src="./teamDetailComponent.css"></style>
