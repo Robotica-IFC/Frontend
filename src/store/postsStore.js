@@ -25,7 +25,7 @@ export const usePostStore = defineStore('post', () => {
     return uploadedImages
   }
 
-  async function createPost({ legenda, projeto, files }) {
+  async function createPost({ legenda, projeto, files, formato_imagem = 'RETANGULAR' }) {
     loading.value = true
     try {
       let images = []
@@ -35,6 +35,7 @@ export const usePostStore = defineStore('post', () => {
 
       const payload = {
         legenda,
+        formato_imagem,
         projeto: Number(projeto),
         images
       }
@@ -51,10 +52,10 @@ export const usePostStore = defineStore('post', () => {
     }
   }
 
-  async function updatePost(id, legenda, files = null) {
+  async function updatePost(id, legenda, files = null, formato_imagem = 'RETANGULAR') {
     loading.value = true
     try {
-      const payload = { legenda }
+      const payload = { legenda, formato_imagem }
       if (files !== null) payload.images = await uploadImages(files)
       const { data } = await postsApi.update(id, payload)
       return data
