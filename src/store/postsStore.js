@@ -51,8 +51,42 @@ export const usePostStore = defineStore('post', () => {
     }
   }
 
+  async function updatePost(id, legenda, files = null) {
+    loading.value = true
+    try {
+      const payload = { legenda }
+      if (files !== null) payload.images = await uploadImages(files)
+      const { data } = await postsApi.update(id, payload)
+      return data
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function toggleLike(post) {
+    const { data } = post.curtiu ? await postsApi.unlike(post.id) : await postsApi.like(post.id)
+    post.curtiu = data.curtiu
+    post.curtidas = data.curtidas
+    return data
+  }
+
+  async function addComment(post, texto) {
+    const { data } = await postsApi.addComment(post.id, texto)
+    post.comentarios = [...(post.comentarios || []), data]
+    return data
+  }
+
+  async function removeComment(post, id) {
+    await postsApi.removeComment(post.id, id)
+    post.comentarios = (post.comentarios || []).filter(c => c.id !== id)
+  }
+
   return {
     loading,
+    updatePost,
+    toggleLike,
+    addComment,
+    removeComment,
     createPost
   }
 })
