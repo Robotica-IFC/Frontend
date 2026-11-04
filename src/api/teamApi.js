@@ -10,6 +10,9 @@ const teamApi = {
 
     return api.get(url)
   },
+  update(id, payload) {
+    return api.patch(`/equipes/${id}/`, payload)
+  },
   create(payload) {
     return api.post('equipes/', payload)
   },
