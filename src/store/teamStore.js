@@ -175,6 +175,11 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
+  async function removeMember(teamId, memberId, type) {
+    await teamApi.removeMember(teamId, memberId, type)
+    await getTeamById(teamId)
+  }
+
   async function updateTeam(id, data, image = undefined) {
     const payload = { ...data }
     if (image !== undefined) payload.image_perfil = image ? await uploadTeamImage(image) : null
@@ -184,6 +189,7 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   return {
+    removeMember,
     updateTeam,
     teams,
     loading,
