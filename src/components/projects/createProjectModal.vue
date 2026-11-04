@@ -24,7 +24,7 @@ const form = reactive({
   titulo: props.suggestion?.titulo || '',
   desc_curta: props.suggestion?.descricao?.trim().replace(/\s+/g, ' ').slice(0, 60) || '',
   descricao: props.suggestion?.descricao || '',
-  sugestao: false,
+  sugestao: Boolean(props.suggestion),
   status: 'EM_ANDAMENTO',
   equipe: props.id,
 })
@@ -72,7 +72,7 @@ async function handleSubmit() {
       titulo: form.titulo.trim(),
       desc_curta: form.desc_curta.trim(),
       descricao: form.descricao.trim(),
-      sugestao: form.sugestao,
+      sugestao: Boolean(props.suggestion) || form.sugestao,
       status: form.status,
       equipe: form.equipe,
     }
@@ -206,8 +206,8 @@ onBeforeUnmount(() => {
         <!-- Sugestão (Checkbox) -->
         <div class="form-group checkbox-group">
           <label class="checkbox-label">
-            <input type="checkbox" v-model="form.sugestao" />
-            <span>É uma sugestão?</span>
+            <input type="checkbox" v-model="form.sugestao" :disabled="Boolean(props.suggestion)" />
+            <span>Criado a partir de uma sugestão</span>
           </label>
         </div>
         <!-- Ações do Modal -->

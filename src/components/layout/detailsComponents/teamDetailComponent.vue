@@ -106,6 +106,11 @@ function openCreateProject(suggestion = null) {
   isModalOpen.value = true
 }
 
+function closeSuggestions() {
+  showSuggestions.value = false
+  document.getElementById('toggle-team-suggestions')?.focus()
+}
+
 async function goToStorage() {
   const storageId = await storageStore.getOrCreateStorage(team.value.id)
 
@@ -169,13 +174,15 @@ async function goToStorage() {
       </button>
       <button
         v-if="isTeacherInTeam"
+        id="toggle-team-suggestions"
         type="button"
         class="createProject"
         :aria-expanded="showSuggestions"
         aria-controls="team-suggestions"
         @click="showSuggestions = !showSuggestions"
       >
-        <span class="mdi mdi-lightbulb-on-outline" aria-hidden="true"></span> Ver sugestões
+        <span class="mdi mdi-lightbulb-on-outline" aria-hidden="true"></span>
+        {{ showSuggestions ? 'Ocultar sugestões' : 'Ver sugestões' }}
       </button>
       <button v-if="isTeacherInTeam" class="createProject" @click="openCreateProject()">
         <span class="mdi mdi-plus"></span> Criar projeto
@@ -191,6 +198,7 @@ async function goToStorage() {
       id="team-suggestions"
       :team-id="props.id"
       @create="openCreateProject"
+      @close="closeSuggestions"
     />
 
     <div v-if="team.id && isModalOpen" class="project-overlay">

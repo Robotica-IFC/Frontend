@@ -5,7 +5,7 @@ import { useProjectSuggestionsStore } from '@/store/projectSuggestionsStore'
 const props = defineProps({
   teamId: { type: [String, Number], required: true },
 })
-const emit = defineEmits(['create'])
+const emit = defineEmits(['create', 'close'])
 const suggestionsStore = useProjectSuggestionsStore()
 const suggestions = ref([])
 const loading = ref(false)
@@ -30,7 +30,14 @@ function normalize(value) {
 
 function authorName(suggestion) {
   if (suggestion.anonimo || !suggestion.autor) return 'Usuário não identificado'
-  return suggestion.autor.name || suggestion.autor.username || 'Usuário não identificado'
+  return suggestion.autor.username || suggestion.autor.name || 'Usuário não identificado'
+}
+
+function authorRoute(suggestion) {
+  const author = suggestion.autor
+  if (suggestion.anonimo || !author?.perfil_id) return null
+  const name = { aluno: 'studentDetails', professor: 'teacherDetails' }[author.tipo]
+  return name ? { name, params: { id: author.perfil_id } } : null
 }
 
 async function loadSuggestions() {
@@ -75,9 +82,14 @@ onBeforeUnmount(() => controller?.abort())
         <h2 id="team-suggestions-heading">Sugestões de projetos</h2>
         <p>Ideias enviadas para esta equipe.</p>
       </div>
-      <button type="button" :disabled="loading" @click="loadSuggestions">
-        <span class="mdi mdi-refresh" aria-hidden="true"></span> Atualizar
-      </button>
+      <div class="suggestions-header-actions">
+        <button type="button" :disabled="loading" @click="loadSuggestions">
+          <span class="mdi mdi-refresh" aria-hidden="true"></span> Atualizar
+        </button>
+        <button type="button" aria-label="Fechar sugestões" @click="emit('close')">
+          <span class="mdi mdi-close" aria-hidden="true"></span> Fechar
+        </button>
+      </div>
     </header>
     <div class="suggestions-search">
       <label for="team-suggestions-search">Pesquisar sugestões</label>
@@ -113,7 +125,26 @@ onBeforeUnmount(() => controller?.abort())
             <h3>{{ suggestion.titulo }}</h3>
             <time :datetime="suggestion.criado_em">{{ formatDate(suggestion.criado_em) }}</time>
           </header>
-          <p class="suggestion-author">
+          <RouterLink
+            v-if="authorRoute(suggestion)"
+            :to="authorRoute(suggestion)"
+            class="suggestion-author author-link"
+            :aria-label="`Ver perfil de ${authorName(suggestion)}`"
+          >
+            <img
+              v-if="suggestion.autor.imagem_perfil?.url"
+              class="author-avatar"
+              :src="suggestion.autor.imagem_perfil.url"
+              alt=""
+            />
+            <span
+              v-else
+              class="mdi mdi-account-circle author-placeholder"
+              aria-hidden="true"
+            ></span>
+            <span>{{ authorName(suggestion) }}</span>
+          </RouterLink>
+          <p v-else class="suggestion-author">
             <span
               :class="[
                 'mdi',
