@@ -52,6 +52,7 @@ const fetchProject = async () => {
 
   const loggedUser = authStore.user
 
+  onTheTeam.value = false
   if (actualProject.value && loggedUser) {
     const isStudentInTeam = actualProject.value.alunos?.some(
       (aluno) => aluno.id === loggedUser.id || aluno.user_id === loggedUser.id
