@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useTeamStore } from '@/store/teamStore'
 import { useAuthStore } from '@/store/authStore'
 import studentsApi from '@/api/studentApi'
+import teacherApi from '@/api/teacherApi'
 
 const props = defineProps({ team: { type: Object, required: true } })
 const emit = defineEmits(['close', 'saved'])
@@ -21,6 +22,9 @@ const error = ref('')
 const studentSearch = ref('')
 const studentsFound = ref([])
 const searchLoading = ref(false)
+const teacherSearch = ref('')
+const teachersFound = ref([])
+const teacherLoading = ref(false)
 
 watch(() => props.team, (team) => {
   nome.value = team.nome || ''
@@ -40,6 +44,15 @@ async function findStudents() {
     studentsFound.value = (data.results || data.items || data || []).filter(item => !students.value.includes(item.id))
   } catch { error.value = 'Não foi possível buscar alunos.' }
   finally { searchLoading.value = false }
+}
+async function findTeachers() {
+  if (!teacherSearch.value.trim()) { teachersFound.value = []; return }
+  teacherLoading.value = true
+  try {
+    const { data } = await teacherApi.search(teacherSearch.value)
+    teachersFound.value = data.results || data.items || data || []
+  } catch { error.value = 'Não foi possível buscar professores.' }
+  finally { teacherLoading.value = false }
 }
 const canEdit = computed(() => {
   const uid = auth.user?.user_id
@@ -91,6 +104,26 @@ async function save() {
             <input type="checkbox" :checked="categories.includes(c.id)" @change="toggleCategory(c.id)" />{{ c.nome }}
           </label>
         </div>
+        <h3>Professores</h3>
+        <div class="member-list">
+          <div v-for="professor in (team.professores || []).filter(p => teachers.includes(p.id))" :key="professor.id" class="member-row">
+            <span>{{ professor.user?.name || professor.user?.username }}</span>
+            <button type="button" aria-label="Remover professor" :disabled="teachers.length <= 1 || professor.user?.id === auth.user?.user_id" @click="teachers = teachers.filter(id => id !== professor.id)"><i class="mdi mdi-delete-outline"/></button>
+          </div>
+          <div v-for="professor in teachersFound.filter(p => teachers.includes(p.id) && !(team.professores || []).some(t => t.id === p.id))" :key="professor.id" class="member-row">
+            <span>{{ professor.user?.name || professor.user?.username }}</span>
+            <button type="button" aria-label="Remover professor" @click="teachers = teachers.filter(id => id !== professor.id)"><i class="mdi mdi-delete-outline"/></button>
+          </div>
+        </div>
+        <div class="member-search">
+          <label for="teacher-search">Adicionar professor</label>
+          <input id="teacher-search" v-model="teacherSearch" placeholder="Buscar professor" @input="findTeachers" />
+          <p v-if="teacherLoading">Buscando...</p>
+          <div v-for="professor in teachersFound.filter(p => !teachers.includes(p.id))" :key="professor.id" class="member-row">
+            <span>{{ professor.user?.name || professor.user?.username }}</span>
+            <button type="button" :aria-label="'Adicionar ' + professor.user?.name" @click="teachers.push(professor.id)"><i class="mdi mdi-plus"/></button>
+          </div>
+        </div>
         <h3>Membros da equipe</h3>
         <div class="member-list">
           <div v-for="aluno in (team.alunos || []).filter(a => students.includes(a.id))" :key="aluno.id" class="member-row">
@@ -114,7 +147,7 @@ async function save() {
             <button type="button" :aria-label="'Adicionar ' + aluno.user?.name" @click="students.push(aluno.id)"><i class="mdi mdi-plus"/></button>
           </div>
         </div>
-        <p class="hint">Apenas professores da equipe podem salvar alterações. Professores atuais são preservados.</p>
+        <p class="hint">Apenas professores da equipe podem salvar alterações. O professor responsável não pode remover a si mesmo.</p>
         <p v-if="error" role="alert" class="error">{{ error }}</p>
         <footer>
           <button type="button" class="secondary" @click="$emit('close')">Cancelar</button>
