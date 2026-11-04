@@ -43,11 +43,110 @@ function openTeam(invite) { router.push({ name: 'teamDetails', params: { id: inv
   </main>
 </template>
 <style scoped>
-.notifications-page{width:100%;max-width:980px;margin:0 auto;padding:28px 16px 90px;box-sizing:border-box;color:#003f63}
-header{display:flex;gap:14px;align-items:center;margin:20px 0 28px}header>.mdi{font-size:32px}h1{font-size:25px;margin:0}header p{margin:6px 0 0;font-size:13px;color:#627e90}
-.invites{display:grid;gap:14px}.invite{background:#fff;border:1px solid #d5e1e8;box-shadow:0 4px 12px #00436912;border-radius:12px;padding:18px}
-.invite-heading{display:flex;justify-content:space-between;align-items:center}.invite-heading .mdi{font-size:22px}.status{font-size:11px;background:#e4f1ef;border-radius:20px;padding:5px 9px}.status.pending{background:#f9ecd0}
-h2{font-size:18px;margin:8px 0}.invite>p{font-size:13px;color:#577386}.actions{display:flex;gap:10px;margin-top:18px}.actions button,.team-link{border:1px solid #004369;background:#004369;color:#fff;border-radius:8px;padding:10px 14px;cursor:pointer;font:inherit;font-size:13px}.actions .secondary{background:#fff;color:#004369}
-.team-link{margin-top:10px}.empty{text-align:center;padding:40px;color:#648091}.error{color:#ad2434}
-@media(min-width:768px){.notifications-page{padding:80px 40px}.invites{grid-template-columns:repeat(2,minmax(0,1fr))}.invite{padding:24px}h1{font-size:30px}}
+.notifications-page {
+  width:100%;
+  max-width:980px;
+  margin:0 auto;
+  padding:28px 16px 90px;
+  box-sizing:border-box;
+  color:#003f63
+}
+header {
+  display:flex;
+  gap:14px;
+  align-items:center;
+  margin:20px 0 28px
+}
+header>.mdi {
+  font-size:32px
+}
+h1 {
+  font-size:25px;
+  margin:0
+}
+header p {
+  margin:6px 0 0;
+  font-size:13px;
+  color:#627e90
+}
+.invites {
+  display:grid;
+  gap:14px
+}
+.invite {
+  background:#fff;
+  border:1px solid #d5e1e8;
+  box-shadow:0 4px 12px #00436912;
+  border-radius:12px;
+  padding:18px
+}
+.invite-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+.invite-heading .mdi {
+  font-size:22px
+}
+.status {
+  font-size:11px;
+  background:#e4f1ef;
+  border-radius:20px;
+  padding:5px 9px
+}
+.status.pending {
+  background:#f9ecd0
+}
+h2 {
+  font-size:18px;
+  margin:8px 0
+}
+.invite>p {
+  font-size:13px;
+  color:#577386
+}
+.actions {
+  display:flex;
+  gap:10px;
+  margin-top:18px
+}
+.actions button,.team-link {
+  border:1px solid #004369;
+  background:#004369;
+  color:#fff;
+  border-radius:8px;
+  padding:10px 14px;
+  cursor:pointer;
+  font:inherit;
+  font-size:13px
+}
+.actions .secondary {
+  background:#fff;
+  color:#004369
+}
+.team-link {
+  margin-top:10px
+}
+.empty {
+  text-align:center;
+  padding:40px;
+  color:#648091
+}
+.error {
+  color:#ad2434
+}
+@media(min-width:768px) {
+  .notifications-page {
+    padding:80px 40px
+  }
+  .invites {
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+  .invite {
+    padding:24px
+  }
+  h1 {
+    font-size:30px
+  }
+}
 </style>
