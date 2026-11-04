@@ -45,18 +45,112 @@ async function save() {
   </div>
 </template>
 <style scoped>
-.post-edit-overlay{position:fixed;inset:0;z-index:1100;background:#0007;display:flex;align-items:flex-end;justify-content:center}
-.post-edit-panel{width:100%;max-height:90dvh;overflow:auto;padding:24px;background:white;border-radius:20px 20px 0 0;color:#004369;box-sizing:border-box}
-header,footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
-header button{border:0;background:none;font-size:20px;color:inherit}
-form{display:grid;gap:16px}label{display:grid;gap:8px}
-textarea,input{font:inherit;border:1px solid #a3c3d2;border-radius:8px;padding:12px;width:100%;box-sizing:border-box}
-.hint{font-size:12px;color:#526b7e}.error{color:#b3261e}
-footer button{padding:12px 16px;border-radius:7px;border:1px solid #004369;background:#004369;color:#fff}footer .secondary{background:#fff;color:#004369}
-.format-selector{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:9px;min-width:0}
-.format-selector legend{font-weight:600;margin-bottom:9px}
-.format-selector label{flex:1 1 140px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;border:1px solid #afcbdc;border-radius:8px;padding:11px 9px;cursor:pointer;font-size:13px}
-.format-selector label.active{background:#e8f4fa;border-color:#004369}
-.format-selector input{width:auto}
-@media(min-width:768px){.post-edit-overlay{align-items:center;padding:24px}.post-edit-panel{max-width:600px;border-radius:16px}}
+.post-edit-overlay {
+  position:fixed;
+  inset:0;
+  z-index:1100;
+  background:#0007;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center
+}
+.post-edit-panel {
+  width:100%;
+  max-height:90dvh;
+  overflow:auto;
+  padding:24px;
+  background:white;
+  border-radius:20px 20px 0 0;
+  color:#004369;
+  box-sizing:border-box
+}
+header,footer {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px
+}
+header button {
+  border:0;
+  background:none;
+  font-size:20px;
+  color:inherit
+}
+form {
+  display:grid;
+  gap:16px
+}
+label {
+  display:grid;
+  gap:8px
+}
+textarea,input {
+  font:inherit;
+  border:1px solid #a3c3d2;
+  border-radius:8px;
+  padding:12px;
+  width:100%;
+  box-sizing:border-box
+}
+.hint {
+  font-size:12px;
+  color:#526b7e
+}
+.error {
+  color:#b3261e
+}
+footer button {
+  padding:12px 16px;
+  border-radius:7px;
+  border:1px solid #004369;
+  background:#004369;
+  color:#fff
+}
+footer .secondary {
+  background:#fff;
+  color:#004369
+}
+.format-selector {
+  border:0;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  min-width:0
+}
+.format-selector legend {
+  font-weight:600;
+  margin-bottom:9px
+}
+.format-selector label {
+  flex:1 1 140px;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:1px solid #afcbdc;
+  border-radius:8px;
+  padding:11px 9px;
+  cursor:pointer;
+  font-size:13px
+}
+.format-selector label.active {
+  background:#e8f4fa;
+  border-color:#004369
+}
+.format-selector input {
+  width:auto
+}
+@media(min-width:768px) {
+  .post-edit-overlay {
+    align-items:center;
+    padding:24px
+  }
+  .post-edit-panel {
+    max-width:600px;
+    border-radius:16px
+  }
+}
 </style>
