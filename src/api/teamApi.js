@@ -10,6 +10,9 @@ const teamApi = {
 
     return api.get(url)
   },
+  removeMember(teamId, memberId, type) {
+    return api.delete(`/equipes/${teamId}/membros/${memberId}/`, { params: { tipo: type } })
+  },
   update(id, payload) {
     return api.patch(`/equipes/${id}/`, payload)
   },
