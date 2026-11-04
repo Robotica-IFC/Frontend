@@ -57,14 +57,84 @@ async function save() {
   </div>
 </template>
 <style scoped>
-.edit-project-overlay{position:fixed;inset:0;z-index:1000;background:#0009;display:flex;align-items:flex-end;justify-content:center}
-.edit-project-dialog{background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-height:90dvh;overflow:auto;color:#003e63;box-sizing:border-box}
-header,footer{display:flex;justify-content:space-between;align-items:center;gap:10px}
-header button{border:0;background:none;font-size:24px;color:inherit}
-form{display:grid;gap:17px}label{display:grid;gap:6px;font-weight:600}
-input:not([type=checkbox]),textarea,select{width:100%;box-sizing:border-box;border:1px solid #b3c5d1;border-radius:7px;padding:11px;font:inherit;color:#153f57}
-.checkbox{display:flex;flex-direction:row;align-items:center}
-footer button{padding:11px 16px;border:1px solid #004369;border-radius:7px;background:#004369;color:white;cursor:pointer}footer .secondary{background:white;color:#004369}
-.error{color:#b3261e}
-@media(min-width:768px){.edit-project-overlay{align-items:center;padding:30px}.edit-project-dialog{max-width:640px;border-radius:18px;padding:32px}}
+.edit-project-overlay {
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:#0009;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center
+}
+.edit-project-dialog {
+  background:#fff;
+  border-radius:20px 20px 0 0;
+  padding:24px;
+  width:100%;
+  max-height:90dvh;
+  overflow:auto;
+  color:#003e63;
+  box-sizing:border-box
+}
+header,footer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px
+}
+header button {
+  border:0;
+  background:none;
+  font-size:24px;
+  color:inherit
+}
+form {
+  display:grid;
+  gap:17px
+}
+label {
+  display:grid;
+  gap:6px;
+  font-weight:600
+}
+input:not([type=checkbox]),textarea,select {
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #b3c5d1;
+  border-radius:7px;
+  padding:11px;
+  font:inherit;
+  color:#153f57
+}
+.checkbox {
+  display:flex;
+  flex-direction:row;
+  align-items:center
+}
+footer button {
+  padding:11px 16px;
+  border:1px solid #004369;
+  border-radius:7px;
+  background:#004369;
+  color:white;
+  cursor:pointer
+}
+footer .secondary {
+  background:white;
+  color:#004369
+}
+.error {
+  color:#b3261e
+}
+@media(min-width:768px) {
+  .edit-project-overlay {
+    align-items:center;
+    padding:30px
+  }
+  .edit-project-dialog {
+    max-width:640px;
+    border-radius:18px;
+    padding:32px
+  }
+}
 </style>
