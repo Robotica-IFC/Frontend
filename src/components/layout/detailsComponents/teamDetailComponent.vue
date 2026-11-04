@@ -12,6 +12,7 @@ import { useStorageStore } from '@/store/storageStore'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 import membersOfTeamComponent from './membersOfTeamComponent.vue'
 import EditTeamModal from '@/components/teams/EditTeamModal.vue'
+import InviteTeamModal from '@/components/teams/InviteTeamModal.vue'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
@@ -20,6 +21,7 @@ const storageStore = useStorageStore()
 
 const isModalOpen = ref(false)
 const isEditOpen = ref(false)
+const isInviteOpen = ref(false)
 
 const props = defineProps({
   id: {
@@ -83,7 +85,6 @@ async function goToStorage() {
       <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent v-if="!isMemberOfTeam"></requestToParticipateComponent>
       <exitTeamComponent v-if="isMemberOfTeam" :teamId="props.id"></exitTeamComponent>
-      <button v-if="isTeacherInTeam" type="button" class="edit-team-btn" @click="isEditOpen = true"><i class="mdi mdi-pencil-outline"/> Editar equipe</button>
     </div>
 
     <div class="info">
@@ -98,9 +99,12 @@ async function goToStorage() {
           <span v-else class="mdi mdi-account-group"></span>
         </div>
         <div class="principal-text">
-          <h1>
-            {{ team.nome }}
-          </h1>
+          <div class="team-title-row">
+            <h1>{{ team.nome }}</h1>
+            <button v-if="isTeacherInTeam" type="button" class="edit-team-btn" aria-label="Editar equipe" title="Editar equipe" @click="isEditOpen = true">
+              <i class="mdi mdi-pencil-outline" aria-hidden="true"/>
+            </button>
+          </div>
           <h2>
             <span class="mdi mdi-map-marker"></span>
             {{ team.professores?.[0]?.instituicao?.nome }} -
@@ -121,6 +125,12 @@ async function goToStorage() {
           {{ c.nome }}
         </li>
       </ul>
+      <div class="members-title-bar">
+        <h3>Participantes</h3>
+        <button v-if="isTeacherInTeam" class="invite-team-btn" type="button" @click="isInviteOpen = true">
+          <i class="mdi mdi-account-plus-outline" aria-hidden="true"/> Convidar
+        </button>
+      </div>
       <membersOfTeamComponent
         :teachers="team.professores"
         :students="team.alunos"
@@ -145,12 +155,17 @@ async function goToStorage() {
 
     <teamProjectsComponent :team-id="props.id" />
     <EditTeamModal v-if="isEditOpen" :team="team" @close="isEditOpen = false" @saved="teamStore.getTeamById(props.id)" />
+    <InviteTeamModal v-if="isInviteOpen" :team="team" @close="isInviteOpen = false" />
   </div>
 </template>
 
 <style scoped>
-.edit-team-btn{padding:10px 16px;border:1px solid #004369;border-radius:7px;background:white;color:#004369;cursor:pointer;font:inherit;display:flex;align-items:center;gap:8px}
-@media(max-width:650px){.edit-team-btn{font-size:12px;padding:8px}}
+.team-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.edit-team-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;padding:0;border:1px solid #bed4e0;border-radius:8px;background:#f3f9fc;color:#004369;cursor:pointer;font-size:18px}
+.edit-team-btn:hover{background:#e1eff7}.edit-team-btn:focus-visible,.invite-team-btn:focus-visible{outline:2px solid #004369;outline-offset:2px}
+.members-title-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 10px}.members-title-bar h3{color:#004369;font-size:18px}
+.invite-team-btn{display:flex;align-items:center;gap:7px;background:#004369;color:white;border:0;border-radius:8px;padding:10px 14px;font:inherit;font-size:14px;cursor:pointer}
+@media(max-width:650px){.edit-team-btn{width:32px;height:32px;flex-basis:32px;font-size:17px}.invite-team-btn{font-size:12px;padding:9px 11px}}
 </style>
 
 <style scoped src="./teamDetailComponent.css"></style>
