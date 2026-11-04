@@ -1,43 +1,325 @@
 /* Área do projeto: mobile-first e isolada das páginas de equipe */
-.project-detail-page{width:100%;max-width:960px;margin:0 auto;padding:142px 16px 64px;box-sizing:border-box;min-width:0}
-.project-detail-page .project-intro{width:100%;max-width:760px;margin:0 auto;border-bottom:1px solid #9eb8cd;padding:8px 0 26px;display:flex;flex-direction:column;gap:18px;min-width:0}
-.project-detail-page .project-back{align-self:flex-start;cursor:pointer}
-.project-detail-page .project-heading-row{display:flex;justify-content:center;align-items:center;gap:12px;min-width:0;width:100%}
-.project-detail-page .project-heading-row h1{font-size:clamp(22px,4vw,32px);color:#004369;margin:0;overflow-wrap:anywhere;line-height:1.22;text-align:center}
-.project-detail-page .project-heading-row .project-edit-control{display:inline-flex!important;justify-content:center;align-items:center;flex:0 0 36px!important;width:36px!important;max-width:36px!important;min-width:36px!important;height:36px!important;margin:0!important;padding:0!important;border:1px solid #b4cddd;border-radius:9px;background:#f4f9fc;color:#004369;cursor:pointer;line-height:1}
-.project-detail-page .project-edit-control .mdi{font-size:18px}
-.project-detail-page .project-edit-control:hover{background:#e5f2f9}
-.project-detail-page .project-edit-control:focus-visible{outline:2px solid #004369;outline-offset:3px}
-.project-detail-page .project-intro>p{font-size:14px;line-height:1.55;color:#283c49;margin:0;white-space:pre-line;overflow-wrap:anywhere}
-.project-detail-page .project-intro .see-team{width:auto!important;max-width:220px;align-self:center}
-.project-detail-page .action-bar{max-width:700px;width:100%;margin:20px auto 0;display:flex;justify-content:flex-end}
-.project-detail-page .posts{display:flex;flex-direction:column;gap:20px;width:100%;max-width:700px;padding:20px 0 0;margin:0 auto;list-style:none;box-sizing:border-box;min-width:0}
-.project-detail-page .posts>li.post-card{box-sizing:border-box;min-width:0;width:100%;margin:0;padding:17px 14px;border:1px solid #e0e9ef;border-radius:13px;background:#fff;box-shadow:0 2px 12px rgba(0,52,83,.08);overflow:hidden;list-style:none}
-.project-detail-page .post-header{display:flex;align-items:center;justify-content:space-between;gap:9px;min-width:0;width:100%}
-.project-detail-page .post-header-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
-.project-detail-page .post-header-left>img{width:42px!important;height:42px!important;flex:0 0 42px!important;border-radius:50%;object-fit:cover;border:1px solid #bfd2de}
-.project-detail-page .post-header-left .names{display:grid;gap:3px;min-width:0}
-.project-detail-page .post-header-left .team-name{font-size:14px;font-weight:700;margin:0;color:#1a3448;overflow-wrap:anywhere}
-.project-detail-page .post-header-left h3{font-size:11px;margin:0;font-weight:400;color:#506b7a;overflow-wrap:anywhere}
-.project-detail-page .post-header-actions{display:flex;align-items:center;gap:7px;flex-shrink:0}
-.project-detail-page .post-header-actions .date{font-size:11px;color:#566f7e;margin:0;white-space:nowrap}
-.project-detail-page .posts .legenda{font-size:14px;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere;margin:15px 0}
-.project-detail-page .post-media{width:100%;max-width:100%;min-width:0;background:#edf2f5;border-radius:10px;overflow:hidden;box-shadow:none}
-.project-detail-page .post-card.post-square .post-media{aspect-ratio:1/1}
-.project-detail-page .post-card.post-wide .post-media{aspect-ratio:16/9}
-.project-detail-page .post-image img{display:block;width:100%;height:100%;max-height:none!important;object-fit:contain;border-radius:0;box-shadow:none}
-.project-detail-page .carousel-wrapper{position:relative}
-.project-detail-page .carousel-container{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;height:100%;width:100%}
-.project-detail-page .carousel-container::-webkit-scrollbar{display:none}
-.project-detail-page .carousel-container .carousel-item{flex:0 0 100%;height:100%;scroll-snap-align:center;min-width:0;display:flex;align-items:center;justify-content:center}
-.project-detail-page .carousel-container .carousel-item img{display:block;width:100%;height:100%;max-height:100%;aspect-ratio:auto!important;object-fit:contain;background:#edf2f5}
-.project-detail-page .carousel-wrapper .nav-btn{position:absolute;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:34px;height:34px;background:rgba(0,44,70,.72);color:#fff;border:0;border-radius:50%;z-index:1;cursor:pointer}
-.project-detail-page .carousel-wrapper .prev{left:8px}.project-detail-page .carousel-wrapper .next{right:8px}
-.project-detail-page .post-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 4px 0}
-@media(max-width:520px){.project-detail-page .posts>li.post-card{padding:14px 11px}.project-detail-page .post-header-actions .date{font-size:10px}.project-detail-page .post-header-left>img{width:38px!important;height:38px!important;flex-basis:38px!important}.project-detail-page .project-heading-row{gap:7px}}
-@media(min-width:900px){.project-detail-page{max-width:1080px;padding:150px 32px 90px}.project-detail-page .project-intro{max-width:760px;gap:22px}.project-detail-page .project-intro>p{font-size:16px}.project-detail-page .posts{max-width:660px;gap:24px}.project-detail-page .action-bar{max-width:660px}.project-detail-page .posts>li.post-card{padding:22px 24px}.project-detail-page .post-header-left>img{width:50px!important;height:50px!important;flex-basis:50px!important}.project-detail-page .post-header-left .team-name{font-size:16px}.project-detail-page .posts .legenda{font-size:15px}.project-detail-page .project-heading-row .project-edit-control{width:38px!important;min-width:38px!important;max-width:38px!important;flex-basis:38px!important;height:38px!important}}
-
-/* O header tem posição fixed e altura total de 120px (50px + 35px de padding em cada lado).
-   O conteúdo precisa começar abaixo dele também em recarregamentos e links diretos. */
-.project-detail-page{scroll-margin-top:130px}
-@media(max-width:520px){.project-detail-page{padding-top:138px}}
+.project-detail-page {
+  width:100%;
+  max-width:960px;
+  margin:0 auto;
+  padding:142px 16px 64px;
+  box-sizing:border-box;
+  min-width:0
+}
+.project-detail-page .project-intro {
+  width:100%;
+  max-width:760px;
+  margin:0 auto;
+  border-bottom:1px solid #9eb8cd;
+  padding:8px 0 26px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  min-width:0
+}
+.project-detail-page .project-back {
+  align-self:flex-start;
+  cursor:pointer
+}
+.project-detail-page .project-heading-row {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  width:100%
+}
+.project-detail-page .project-heading-row h1 {
+  font-size:clamp(22px,4vw,32px);
+  color:#004369;
+  margin:0;
+  overflow-wrap:anywhere;
+  line-height:1.22;
+  text-align:center
+}
+.project-detail-page .project-heading-row .project-edit-control {
+  display:inline-flex!important;
+  justify-content:center;
+  align-items:center;
+  flex:0 0 36px!important;
+  width:36px!important;
+  max-width:36px!important;
+  min-width:36px!important;
+  height:36px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid #b4cddd;
+  border-radius:9px;
+  background:#f4f9fc;
+  color:#004369;
+  cursor:pointer;
+  line-height:1
+}
+.project-detail-page .project-edit-control .mdi {
+  font-size:18px
+}
+.project-detail-page .project-edit-control:hover {
+  background:#e5f2f9
+}
+.project-detail-page .project-edit-control:focus-visible {
+  outline:2px solid #004369;
+  outline-offset:3px
+}
+.project-detail-page .project-intro>p {
+  font-size:14px;
+  line-height:1.55;
+  color:#283c49;
+  margin:0;
+  white-space:pre-line;
+  overflow-wrap:anywhere
+}
+.project-detail-page .project-intro .see-team {
+  width:auto!important;
+  max-width:220px;
+  align-self:center
+}
+.project-detail-page .action-bar {
+  max-width:700px;
+  width:100%;
+  margin:20px auto 0;
+  display:flex;
+  justify-content:flex-end
+}
+.project-detail-page .posts {
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  width:100%;
+  max-width:700px;
+  padding:20px 0 0;
+  margin:0 auto;
+  list-style:none;
+  box-sizing:border-box;
+  min-width:0
+}
+.project-detail-page .posts>li.post-card {
+  box-sizing:border-box;
+  min-width:0;
+  width:100%;
+  margin:0;
+  padding:17px 14px;
+  border:1px solid #e0e9ef;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 2px 12px rgba(0,52,83,.08);
+  overflow:hidden;
+  list-style:none
+}
+.project-detail-page .post-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  min-width:0;
+  width:100%
+}
+.project-detail-page .post-header-left {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  flex:1
+}
+.project-detail-page .post-header-left>img {
+  width:42px!important;
+  height:42px!important;
+  flex:0 0 42px!important;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid #bfd2de
+}
+.project-detail-page .post-header-left .names {
+  display:grid;
+  gap:3px;
+  min-width:0
+}
+.project-detail-page .post-header-left .team-name {
+  font-size:14px;
+  font-weight:700;
+  margin:0;
+  color:#1a3448;
+  overflow-wrap:anywhere
+}
+.project-detail-page .post-header-left h3 {
+  font-size:11px;
+  margin:0;
+  font-weight:400;
+  color:#506b7a;
+  overflow-wrap:anywhere
+}
+.project-detail-page .post-header-actions {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-shrink:0
+}
+.project-detail-page .post-header-actions .date {
+  font-size:11px;
+  color:#566f7e;
+  margin:0;
+  white-space:nowrap
+}
+.project-detail-page .posts .legenda {
+  font-size:14px;
+  line-height:1.55;
+  white-space:pre-line;
+  overflow-wrap:anywhere;
+  margin:15px 0
+}
+.project-detail-page .post-media {
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  background:#edf2f5;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:none
+}
+.project-detail-page .post-card.post-square .post-media {
+  aspect-ratio:1/1
+}
+.project-detail-page .post-card.post-wide .post-media {
+  aspect-ratio:16/9
+}
+.project-detail-page .post-image img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-height:none!important;
+  object-fit:contain;
+  border-radius:0;
+  box-shadow:none
+}
+.project-detail-page .carousel-wrapper {
+  position:relative
+}
+.project-detail-page .carousel-container {
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+  height:100%;
+  width:100%
+}
+.project-detail-page .carousel-container::-webkit-scrollbar {
+  display:none
+}
+.project-detail-page .carousel-container .carousel-item {
+  flex:0 0 100%;
+  height:100%;
+  scroll-snap-align:center;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+.project-detail-page .carousel-container .carousel-item img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-height:100%;
+  aspect-ratio:auto!important;
+  object-fit:contain;
+  background:#edf2f5
+}
+.project-detail-page .carousel-wrapper .nav-btn {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  background:rgba(0,44,70,.72);
+  color:#fff;
+  border:0;
+  border-radius:50%;
+  z-index:1;
+  cursor:pointer
+}
+.project-detail-page .carousel-wrapper .prev {
+  left:8px
+}
+.project-detail-page .carousel-wrapper .next {
+  right:8px
+}
+.project-detail-page .post-actions {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:14px 4px 0
+}
+@media(max-width:520px) {
+  .project-detail-page .posts>li.post-card {
+    padding:14px 11px
+  }
+  .project-detail-page .post-header-actions .date {
+    font-size:10px
+  }
+  .project-detail-page .post-header-left>img {
+    width:38px!important;
+    height:38px!important;
+    flex-basis:38px!important
+  }
+  .project-detail-page .project-heading-row {
+    gap:7px
+  }
+}
+@media(min-width:900px) {
+  .project-detail-page {
+    max-width:1080px;
+    padding:150px 32px 90px
+  }
+  .project-detail-page .project-intro {
+    max-width:760px;
+    gap:22px
+  }
+  .project-detail-page .project-intro>p {
+    font-size:16px
+  }
+  .project-detail-page .posts {
+    max-width:660px;
+    gap:24px
+  }
+  .project-detail-page .action-bar {
+    max-width:660px
+  }
+  .project-detail-page .posts>li.post-card {
+    padding:22px 24px
+  }
+  .project-detail-page .post-header-left>img {
+    width:50px!important;
+    height:50px!important;
+    flex-basis:50px!important
+  }
+  .project-detail-page .post-header-left .team-name {
+    font-size:16px
+  }
+  .project-detail-page .posts .legenda {
+    font-size:15px
+  }
+  .project-detail-page .project-heading-row .project-edit-control {
+    width:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    flex-basis:38px!important;
+    height:38px!important
+  }
+}
+/* O header tem posição fixed e altura total de 120px (50px + 35px de padding em cada lado). O conteúdo precisa começar abaixo dele também em recarregamentos e links diretos. */
+.project-detail-page {
+  scroll-margin-top:130px
+}
+@media(max-width:520px) {
+  .project-detail-page {
+    padding-top:138px
+  }
+}
