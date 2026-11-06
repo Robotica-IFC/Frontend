@@ -2,11 +2,18 @@
 import { computed, ref } from 'vue'
 import { usePostStore } from '@/store/postsStore'
 import { useAuthStore } from '@/store/authStore'
+import { useConfirmation } from '@/composables/useConfirmation'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+import { formatApiError } from '@/utils/formValidation'
+
+const limits = useFormLimits()
 
 const props = defineProps({ post: { type: Object, required: true } })
 const emit = defineEmits(['close'])
 const store = usePostStore()
 const auth = useAuthStore()
+const { confirm } = useConfirmation()
 const texto = ref('')
 const error = ref('')
 const sending = ref(false)
@@ -18,13 +25,17 @@ async function send() {
   try {
     await store.addComment(props.post, texto.value.trim())
     texto.value = ''
-  } catch {
-    error.value = 'Não foi possível enviar o comentário.'
+  } catch (err) {
+    error.value = formatApiError(err, 'Não foi possível enviar o comentário.')
   } finally { sending.value = false }
 }
 async function remove(id) {
-  try { await store.removeComment(props.post, id) }
-  catch { error.value = 'Não foi possível excluir o comentário.' }
+  await confirm({
+    title: 'Excluir comentário?',
+    message: 'Este comentário será excluído permanentemente. Esta ação não pode ser desfeita.',
+    confirmLabel: 'Excluir comentário',
+    onConfirm: () => store.removeComment(props.post, id),
+  })
 }
 </script>
 <template>
@@ -48,7 +59,7 @@ async function remove(id) {
       </div>
       <p v-if="error" class="error" role="alert">{{ error }}</p>
       <form @submit.prevent="send">
-        <input v-model="texto" maxlength="1000" placeholder="Adicione um comentário" aria-label="Adicionar comentário" required />
+        <div class="comment-input"><input v-model="texto" v-bind="limits.attrs('comentario', 'texto')" placeholder="Adicione um comentário" aria-label="Adicionar comentário" required /><FieldHint resource="comentario" field="texto" :value="texto" /></div>
         <button type="submit" :disabled="sending || !texto.trim()" aria-label="Enviar comentário"><i class="mdi mdi-send"/></button>
       </form>
     </section>
@@ -158,6 +169,8 @@ form input {
   padding:12px;
   font:inherit
 }
+.comment-input { flex:1; min-width:0; }
+.comment-input input { width:100%; }
 form button {
   background:#004369;
   color:white;

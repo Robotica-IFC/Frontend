@@ -1,6 +1,12 @@
 <script setup>
+import UploadHint from '@/components/form/UploadHint.vue'
 import { ref } from 'vue'
 import { usePostStore } from '@/store/postsStore'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+import { formatApiError } from '@/utils/formValidation'
+
+const limits = useFormLimits()
 const props = defineProps({ post: { type: Object, required: true } })
 const emit = defineEmits(['close', 'saved'])
 const store = usePostStore()
@@ -14,7 +20,7 @@ async function save() {
     await store.updatePost(props.post.id, legenda.value.trim(), images.value, formatoImagem.value)
     emit('saved')
     emit('close')
-  } catch { error.value = 'Não foi possível atualizar a publicação.' }
+  } catch (err) { error.value = formatApiError(err, 'Não foi possível atualizar a publicação.') }
 }
 </script>
 <template>
@@ -22,7 +28,7 @@ async function save() {
     <section class="post-edit-panel" role="dialog" aria-modal="true" aria-label="Editar publicação">
       <header><h2>Editar publicação</h2><button @click="$emit('close')" aria-label="Fechar"><i class="mdi mdi-close"/></button></header>
       <form @submit.prevent="save">
-        <label>Legenda <textarea v-model="legenda" rows="6" placeholder="Escreva sua publicação..." /></label>
+        <label>Legenda <textarea v-model="legenda" v-bind="limits.attrs('post', 'legenda')" rows="6" placeholder="Escreva sua publicação..." /><FieldHint resource="post" field="legenda" :value="legenda" /></label>
         <fieldset class="format-selector">
           <legend>Formato das imagens</legend>
           <label :class="{ active: formatoImagem === 'QUADRADO' }">
@@ -37,6 +43,7 @@ async function save() {
         <label>Substituir imagens (opcional)
           <input type="file" accept="image/*" multiple @change="images = Array.from($event.target.files)" />
         </label>
+        <UploadHint />
         <p class="hint">Ao selecionar novas imagens, elas substituirão as imagens anteriores.</p>
         <p v-if="error" role="alert" class="error">{{ error }}</p>
         <footer><button type="button" class="secondary" @click="$emit('close')">Cancelar</button><button type="submit" :disabled="store.loading">{{ store.loading ? 'Salvando...' : 'Salvar' }}</button></footer>

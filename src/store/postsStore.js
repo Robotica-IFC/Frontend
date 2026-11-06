@@ -1,18 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import postsApi from '@/api/postsApi'
-import projectsApi from '@/api/projectsApi'
+import imageApi from '@/api/imageApi'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const usePostStore = defineStore('post', () => {
+  const limits = useFormLimits()
   const loading = ref(false)
 
   async function uploadImages(files) {
+    await limits.assertImages(files)
     const uploadedImages = []
     
     for (const file of files) {
       const formData = new FormData()
       formData.append('file', file)
-      const response = await projectsApi.uploadImage(formData)
+      const response = await imageApi.uploadImage(formData)
       
       // Captura o UUID correto retornado pela API ('attachment_key')
       const imageId = response.data.attachment_key || response.data.id
@@ -28,6 +31,7 @@ export const usePostStore = defineStore('post', () => {
   async function createPost({ legenda, projeto, files, formato_imagem = 'RETANGULAR' }) {
     loading.value = true
     try {
+      await limits.assertValid('post', { legenda })
       let images = []
       if (files && files.length > 0) {
         images = await uploadImages(files)
@@ -56,6 +60,7 @@ export const usePostStore = defineStore('post', () => {
     loading.value = true
     try {
       const payload = { legenda, formato_imagem }
+      await limits.assertValid('post', payload)
       if (files !== null) payload.images = await uploadImages(files)
       const { data } = await postsApi.update(id, payload)
       return data
@@ -72,6 +77,7 @@ export const usePostStore = defineStore('post', () => {
   }
 
   async function addComment(post, texto) {
+    await limits.assertValid('comentario', { texto })
     const { data } = await postsApi.addComment(post.id, texto)
     post.comentarios = [...(post.comentarios || []), data]
     return data

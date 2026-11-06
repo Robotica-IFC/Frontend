@@ -1,13 +1,17 @@
 <script setup>
+import UploadHint from '@/components/form/UploadHint.vue'
 import { ref, reactive } from 'vue'
 import { useProjectStore } from '@/store/projectsStore.js'
-import { useTeamStore } from '@/store/teamStore'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+import { formatApiError } from '@/utils/formValidation'
+
+const limits = useFormLimits()
 const emit = defineEmits(['close', 'created'])
 const projectStore = useProjectStore()
-const teamStore = useTeamStore()
 const loading = ref(false)
 const errorMessage = ref('')
 const selectedFile = ref(null)
@@ -48,16 +52,12 @@ async function handleSubmit() {
     errorMessage.value = 'O título do projeto é obrigatório.'
     return
   }
-  if (form.titulo.length > 30) {
-    errorMessage.value = 'O título deve ter no máximo 30 caracteres.'
+  if (!form.desc_curta.trim()) {
+    errorMessage.value = 'A descrição curta é obrigatória.'
     return
   }
-  if (form.desc_curta && form.desc_curta.length > 60) {
-    errorMessage.value = 'A descrição curta deve ter no máximo 60 caracteres.'
-    return
-  }
-  if (!form.descricao || form.descricao.trim().length < 150) {
-    errorMessage.value = 'A descrição completa deve ter no mínimo 150 caracteres.'
+  if (!form.descricao.trim()) {
+    errorMessage.value = 'A descrição completa é obrigatória.'
     return
   }
   if (!form.equipe) {
@@ -79,7 +79,7 @@ async function handleSubmit() {
     emit('close')
   } catch (error) {
     console.error('Erro ao criar projeto:', error)
-    errorMessage.value = error.response?.data?.detail || 'Erro ao criar o projeto.'
+    errorMessage.value = formatApiError(error, 'Erro ao criar o projeto.')
   } finally {
     loading.value = false
   }
@@ -93,10 +93,11 @@ async function handleSubmit() {
         <button class="close-btn" @click="$emit('close')">&times;</button>
       </div>
       <form @submit.prevent="handleSubmit" class="modal-body">
-        <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
+        <p v-if="errorMessage" role="alert" class="error-msg">{{ errorMessage }}</p>
         <!-- Upload da Imagem de Perfil do Projeto -->
         <div class="form-group align-center">
           <label>Imagem do Projeto</label>
+          <UploadHint />
           <div class="image-upload-wrapper">
             <button type="button" class="image-preview-container" @click="showImageSheet = true">
               <img
@@ -124,42 +125,34 @@ async function handleSubmit() {
         <!-- Título -->
         <div class="form-group">
           <label>Título *</label>
-          <appInput
-            placeholder="Título do projeto (Max: 20 caracteres)"
+          <appInput resource="projeto" field="titulo"
+            placeholder="Título do projeto"
             icon="mdi mdi-format-title"
             v-model="form.titulo"
-            maxlength="30"
             required
           />
-          <small class="char-count" :class="{ danger: form.titulo.length > 30 }">
-            {{ form.titulo.length }}/30 caracteres
-          </small>
         </div>
         <!-- Descrição Curta -->
         <div class="form-group">
-          <label>Descrição Curta</label>
-          <appInput
-            placeholder="Resumo do projeto (Max: 60 caracteres)"
+          <label>Descrição curta *</label>
+          <appInput resource="projeto" field="desc_curta"
+            placeholder="Resumo do projeto"
             icon="mdi mdi-text-short"
             v-model="form.desc_curta"
-            maxlength="60"
+            required
           />
-          <small class="char-count" :class="{ danger: form.desc_curta.length > 60 }">
-            {{ form.desc_curta.length }}/60 caracteres
-          </small>
         </div>
         <!-- Descrição Completa -->
         <div class="form-group">
           <label>Descrição Completa *</label>
           <textarea
+            v-bind="limits.attrs('projeto', 'descricao')"
             v-model="form.descricao"
             rows="4"
-            placeholder="Descrição detalhada do projeto (Mínimo de 150 caracteres)..."
+            placeholder="Descrição detalhada do projeto..."
             required
           ></textarea>
-          <small class="char-count" :class="{ danger: form.descricao.trim().length < 150 }">
-            {{ form.descricao.trim().length }}/150 caracteres mínimos
-          </small>
+          <FieldHint resource="projeto" field="descricao" :value="form.descricao" />
         </div>
         <!-- Status -->
         <div class="form-group">

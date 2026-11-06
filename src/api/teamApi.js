@@ -1,6 +1,12 @@
 import api from './config'
 
 const teamApi = {
+  delete(id) {
+    return api.delete(`/equipes/${id}/`)
+  },
+  transferOwner(id, professorId) {
+    return api.post(`/equipes/${id}/transferir-owner/`, { professor: professorId })
+  },
   getAll(page, pageSize) {
     let url = `/equipes/?page=${page}`
 

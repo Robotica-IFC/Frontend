@@ -2,8 +2,10 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import projectApi from '@/api/projectsApi'
 import imageApi from '@/api/imageApi'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const useProjectStore = defineStore('project', () => {
+  const limits = useFormLimits()
   const projects = ref([])
   const loading = ref(false)
 
@@ -69,6 +71,7 @@ export const useProjectStore = defineStore('project', () => {
 
   async function createProject(projectData, image) {
     try {
+      await limits.assertValid('projeto', projectData)
       let attachmentKey = null
       if (image) {
         attachmentKey = await uploadProjectImage(image)
@@ -88,13 +91,21 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   async function updateProject(id, projectData, image = undefined) {
+    await limits.assertValid('projeto', projectData)
     const payload = { ...projectData }
     if (image !== undefined) payload.image_perfil = image ? await uploadProjectImage(image) : null
     const { data } = await projectApi.update(id, payload)
     return data
   }
 
+  async function deleteProject(id) {
+    await projectApi.delete(id)
+    projects.value = projects.value.filter(project => String(project.id) !== String(id))
+    teamProjects.value = teamProjects.value.filter(project => String(project.id) !== String(id))
+  }
+
   return {
+    deleteProject,
     updateProject,
     projects,
     loading,

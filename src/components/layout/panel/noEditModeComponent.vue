@@ -7,10 +7,16 @@ import { useAuthStore } from '@/store/authStore'
 import appButton from '@/components/form/appButton.vue'
 import { useTeamStore } from '@/store/teamStore'
 import { onMounted, ref } from 'vue'
+import { useConfirmation } from '@/composables/useConfirmation'
 
 const templateStore = useTemplateStore()
 const authStore = useAuthStore()
 const teamStore = useTeamStore()
+const { confirm } = useConfirmation()
+
+function confirmLogout() {
+  return confirm({ title: 'Sair da conta?', message: 'Será necessário entrar novamente para acessar sua conta.', confirmLabel: 'Sair da conta', danger: false, onConfirm: () => authStore.logout() })
+}
 
 const { user } = storeToRefs(authStore)
 
@@ -71,7 +77,7 @@ function openTeam(id) {
       </div>
     </div>
     <div class="logout">
-      <button class="danger" @click="authStore.logout()">
+      <button class="danger" @click="confirmLogout">
         <span class="mdi mdi-logout"></span> <span>Sair da conta</span>
       </button>
       <button class="danger">

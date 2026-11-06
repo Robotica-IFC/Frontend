@@ -5,6 +5,7 @@ import router from '@/router'
 const props = defineProps({
   teachers: { type: Array, default: () => [] },
   students: { type: Array, default: () => [] },
+  ownerId: { type: String, default: null },
 })
 
 const teachersExpanded = ref(false)
@@ -42,6 +43,7 @@ function goToTeacher(id) {
             <span v-else class="avatar-placeholder mdi mdi-account" aria-hidden="true"></span>
             <span class="member-label">
               <strong :title="teacher.user?.name">{{ teacher.user?.name || 'Professor' }}</strong>
+              <small v-if="teacher.id === ownerId" class="owner-badge">OWNER</small>
               <small :title="teacher.user?.email">{{ teacher.user?.email }}</small>
             </span>
           </button>
@@ -80,3 +82,6 @@ function goToTeacher(id) {
   </div>
 </template>
 <style scoped src="./membersOfTeamComponent.css"></style>
+<style scoped>
+.owner-badge { color: #004369; font-weight: 700; font-size: 10px; }
+</style>

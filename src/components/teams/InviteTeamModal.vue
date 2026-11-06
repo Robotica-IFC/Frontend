@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useInvitesStore } from '@/store/invitesStore'
 import studentsApi from '@/api/studentApi'
 import teacherApi from '@/api/teacherApi'
+import { formatApiError } from '@/utils/formValidation'
 
 const props = defineProps({ team: { type: Object, required: true } })
 const emit = defineEmits(['close', 'sent'])
@@ -48,7 +49,7 @@ async function send(person) {
     results.value = results.value.filter(p => p.id !== person.id)
     emit('sent')
   } catch (err) {
-    error.value = err.response?.data?.non_field_errors?.[0] || err.response?.data?.detail || 'Não foi possível enviar o convite.'
+    error.value = formatApiError(err, 'Não foi possível enviar o convite.')
   } finally { sending.value = null }
 }
 </script>

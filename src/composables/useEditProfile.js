@@ -5,9 +5,13 @@ import { useInstituteStore } from '@/store/instituteStore'
 import { useStudentStore } from '@/store/studentStore'
 import { useTeacherStore } from '@/store/teacherStore'
 import { useTemplateStore } from '@/store/template'
+import { useFormLimits } from '@/composables/useFormLimits'
+import { formatApiError } from '@/utils/formValidation'
 
 export function useEditProfile() {
   const authStore = useAuthStore()
+  const limits = useFormLimits()
+  const errorMessage = ref('')
   const studentStore = useStudentStore()
   const teacherStore = useTeacherStore()
   const instituteStore = useInstituteStore()
@@ -109,6 +113,7 @@ export function useEditProfile() {
   }
 
   const handleCreateInstitute = async () => {
+    errorMessage.value = ''
     try {
       loading.value = true
       const novoInst = await instituteStore.createInstitute(fileInstitute.value)
@@ -118,7 +123,7 @@ export function useEditProfile() {
       alert('Nova instituição cadastrada e vinculada!')
     } catch (error) {
       console.error('Erro ao criar instituto:', error)
-      alert('Falha ao cadastrar instituição.')
+      errorMessage.value = formatApiError(error, 'Falha ao cadastrar instituição.')
     } finally {
       loading.value = false
     }
@@ -131,8 +136,10 @@ export function useEditProfile() {
   }
 
   const handleSave = async () => {
+    if (loading.value) return
+    errorMessage.value = ''
     if (user.value?.tipo === 'professor' && !formData.value.instituicao) {
-      alert('Por favor, selecione ou cadastre uma instituição primeiro!')
+      errorMessage.value = 'Selecione ou cadastre uma instituição primeiro.'
       return
     }
 
@@ -150,6 +157,8 @@ export function useEditProfile() {
         name: formData.value.name,
         username: formData.value.username,
       }
+      await limits.assertValid(authStore.user?.tipo === 'aluno' ? 'aluno' : 'professor', profilePayload)
+      await limits.assertValid('usuario', userPayload)
 
       if (imageFile.value) {
         const uploadStore = authStore.user?.tipo === 'aluno' ? studentStore : teacherStore
@@ -191,15 +200,11 @@ export function useEditProfile() {
       closeEdit()
     } catch (error) {
       const backendErrors = error.response?.data
-      if (backendErrors && backendErrors.username) {
-        alert('Este nome de usuário já está em uso. Escolha outro!')
-      } else if (backendErrors && backendErrors.refresh) {
+      if (backendErrors && backendErrors.refresh) {
         alert('Sua sessão expirou. Por favor, faça login novamente.')
         authStore.logout()
-      } else if (backendErrors) {
-        alert(`Erro na validação:\n${Object.values(backendErrors).flat().join('\n')}`)
       } else {
-        alert('Erro ao salvar as alterações. Verifique os dados.')
+        errorMessage.value = formatApiError(error, 'Erro ao salvar as alterações. Verifique os dados.')
       }
     } finally {
       loading.value = false
@@ -208,6 +213,7 @@ export function useEditProfile() {
 
   return {
     authStore,
+    errorMessage,
     instituteStore,
     user,
     loading,

@@ -2,8 +2,10 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import itemApi from '@/api/itemApi'
 import imageApi from '@/api/imageApi'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const useItemStore = defineStore('item', () => {
+  const limits = useFormLimits()
   const loading = ref(false)
 
   async function uploadItemImage(imageFile) {
@@ -22,6 +24,8 @@ export const useItemStore = defineStore('item', () => {
   async function createItem(itemData, image) {
     try {
       loading.value = true
+
+      await limits.assertValid('item', itemData)
 
       const attachmentKey = await uploadItemImage(image)
 
@@ -45,6 +49,7 @@ export const useItemStore = defineStore('item', () => {
       loading.value = true
 
       const payload = { ...itemData }
+      await limits.assertValid('item', payload)
 
       if (image) {
         payload.imagem = await uploadItemImage(image)

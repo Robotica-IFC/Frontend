@@ -1,8 +1,15 @@
 <script setup>
+import UploadHint from '@/components/form/UploadHint.vue'
 import { ref, defineProps, defineEmits } from 'vue'
 import { usePostStore } from '@/store/postsStore'
 import appButton from '@/components/form/appButton.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+import { formatApiError } from '@/utils/formValidation'
+
+const limits = useFormLimits()
+const errorMessage = ref('')
 
 const props = defineProps({
   projectId: {
@@ -47,7 +54,12 @@ const closeModal = () => {
 }
 
 const handleSubmit = async () => {
-  if (!legenda.value.trim() && selectedFiles.value.length === 0) return
+  if (postStore.loading) return
+  errorMessage.value = ''
+  if (!legenda.value.trim() && selectedFiles.value.length === 0) {
+    errorMessage.value = 'Adicione uma legenda ou pelo menos uma imagem.'
+    return
+  }
 
   try {
     await postStore.createPost({
@@ -59,7 +71,7 @@ const handleSubmit = async () => {
     closeModal()
     emit('created')
   } catch (error) {
-    alert('Erro ao publicar post. Tente novamente.')
+    errorMessage.value = formatApiError(error, 'Erro ao publicar post. Tente novamente.')
   }
 }
 </script>
@@ -74,10 +86,13 @@ const handleSubmit = async () => {
 
       <div class="modal-body">
         <textarea
+          v-bind="limits.attrs('post', 'legenda')"
           v-model="legenda"
           placeholder="Escreva a legenda do post..."
           rows="4"
         ></textarea>
+        <FieldHint resource="post" field="legenda" :value="legenda" />
+        <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
 
         <fieldset class="format-selector">
           <legend>Formato da publicação</legend>
@@ -104,6 +119,7 @@ const handleSubmit = async () => {
         <button type="button" class="add-image-btn" @click="showImageSheet = true">
           <i class="mdi mdi-image-plus-outline" aria-hidden="true"></i> Adicionar imagens
         </button>
+        <UploadHint />
       </div>
 
       <div class="modal-footer">

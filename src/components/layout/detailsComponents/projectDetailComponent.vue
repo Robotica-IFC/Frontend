@@ -7,6 +7,7 @@ import appButton from '@/components/form/appButton.vue'
 import CreatePostModal from '@/components/posts/CreatePostModal.vue'
 import PostCommentsSheet from '@/components/posts/PostCommentsSheet.vue'
 import EditPostModal from '@/components/posts/EditPostModal.vue'
+import PostImageViewer from '@/components/posts/PostImageViewer.vue'
 import EditProjectModal from '@/components/projects/EditProjectModal.vue'
 import ProjectParticipantsModal from '@/components/layout/detailsComponents/projectParticipantsModal.vue'
 import { usePostStore } from '@/store/postsStore'
@@ -19,6 +20,7 @@ const templateStore = useTemplateStore()
 const postStore = usePostStore()
 const selectedComments = ref(null)
 const editingPost = ref(null)
+const viewedImages = ref(null)
 const editingProject = ref(false)
 const isParticipantsModalOpen = ref(false)
 const errorMessage = ref('')
@@ -136,7 +138,9 @@ onMounted(async () => {
         <p class="legenda">{{ p.legenda }}</p>
 
         <div class="post-image post-media" v-if="p.images && p.images.length === 1">
-          <img :src="p.images[0].url" alt="Imagem do post" loading="lazy">
+          <button type="button" class="post-image-open" aria-label="Ampliar imagem do post" @click="viewedImages = { images: p.images, index: 0 }">
+            <img :src="p.images[0].url" alt="Imagem do post" loading="lazy">
+          </button>
         </div>
 
         <div class="carousel-wrapper post-media" v-else-if="p.images && p.images.length > 1">
@@ -144,7 +148,9 @@ onMounted(async () => {
 
           <div class="carousel-container" :id="`carousel-${p.id}`">
             <div v-for="(img, index) in p.images" :key="index" class="carousel-item">
-              <img :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy">
+              <button type="button" class="post-image-open" :aria-label="`Ampliar imagem ${index + 1} do post`" @click="viewedImages = { images: p.images, index }">
+                <img :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy">
+              </button>
             </div>
           </div>
 
@@ -166,6 +172,7 @@ onMounted(async () => {
       @close="isParticipantsModalOpen = false"
     />
     <PostCommentsSheet v-if="selectedComments" :post="selectedComments" @close="selectedComments = null" />
+    <PostImageViewer v-if="viewedImages" :images="viewedImages.images" :initial-index="viewedImages.index" @close="viewedImages = null" />
     <EditPostModal v-if="editingPost" :post="editingPost" @close="editingPost = null" @saved="fetchProject" />
     <EditProjectModal v-if="editingProject" :project="actualProject" @close="editingProject = false" @saved="fetchProject" />
     <CreatePostModal
@@ -178,6 +185,17 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.post-image-open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+.post-image-open:focus-visible { outline: 3px solid #004369; outline-offset: -3px; }
 .post-actions {
   display:flex;
   justify-content:space-between;

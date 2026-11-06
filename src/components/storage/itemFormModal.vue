@@ -1,9 +1,14 @@
 <script setup>
+import UploadHint from '@/components/form/UploadHint.vue'
 import { useItemFormModal } from '@/composables/useItemFormModal'
 import { ITEM_CATEGORIES } from '@/constants/itemCategories'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+
+const limits = useFormLimits()
 
 const props = defineProps({
   estoqueId: { type: [Number, String], required: true },
@@ -32,9 +37,10 @@ const {
         <button class="close-btn" @click="$emit('close')">&times;</button>
       </div>
       <form @submit.prevent="handleSubmit" class="modal-body">
-        <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
+        <p v-if="errorMessage" role="alert" class="error-msg">{{ errorMessage }}</p>
         <div class="form-group align-center">
           <label>Imagem do Item</label>
+          <UploadHint />
           <div class="image-upload-wrapper">
             <button type="button" class="image-preview-container" @click="showImageSheet = true">
               <img
@@ -67,20 +73,17 @@ const {
         />
         <div class="form-group">
           <label>Nome *</label>
-          <appInput
-            placeholder="Nome do item (Max: 40 caracteres)"
+          <appInput resource="item" field="nome"
+            placeholder="Nome do item"
             icon="mdi mdi-format-title"
             v-model="form.nome"
-            maxlength="40"
             required
           />
-          <small class="char-count" :class="{ danger: form.nome.length > 40 }">
-            {{ form.nome.length }}/40 caracteres
-          </small>
         </div>
         <div class="form-group">
           <label>Quantidade *</label>
           <input
+            v-bind="limits.attrs('item', 'quantidade')"
             type="number"
             min="0"
             step="1"
@@ -88,6 +91,7 @@ const {
             class="custom-input"
             required
           />
+          <FieldHint resource="item" field="quantidade" :value="form.quantidade" />
         </div>
         <div class="form-group">
           <label>Categoria *</label>
@@ -99,7 +103,8 @@ const {
         </div>
         <div class="form-group">
           <label>Descrição</label>
-          <textarea v-model="form.descricao" rows="4" placeholder="Descrição do item..."></textarea>
+          <textarea v-model="form.descricao" v-bind="limits.attrs('item', 'descricao')" rows="4" placeholder="Descrição do item..."></textarea>
+          <FieldHint resource="item" field="descricao" :value="form.descricao" />
         </div>
         <div class="modal-actions">
           <button

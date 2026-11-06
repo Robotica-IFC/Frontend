@@ -134,6 +134,7 @@ async function goToStorage() {
       <membersOfTeamComponent
         :teachers="team.professores"
         :students="team.alunos"
+        :owner-id="team.criador"
       ></membersOfTeamComponent>
     </div>
     <div class="creates" style="margin-top: 20px">
