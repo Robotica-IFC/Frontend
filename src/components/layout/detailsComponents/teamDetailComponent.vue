@@ -81,7 +81,7 @@ async function goToStorage() {
 
 <template>
   <div class="page">
-    <div class="top">
+    <div class="top" style="padding-top: 20px;">
       <appArrow @click="router.back()"></appArrow>
       <requestToParticipateComponent v-if="!isMemberOfTeam"></requestToParticipateComponent>
       <exitTeamComponent v-if="isMemberOfTeam" :teamId="props.id"></exitTeamComponent>

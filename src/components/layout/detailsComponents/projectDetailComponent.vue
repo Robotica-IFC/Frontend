@@ -88,7 +88,7 @@ onMounted(async () => {
 
     <div class="project-intro">
 
-    <appArrow class="project-back" @back="router.back()" />
+    <appArrow class="project-back" @back="router.back()"  />
 
       <div class="project-heading-row">
         <h1>{{ actualProject.titulo }}</h1>
