@@ -182,7 +182,7 @@ async function goToStorage() {
         @click="showSuggestions = !showSuggestions"
       >
         <span class="mdi mdi-lightbulb-on-outline" aria-hidden="true"></span>
-        {{ showSuggestions ? 'Ocultar sugestões' : 'Ver sugestões' }}
+        Ver sugestões
       </button>
       <button v-if="isTeacherInTeam" class="createProject" @click="openCreateProject()">
         <span class="mdi mdi-plus"></span> Criar projeto

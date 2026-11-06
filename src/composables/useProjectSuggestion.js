@@ -12,10 +12,10 @@ export function useProjectSuggestion() {
   const loadingTeams = ref(false)
   const teamError = ref('')
   const attachments = ref([])
-  const fileInput = ref(null)
+  const showAttachmentSheet = ref(false)
+  const maxAttachments = 4
   const submitting = ref(false)
   const errors = ref({})
-  const successMessage = ref('')
   let teamController
 
   async function loadTeams() {
@@ -50,11 +50,14 @@ export function useProjectSuggestion() {
     delete errors.value.equipe
   }
 
-  function selectAttachments(event) {
+  function selectAttachments(files) {
     delete errors.value.anexos
-    for (const file of event.target.files) {
-      if (!/\.pdf$/i.test(file.name) || (file.type && file.type !== 'application/pdf')) {
-        errors.value.anexos = 'Selecione apenas arquivos PDF.'
+    if (submitting.value) return
+    for (const file of files) {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif']
+      const allowedExtension = /\.(pdf|jpe?g|png|webp|gif)$/i.test(file.name)
+      if (!allowedExtension || (file.type && !allowedTypes.includes(file.type))) {
+        errors.value.anexos = 'Selecione PDFs ou imagens JPG, PNG, WEBP ou GIF.'
         continue
       }
       if (
@@ -65,10 +68,18 @@ export function useProjectSuggestion() {
             other.lastModified === file.lastModified,
         )
       ) {
+        if (attachments.value.length >= maxAttachments) {
+          errors.value.anexos = 'Você pode adicionar no máximo 4 anexos por sugestão.'
+          continue
+        }
         attachments.value.push({ file, attachmentKey: null })
       }
     }
-    event.target.value = ''
+  }
+
+  function removeAttachment(index) {
+    attachments.value.splice(index, 1)
+    delete errors.value.anexos
   }
 
   function clearForm() {
@@ -76,14 +87,12 @@ export function useProjectSuggestion() {
     selectedTeam.value = null
     attachments.value = []
     errors.value = {}
-    successMessage.value = ''
-    if (fileInput.value) fileInput.value.value = ''
+    showAttachmentSheet.value = false
   }
 
   async function submitSuggestion() {
     if (submitting.value) return
     errors.value = {}
-    successMessage.value = ''
     if (!authStore.isAuthenticated) {
       errors.value.general = 'Entre na sua conta para enviar uma sugestão.'
       return
@@ -94,6 +103,8 @@ export function useProjectSuggestion() {
     if (!form.descricao.trim()) errors.value.descricao = 'Descreva sua sugestão de projeto.'
     else if (form.descricao.length > 1000)
       errors.value.descricao = 'Use no máximo 1.000 caracteres na descrição.'
+    if (attachments.value.length > maxAttachments)
+      errors.value.anexos = 'Você pode adicionar no máximo 4 anexos por sugestão.'
     if (Object.keys(errors.value).length) return
 
     submitting.value = true
@@ -108,7 +119,6 @@ export function useProjectSuggestion() {
         attachments.value,
       )
       clearForm()
-      successMessage.value = 'Sugestão enviada com sucesso! Obrigado por compartilhar sua ideia.'
     } catch (error) {
       const data = error.response?.data
       for (const field of ['titulo', 'equipe', 'descricao', 'anonimo', 'anexos']) {
@@ -143,13 +153,14 @@ export function useProjectSuggestion() {
     loadingTeams,
     teamError,
     attachments,
-    fileInput,
+    showAttachmentSheet,
+    maxAttachments,
     submitting,
     errors,
-    successMessage,
     loadTeams,
     selectTeam,
     selectAttachments,
+    removeAttachment,
     clearForm,
     submitSuggestion,
   }

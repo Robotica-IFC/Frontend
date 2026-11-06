@@ -1,6 +1,7 @@
 <script setup>
 import { useProjectSuggestion } from '@/composables/useProjectSuggestion'
 import teamSelectComponent from '@/components/teams/teamSelectComponent.vue'
+import imagesourcesheet from '@/components/imagesourcesheet.vue'
 
 const {
   form,
@@ -9,13 +10,14 @@ const {
   loadingTeams,
   teamError,
   attachments,
-  fileInput,
+  showAttachmentSheet,
+  maxAttachments,
   submitting,
   errors,
-  successMessage,
   loadTeams,
   selectTeam,
   selectAttachments,
+  removeAttachment,
   clearForm,
   submitSuggestion,
 } = useProjectSuggestion()
@@ -110,21 +112,19 @@ const {
                 <small id="suggestion-description-count" class="char-count"
                   >{{ form.descricao.length }}/1000</small
                 >
-                <button type="button" class="attachment-button" @click="fileInput?.click()">
+                <button
+                  type="button"
+                  class="attachment-button"
+                  :disabled="attachments.length >= maxAttachments"
+                  @click="showAttachmentSheet = true"
+                >
                   <span class="mdi mdi-paperclip" aria-hidden="true"></span> Inserir anexo
                 </button>
               </div>
-              <input
-                ref="fileInput"
-                class="visually-hidden"
-                type="file"
-                accept=".pdf,application/pdf"
-                multiple
-                aria-label="Selecionar anexos PDF"
-                tabindex="-1"
-                @change="selectAttachments"
-              />
-              <small class="help-text">Anexos opcionais em PDF.</small>
+              <small class="help-text">
+                Até {{ maxAttachments }} anexos em PDF, JPG, PNG, WEBP ou GIF.
+                {{ attachments.length }}/{{ maxAttachments }} selecionados.
+              </small>
               <p
                 v-if="errors.descricao"
                 id="suggestion-description-error"
@@ -139,12 +139,20 @@ const {
                 aria-label="Anexos selecionados"
               >
                 <li v-for="(attachment, index) in attachments" :key="index">
-                  <span class="mdi mdi-file-pdf-box" aria-hidden="true"></span
+                  <span
+                    :class="[
+                      'mdi',
+                      /\.pdf$/i.test(attachment.file.name)
+                        ? 'mdi-file-pdf-box'
+                        : 'mdi-image-outline',
+                    ]"
+                    aria-hidden="true"
+                  ></span
                   ><span>{{ attachment.file.name }}</span>
                   <button
                     type="button"
                     :aria-label="`Remover ${attachment.file.name}`"
-                    @click="attachments.splice(index, 1)"
+                    @click="removeAttachment(index)"
                   >
                     <span class="mdi mdi-close" aria-hidden="true"></span>
                   </button>
@@ -165,10 +173,19 @@ const {
       <p v-if="errors.general" class="field-error feedback-message" role="alert">
         {{ errors.general }}
       </p>
-      <p v-if="successMessage" class="success-message feedback-message" role="status">
-        {{ successMessage }}
-      </p>
     </form>
+    <Teleport to="body">
+      <imagesourcesheet
+        v-if="showAttachmentSheet"
+        accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,application/pdf,image/jpeg,image/png,image/webp,image/gif"
+        multiple
+        gallery-label="Escolher arquivos"
+        facing-mode="environment"
+        :normalize-images="false"
+        @select="selectAttachments"
+        @close="showAttachmentSheet = false"
+      />
+    </Teleport>
   </section>
 </template>
 

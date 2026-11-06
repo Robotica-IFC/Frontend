@@ -1,7 +1,7 @@
 <template>
   <span class="suggestion-badge">
     <span class="mdi mdi-lightbulb-on-outline" aria-hidden="true"></span>
-    A partir de uma sugestão
+    Sugestão
   </span>
 </template>
 

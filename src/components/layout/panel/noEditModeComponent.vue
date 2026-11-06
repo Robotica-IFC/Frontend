@@ -6,7 +6,8 @@ import router from '@/router'
 import { useAuthStore } from '@/store/authStore'
 import appButton from '@/components/form/appButton.vue'
 import { useTeamStore } from '@/store/teamStore'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { getProfileImageUrl } from '@/utils/profileImage'
 
 const templateStore = useTemplateStore()
 const authStore = useAuthStore()
@@ -15,9 +16,16 @@ const teamStore = useTeamStore()
 const { user } = storeToRefs(authStore)
 
 const teamsUser = ref(null)
+const profileImageUrl = computed(() => getProfileImageUrl(user.value?.imagem_perfil))
 
 onMounted(async () => {
-  teamsUser.value = await teamStore.getTeamByUserId(user.value.user_id)
+  if (!user.value?.user_id) return
+  const [profile, teams] = await Promise.allSettled([
+    authStore.refreshUserProfile(),
+    teamStore.getTeamByUserId(user.value.user_id),
+  ])
+  if (profile.status === 'rejected') console.error('Erro ao atualizar perfil:', profile.reason)
+  if (teams.status === 'fulfilled') teamsUser.value = teams.value
 })
 
 function openTeam(id) {
@@ -34,10 +42,16 @@ function openTeam(id) {
       <div class="first-data">
         <div class="name-image">
           <img
+            v-if="profileImageUrl"
             class="profile-image"
-            :src="user?.imagem_perfil ? `${user.imagem_perfil}?t=${Date.now()}` : ''"
+            :src="profileImageUrl"
             :alt="user?.name"
           />
+          <span
+            v-else
+            class="mdi mdi-account-circle profile-placeholder"
+            aria-label="Sem foto de perfil"
+          ></span>
           <div>
             <h1>{{ user?.username }}</h1>
             <h2>{{ user?.email }}</h2>

@@ -13,6 +13,16 @@ const projectSuggestionsApi = {
   uploadDocument(formData) {
     return api.post('media/documents/', formData)
   },
+  reject(id) {
+    return api.post(`sugestoes-projetos/${id}/recusar/`)
+  },
+  accept(id) {
+    return api.post(`sugestoes-projetos/${id}/aceitar/`)
+  },
+  setFavorite(id, favorite) {
+    const action = favorite ? 'favoritar' : 'desfavoritar'
+    return api.post(`sugestoes-projetos/${id}/${action}/`)
+  },
 }
 
 export default projectSuggestionsApi
