@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, onMounted, computed, ref } from 'vue'
+import { defineProps, computed, ref, watch } from 'vue'
 import appArrow from '@/components/appArrow.vue'
 import requestToParticipateComponent from '@/components/requestToParticipateComponent.vue'
 import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useStorageStore } from '@/store/storageStore'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 import membersOfTeamComponent from './membersOfTeamComponent.vue'
+import teamSuggestionsComponent from '@/components/teams/teamSuggestionsComponent.vue'
 
 const teamStore = useTeamStore()
 const projectStore = useProjectStore()
@@ -18,6 +19,8 @@ const authStore = useAuthStore()
 const storageStore = useStorageStore()
 
 const isModalOpen = ref(false)
+const selectedSuggestion = ref(null)
+const showSuggestions = ref(false)
 
 const props = defineProps({
   id: {
@@ -30,14 +33,33 @@ const team = computed(() => teamStore.actualTeam || {})
 
 const currentUserId = computed(() => authStore.user?.user_id || authStore.user?.id)
 
-const isTeacherInTeam = computed(() => {
-  if (!team.value.professores || !currentUserId.value) return false
-  return team.value.professores.some(
-    (teacher) =>
-      teacher.user?.id === currentUserId.value ||
-      teacher.id === currentUserId.value ||
-      teacher.user_id === currentUserId.value,
+const isTeacher = computed(
+  () => authStore.isAuthenticated && authStore.user?.tipo?.trim().toLowerCase() === 'professor',
+)
+
+function sameId(first, second) {
+  if (first == null || second == null || first === '' || second === '') return false
+  return (
+    String(first).replaceAll('-', '').toLowerCase() ===
+    String(second).replaceAll('-', '').toLowerCase()
   )
+}
+
+const isTeacherInTeam = computed(() => {
+  if (
+    !isTeacher.value ||
+    !sameId(team.value.id, props.id) ||
+    !Array.isArray(team.value.professores)
+  )
+    return false
+  return team.value.professores.some((teacher) => {
+    const profileId = teacher?.id ?? teacher
+    const userId =
+      teacher?.user?.id ??
+      teacher?.user_id ??
+      (typeof teacher?.user === 'object' ? null : teacher?.user)
+    return sameId(profileId, authStore.user.id) || sameId(userId, authStore.user.user_id)
+  })
 })
 
 const isStudentInTeam = computed(() => {
@@ -52,18 +74,41 @@ const isStudentInTeam = computed(() => {
 
 const isMemberOfTeam = computed(() => isTeacherInTeam.value || isStudentInTeam.value)
 
-onMounted(async () => {
-  // 1. Busca os dados da equipe primeiro para poder avaliar os membros
-  await teamStore.getTeamById(props.id, false)
+watch(
+  () => props.id,
+  () => {
+    showSuggestions.value = false
+    isModalOpen.value = false
+    selectedSuggestion.value = null
+  },
+)
 
-  // 2. Se o usuário NÃO for membro da equipe, envia a requisição de visualização
-  if (!isMemberOfTeam.value) {
-    await teamStore.incrementView(props.id)
-  }
-})
+watch(
+  () => props.id,
+  async () => {
+    // 1. Busca os dados da equipe primeiro para poder avaliar os membros
+    await teamStore.getTeamById(props.id, false)
+
+    // 2. Se o usuário NÃO for membro da equipe, envia a requisição de visualização
+    if (!isMemberOfTeam.value) {
+      await teamStore.incrementView(props.id)
+    }
+  },
+  { immediate: true },
+)
 
 async function handleProjectCreated() {
   await projectStore.getProjectsByTeam(props.id)
+}
+
+function openCreateProject(suggestion = null) {
+  selectedSuggestion.value = suggestion
+  isModalOpen.value = true
+}
+
+function closeSuggestions() {
+  showSuggestions.value = false
+  document.getElementById('toggle-team-suggestions')?.focus()
 }
 
 async function goToStorage() {
@@ -123,18 +168,43 @@ async function goToStorage() {
         :students="team.alunos"
       ></membersOfTeamComponent>
     </div>
-    <div class="creates" style="margin-top: 20px">
+    <div class="creates">
       <button v-if="isMemberOfTeam" class="createProject" @click="goToStorage()">
         <span class="mdi mdi-archive"></span> Estoque da equipe
       </button>
-      <button v-if="isTeacherInTeam" class="createProject" @click="isModalOpen = true">
+      <button
+        v-if="isTeacherInTeam"
+        id="toggle-team-suggestions"
+        type="button"
+        class="createProject"
+        :aria-expanded="showSuggestions"
+        aria-controls="team-suggestions"
+        @click="showSuggestions = !showSuggestions"
+      >
+        <span class="mdi mdi-lightbulb-on-outline" aria-hidden="true"></span>
+        Ver sugestões
+      </button>
+      <button v-if="isTeacherInTeam" class="createProject" @click="openCreateProject()">
         <span class="mdi mdi-plus"></span> Criar projeto
       </button>
     </div>
 
+    <p v-if="isTeacher && team.id && !isTeacherInTeam" class="team-access-message">
+      As sugestões ficam disponíveis aos professores vinculados a esta equipe.
+    </p>
+
+    <teamSuggestionsComponent
+      v-if="isTeacherInTeam && showSuggestions"
+      id="team-suggestions"
+      :team-id="props.id"
+      @create="openCreateProject"
+      @close="closeSuggestions"
+    />
+
     <div v-if="team.id && isModalOpen" class="project-overlay">
       <createProjectModal
         :id="props.id"
+        :suggestion="selectedSuggestion"
         @close="isModalOpen = false"
         @created="handleProjectCreated"
       ></createProjectModal>

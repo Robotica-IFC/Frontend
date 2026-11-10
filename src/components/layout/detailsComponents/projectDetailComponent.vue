@@ -7,6 +7,7 @@ import appButton from '@/components/form/appButton.vue'
 import CreatePostModal from '@/components/posts/CreatePostModal.vue'
 import appArrow from '@/components/appArrow.vue'
 import router from '@/router'
+import projectSuggestionBadge from '@/components/projects/projectSuggestionBadge.vue'
 
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
@@ -69,6 +70,7 @@ onMounted(async () => {
     <appArrow style="margin-top: 60px;" @click="router.back()"></appArrow>
 
       <h1>{{ actualProject.titulo }}</h1>
+      <projectSuggestionBadge v-if="actualProject.sugestao" />
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team">Ver Participantes</appButton>
     </div>

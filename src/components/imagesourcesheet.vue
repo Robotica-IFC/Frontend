@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 
+defineOptions({ name: 'ImageSourceSheet' })
+
 const props = defineProps({
   accept: {
     type: String,
@@ -10,6 +12,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  galleryLabel: { type: String, default: '' },
+  facingMode: { type: String, default: 'user' },
+  normalizeImages: { type: Boolean, default: true },
   maxDimension: {
     type: Number,
     default: 1920,
@@ -59,7 +64,7 @@ function openGalleryDesktop() {
 async function loadBitmap(file) {
   try {
     return await createImageBitmap(file, { imageOrientation: 'from-image' })
-  } catch (error) {
+  } catch {
     return await createImageBitmap(file)
   }
 }
@@ -90,7 +95,7 @@ async function normalizeImage(file) {
   }
 }
 
-async function handleChange(event) {
+async function handleChange(event, fromCamera = false) {
   const rawFiles = Array.from(event.target.files || [])
   event.target.value = ''
   if (rawFiles.length === 0) return
@@ -98,7 +103,13 @@ async function handleChange(event) {
   fileWasSelected.value = true
   processing.value = true
 
-  const files = await Promise.all(rawFiles.map((rawFile) => normalizeImage(rawFile)))
+  const files = await Promise.all(
+    rawFiles.map((file) =>
+      file.type.startsWith('image/') && (props.normalizeImages || fromCamera)
+        ? normalizeImage(file)
+        : file,
+    ),
+  )
 
   processing.value = false
   emit('select', props.multiple ? files : files[0])
@@ -131,7 +142,7 @@ onMounted(() => {
 
         <button type="button" class="sheet-option" @click="openGallery">
           <span class="mdi mdi-image-multiple-outline"></span>
-          <span>{{ multiple ? 'Escolher da Galeria' : 'Escolher Arquivo' }}</span>
+          <span>{{ galleryLabel || (multiple ? 'Escolher da Galeria' : 'Escolher Arquivo') }}</span>
         </button>
 
         <button type="button" class="sheet-cancel" @click="$emit('close')">Cancelar</button>
@@ -142,10 +153,10 @@ onMounted(() => {
   <input
     ref="cameraInput"
     type="file"
-    :accept="accept"
-    capture="user"
+    accept="image/*"
+    :capture="facingMode"
     class="hidden-input"
-    @change="handleChange"
+    @change="handleChange($event, true)"
   />
   <input
     ref="galleryInput"
