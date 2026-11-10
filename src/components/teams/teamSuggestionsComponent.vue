@@ -10,9 +10,11 @@ const props = defineProps({
 })
 const emit = defineEmits(['create', 'close'])
 const suggestionsStore = useProjectSuggestionsStore()
+const suggestionsSection = ref(null)
 const suggestions = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
+const actionErrorMessage = ref('')
 const search = ref('')
 const suggestionsPerPage = 4
 const currentPage = ref(1)
@@ -66,8 +68,16 @@ const visibleSuggestions = computed(() => {
 })
 let controller
 
-function changePage(page) {
-  if (Number.isInteger(page) && page >= 1 && page <= totalPages.value) currentPage.value = page
+async function changePage(page) {
+  if (!Number.isInteger(page) || page < 1 || page > totalPages.value || page === currentPage.value)
+    return
+
+  currentPage.value = page
+  await nextTick()
+  suggestionsSection.value?.scrollIntoView({
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    block: 'start',
+  })
 }
 
 async function switchTab(tab, focus = false) {
@@ -87,6 +97,7 @@ async function updateSuggestion(suggestion, update) {
   if (pendingActions.value.has(suggestion.id)) return
   const requestController = controller
   pendingActions.value.add(suggestion.id)
+  actionErrorMessage.value = ''
   try {
     const updated = await update()
     if (requestController?.signal.aborted) return
@@ -95,10 +106,8 @@ async function updateSuggestion(suggestion, update) {
     )
   } catch (error) {
     if (!requestController?.signal.aborted) {
-      console.error(
-        'Não foi possível atualizar a sugestão:',
-        error.response?.data?.detail || error.message,
-      )
+      actionErrorMessage.value =
+        error.response?.data?.detail || 'Não foi possível atualizar a sugestão. Tente novamente.'
     }
   } finally {
     pendingActions.value.delete(suggestion.id)
@@ -162,6 +171,7 @@ async function loadSuggestions() {
   controller = requestController
   loading.value = true
   errorMessage.value = ''
+  actionErrorMessage.value = ''
   currentPage.value = 1
   suggestions.value = []
   try {
@@ -202,7 +212,12 @@ onBeforeUnmount(() => controller?.abort())
 </script>
 
 <template>
-  <section class="team-suggestions" aria-labelledby="team-suggestions-heading" :aria-busy="loading">
+  <section
+    ref="suggestionsSection"
+    class="team-suggestions"
+    aria-labelledby="team-suggestions-heading"
+    :aria-busy="loading"
+  >
     <header class="suggestions-header">
       <div>
         <h2 id="team-suggestions-heading">Sugestões de projetos</h2>
@@ -221,6 +236,9 @@ onBeforeUnmount(() => controller?.abort())
         </button>
       </div>
     </header>
+    <p v-if="actionErrorMessage" class="suggestions-message error-message" role="alert">
+      {{ actionErrorMessage }}
+    </p>
     <div class="suggestions-tabs" role="tablist" aria-label="Situação das sugestões">
       <button
         v-for="tab in tabs"
@@ -287,6 +305,7 @@ onBeforeUnmount(() => controller?.abort())
               <div class="suggestion-card-meta">
                 <time :datetime="suggestion.criado_em">{{ formatDate(suggestion.criado_em) }}</time>
                 <button
+                  v-if="!suggestion.recusada"
                   type="button"
                   class="favorite-suggestion"
                   :aria-pressed="Boolean(suggestion.favorita)"

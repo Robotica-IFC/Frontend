@@ -1,6 +1,7 @@
 .team-suggestions {
   margin: 24px 0;
   min-width: 0;
+  scroll-margin-top: 90px;
 }
 .suggestions-header {
   display: flex;
