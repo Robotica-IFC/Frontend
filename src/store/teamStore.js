@@ -6,10 +6,12 @@ import { ref } from 'vue'
 import categoryApi from '@/api/categoryApi'
 import imageApi from '@/api/imageApi'
 import { useStorageStore } from './storageStore'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const useTeamStore = defineStore('team', () => {
   const authStore = useAuthStore()
   const storageStore = useStorageStore()
+  const limits = useFormLimits()
 
   const teams = ref([])
   const loading = ref(false)
@@ -60,6 +62,7 @@ export const useTeamStore = defineStore('team', () => {
   async function createCategory(categoryName) {
     try {
       const formattedName = categoryName.trim().toUpperCase()
+      await limits.assertValid('categoria', { nome: formattedName })
       const response = await categoryApi.create(formattedName)
       return response.data
     } catch (error) {
@@ -70,6 +73,7 @@ export const useTeamStore = defineStore('team', () => {
 
   async function getOrCreateCategory(categoryName) {
     const formattedName = categoryName.trim().toUpperCase()
+    await limits.assertValid('categoria', { nome: formattedName })
 
     const response = await categoryApi.getAll()
     const categories = response.data.results || response.data
@@ -105,6 +109,7 @@ export const useTeamStore = defineStore('team', () => {
   // Action de criação atualizada chamando a função de upload
   async function createTeam(teamData, imageFile) {
     try {
+      await limits.assertValid('equipe', teamData)
       // Chama a função auxiliar para obter a chave do anexo
       const attachmentKey = await uploadTeamImage(imageFile)
 
@@ -175,7 +180,37 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
+  async function removeMember(teamId, memberId, type) {
+    await teamApi.removeMember(teamId, memberId, type)
+    await getTeamById(teamId)
+  }
+
+  async function updateTeam(id, data, image = undefined) {
+    await limits.assertValid('equipe', data)
+    const payload = { ...data }
+    if (image !== undefined) payload.image_perfil = image ? await uploadTeamImage(image) : null
+    const { data: updated } = await teamApi.update(id, payload)
+    await getTeamById(id)
+    return updated
+  }
+
+  async function deleteTeam(id) {
+    await teamApi.delete(id)
+    teams.value = teams.value.filter(team => team.id !== id)
+    if (actualTeam.value?.id === id) actualTeam.value = []
+  }
+
+  async function transferOwner(id, professorId) {
+    const { data } = await teamApi.transferOwner(id, professorId)
+    actualTeam.value = data
+    return data
+  }
+
   return {
+    deleteTeam,
+    transferOwner,
+    removeMember,
+    updateTeam,
     teams,
     loading,
     currentPage,

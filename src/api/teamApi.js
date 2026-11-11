@@ -1,6 +1,12 @@
 import api from './config'
 
 const teamApi = {
+  delete(id) {
+    return api.delete(`/equipes/${id}/`)
+  },
+  transferOwner(id, professorId) {
+    return api.post(`/equipes/${id}/transferir-owner/`, { professor: professorId })
+  },
   getAll(page, pageSize) {
     let url = `/equipes/?page=${page}`
 
@@ -9,6 +15,18 @@ const teamApi = {
     }
 
     return api.get(url)
+  },
+  removeMember(teamId, memberId, type) {
+    return api.delete(`/equipes/${teamId}/membros/${memberId}/`, { params: { tipo: type } })
+  },
+  update(id, payload) {
+    return api.patch(`/equipes/${id}/`, payload)
+  },
+  getOptions(search = '', page = 1, signal) {
+    return api.get('equipes/opcoes/', {
+      params: { ativo: true, search, page, page_size: 15 },
+      signal,
+    })
   },
   create(payload) {
     return api.post('equipes/', payload)
@@ -19,7 +37,7 @@ const teamApi = {
   getOne(id) {
     return api.get(`equipes/${id}`)
   },
-  getTeamByUserId(id){
+  getTeamByUserId(id) {
     return api.get(`equipes/usuario/${id}`)
   },
   postView(id) {
@@ -27,7 +45,7 @@ const teamApi = {
   },
   exitTeam(id) {
     return api.post(`equipes/${id}/sair/`)
-  }
+  },
 }
 
 export default teamApi

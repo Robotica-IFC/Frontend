@@ -37,7 +37,7 @@ const authStore = useAuthStore();
           :src="authStore.user?.imagem_perfil"
           :alt="authStore.user?.name"
         />
-        <span v-else class="mdi mdi-account-circle-outline"></span>
+        <span v-else class="mdi mdi-account-circle-outline" @click="router.push('/edit')"></span>
       </li>
     </ul>
   </header>

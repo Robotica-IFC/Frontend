@@ -2,6 +2,7 @@
 import { onMounted, ref, computed } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
 import router from '@/router'
+import projectSuggestionBadge from './projectSuggestionBadge.vue'
 
 const store = useProjectStore()
 
@@ -59,6 +60,7 @@ onMounted(() => {
 
           <div class="content">
             <h2>{{ project.titulo }}</h2>
+            <projectSuggestionBadge v-if="project.sugestao" />
 
             <p class="desc-curta">
               {{ project.desc_curta }}
