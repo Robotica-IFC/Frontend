@@ -350,17 +350,10 @@ onBeforeUnmount(() => controller?.abort())
               :aria-label="`Ver perfil de ${authorName(suggestion)}`"
               @click="openAuthorProfile(suggestion, $event)"
             >
-              <img
-                v-if="authorImage(suggestion)"
+              <AppImage
                 class="author-avatar"
                 :src="authorImage(suggestion)"
-                :alt="`Foto de perfil de ${authorName(suggestion)}`"
-              />
-              <span
-                v-else
-                class="mdi mdi-account-circle author-placeholder"
-                aria-hidden="true"
-              ></span>
+                :alt="`Foto de perfil de ${authorName(suggestion)}`" />
               <span class="author-identity">
                 <strong>{{ authorName(suggestion) }}</strong>
                 <span

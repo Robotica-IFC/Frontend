@@ -11,7 +11,7 @@ import stepComponent from '../stepComponent.vue'
 const teacherStore = useTeacherStore() // Alterado para Teacher
 const templateStore = useTemplateStore()
 
-const previewImage = ref('/img/default2.jpg')
+const previewImage = ref('')
 const file = ref(null)
 const showImageSheet = ref(false)
 
@@ -45,7 +45,7 @@ function submit() {
     <form @submit.prevent="submit" class="final">
       <div class="avatar-container">
         <button type="button" class="avatar-label" @click="showImageSheet = true">
-          <img :src="previewImage" alt="Foto de perfil" class="profile-pic" />
+          <AppImage :src="previewImage" alt="Foto de perfil" class="profile-pic" />
           <div class="upload-icon">
             <i class="mdi mdi-camera"></i>
           </div>

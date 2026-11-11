@@ -42,15 +42,10 @@ const statusLabels = {
           :aria-label="`Abrir projeto ${project.titulo}`"
           @click="rememberHomeSection('featured-projects')"
         />
-        <img
-          v-if="project.image_perfil?.url || project.image_perfil?.file"
+        <AppImage
           class="project-image"
-          :src="project.image_perfil.url || project.image_perfil.file"
-          :alt="project.titulo"
-        />
-        <div v-else class="project-image image-placeholder">
-          <span class="mdi mdi-robot-outline" aria-hidden="true"></span>
-        </div>
+          :src="project.image_perfil?.url || project.image_perfil?.file"
+          :alt="project.titulo" />
         <div class="project-content">
           <h3>{{ project.titulo }}</h3>
           <div class="project-meta">
@@ -59,13 +54,10 @@ const statusLabels = {
               :to="{ name: 'teamDetails', params: { id: project.equipe_id } }"
               :aria-label="`Ver equipe ${project.equipe}`"
             >
-              <img
-                v-if="project.equipe_image"
+              <AppImage placeholder="team"
                 class="team-avatar"
                 :src="project.equipe_image"
-                :alt="`Logo da equipe ${project.equipe}`"
-              />
-              <span v-else class="mdi mdi-account-group" aria-hidden="true"></span>
+                :alt="`Logo da equipe ${project.equipe}`" />
               <span
                 ><strong>Equipe:</strong> <span class="team-name">{{ project.equipe }}</span></span
               >

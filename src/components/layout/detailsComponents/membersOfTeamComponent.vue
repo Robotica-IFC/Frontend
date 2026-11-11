@@ -38,9 +38,8 @@ function goToTeacher(id) {
       <ul class="teachers">
         <li v-for="teacher in visibleTeachers" :key="teacher.id">
           <button type="button" class="member-link" :aria-label="'Ver professor ' + (teacher.user?.name || '')" @click="goToTeacher(teacher.id)">
-            <img v-if="teacher.imagem_perfil?.url || teacher.imagem_perfil?.file"
-              :src="teacher.imagem_perfil.url || teacher.imagem_perfil.file" :alt="teacher.user?.name || 'Professor'" />
-            <span v-else class="avatar-placeholder mdi mdi-account" aria-hidden="true"></span>
+            <AppImage
+              :src="teacher.imagem_perfil?.url || teacher.imagem_perfil?.file" :alt="teacher.user?.name || 'Professor'" />
             <span class="member-label">
               <strong :title="teacher.user?.name">{{ teacher.user?.name || 'Professor' }}</strong>
               <small v-if="teacher.id === ownerId" class="owner-badge">OWNER</small>
@@ -64,9 +63,8 @@ function goToTeacher(id) {
       <ul class="students">
         <li v-for="student in visibleStudents" :key="student.id">
           <button type="button" class="member-link" :aria-label="'Ver aluno ' + (student.user?.name || '')" @click="goToStudent(student.id)">
-            <img v-if="student.imagem_perfil?.url || student.imagem_perfil?.file"
-              :src="student.imagem_perfil.url || student.imagem_perfil.file" :alt="student.user?.name || 'Aluno'" />
-            <span v-else class="avatar-placeholder mdi mdi-account" aria-hidden="true"></span>
+            <AppImage
+              :src="student.imagem_perfil?.url || student.imagem_perfil?.file" :alt="student.user?.name || 'Aluno'" />
             <span class="member-label">
               <strong :title="student.user?.name">{{ student.user?.name || 'Aluno' }}</strong>
             </span>

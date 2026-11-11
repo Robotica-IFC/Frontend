@@ -137,12 +137,9 @@ async function deleteTeam() {
       </header>
       <form @submit.prevent="save">
         <label class="image-picker">
-          <img
-            v-if="team.image_perfil?.url"
-            :src="team.image_perfil.url"
-            alt="Foto atual da equipe"
-          />
-          <i v-else class="mdi mdi-account-group" />
+          <AppImage placeholder="team"
+            :src="team.image_perfil?.url || team.image_perfil?.file"
+            alt="Foto atual da equipe" />
           <span class="mdi mdi-pencil-outline" />
           <input type="file" accept="image/*" @change="file = $event.target.files[0]" />
         </label>

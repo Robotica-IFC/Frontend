@@ -182,16 +182,9 @@ async function goToStorage() {
     <div class="info">
       <div class="principal-info">
         <div class="logo-team">
-          <img
-            v-if="team.image_perfil?.url || team.image_perfil?.file"
-            :src="team.image_perfil.url || team.image_perfil.file"
-            alt="Logo da equipe"
-          />
-
-          <span
-            v-else
-            class="mdi mdi-account-group"
-          ></span>
+          <AppImage placeholder="team"
+            :src="team.image_perfil?.url || team.image_perfil?.file"
+            alt="Logo da equipe" />
         </div>
 
         <div class="principal-text">

@@ -12,15 +12,10 @@ defineEmits(['edit'])
 <template>
   <button type="button" class="item-row" @click="$emit('edit', item)">
     <div class="item-info">
-      <img
-        v-if="item.imagem_detail?.file || item.imagem_detail?.url"
-        :src="item.imagem_detail.url || item.imagem_detail.file"
+      <AppImage
+        :src="item.imagem_detail?.url || item.imagem_detail?.file"
         :alt="item.nome"
-        class="item-img"
-      />
-      <div v-else class="item-img placeholder">
-        <span class="mdi mdi-image-outline"></span>
-      </div>
+        class="item-img" />
       <span class="item-nome">{{ item.nome }}</span>
     </div>
 

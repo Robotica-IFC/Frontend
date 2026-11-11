@@ -50,10 +50,7 @@ const {
       <div class="edit-header">
         <div class="image-upload-container">
           <button type="button" class="image-label" @click="showProfileSheet = true">
-            <img v-if="imagePreview" :src="imagePreview" class="profile-image-edit" />
-            <div v-else class="profile-image-edit placeholder">
-              <span class="mdi mdi-account-circle"></span>
-            </div>
+            <AppImage :src="imagePreview" class="profile-image-edit" />
             <div class="upload-icon-main">
               <span class="mdi mdi-camera"></span>
             </div>
@@ -120,7 +117,7 @@ const {
             <div class="form-interno">
               <div class="avatar-container">
                 <button type="button" class="avatar-label" @click="showInstituteSheet = true">
-                  <img :src="previewImageInstitute" alt="Logo" class="profile-pic-inst" />
+                  <AppImage :src="previewImageInstitute" alt="Logo" class="profile-pic-inst" />
                   <div class="upload-icon-inst"><i class="mdi mdi-camera"></i></div>
                 </button>
                 <span class="logo-subtext">Logo do instituto</span>

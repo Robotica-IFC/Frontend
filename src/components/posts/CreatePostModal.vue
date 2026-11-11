@@ -107,11 +107,11 @@ const handleSubmit = async () => {
         </fieldset>
         <p class="format-tip">As imagens manterão suas proporções originais dentro do formato escolhido.</p>
         <div v-if="previewUrls.length" class="post-format-preview" :class="formatoImagem === 'QUADRADO' ? 'is-square' : 'is-wide'">
-          <img :src="previewUrls[0]" alt="Prévia do formato da publicação"/>
+          <AppImage :src="previewUrls[0]" alt="Prévia do formato da publicação" />
         </div>
         <div v-if="previewUrls.length" class="previews-container">
           <div v-for="(url, index) in previewUrls" :key="index" class="preview-item">
-            <img :src="url" alt="Pré-visualização" />
+            <AppImage :src="url" alt="Pré-visualização" />
             <button class="remove-btn" @click="removeImage(index)">✕</button>
           </div>
         </div>

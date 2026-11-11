@@ -25,7 +25,7 @@ export function useEditProfile() {
   const newInstitute = ref(false)
   const mostrarDropdown = ref(false)
   const buscaInstituicao = ref('')
-  const previewImageInstitute = ref('/img/default2.jpg')
+  const previewImageInstitute = ref('')
   const showProfileSheet = ref(false)
   const showInstituteSheet = ref(false)
   const formData = ref({

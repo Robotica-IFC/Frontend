@@ -51,16 +51,10 @@ const {
           <UploadHint />
           <div class="image-upload-wrapper">
             <button type="button" class="image-preview-container" @click="showImageSheet = true">
-              <img
-                v-if="imagePreview"
+              <AppImage placeholder="team"
                 :src="imagePreview"
                 alt="Preview da Equipe"
-                class="preview-img"
-              />
-              <div v-else class="upload-placeholder">
-                <i class="mdi mdi-camera-plus-outline"></i>
-                <span>Adicionar Foto</span>
-              </div>
+                class="preview-img" />
             </button>
             <button
               v-if="imagePreview"

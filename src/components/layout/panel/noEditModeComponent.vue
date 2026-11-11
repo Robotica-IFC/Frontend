@@ -77,18 +77,10 @@ function openTeam(id) {
     <div class="data">
       <div class="first-data">
         <div class="name-image">
-          <img
-            v-if="profileImageUrl"
+          <AppImage
             class="profile-image"
             :src="profileImageUrl"
-            :alt="user?.name"
-          />
-
-          <span
-            v-else
-            class="mdi mdi-account-circle profile-placeholder"
-            aria-label="Sem foto de perfil"
-          ></span>
+            :alt="user?.name" />
 
           <div>
             <h1>{{ user?.username }}</h1>
@@ -127,10 +119,9 @@ function openTeam(id) {
           :key="t.id"
           @click="openTeam(t.id)"
         >
-          <img
+          <AppImage placeholder="team"
             :src="t.image_perfil?.url || t.image_perfil?.file"
-            :alt="t.nome"
-          />
+            :alt="t.nome" />
 
           <h2>{{ t.nome }}</h2>
         </li>

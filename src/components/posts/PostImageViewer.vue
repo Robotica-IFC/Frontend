@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
           @wheel.prevent="wheelZoom" @dblclick.prevent="doubleClick"
           @pointerdown.prevent="pointerDown" @pointermove="pointerMove"
           @pointerup="pointerEnd" @pointercancel="pointerEnd" @lostpointercapture="pointerEnd">
-          <img v-if="currentImage" :key="index" :src="currentImage.url"
+          <AppImage v-if="currentImage" :key="index" :src="currentImage.url"
             :alt="`Imagem ${index + 1} do post`" :style="imageStyle" :class="{ loaded }" draggable="false"
             @load="imageLoaded" @error="failed = true" />
           <p v-if="failed" role="alert">Não foi possível carregar esta imagem.</p>

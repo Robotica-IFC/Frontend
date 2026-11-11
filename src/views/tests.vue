@@ -23,7 +23,7 @@ onMounted(async () => {
         <div class="me">
             <h1>Me</h1>
             <p>{{ authStore.user?.name }} / {{ authStore.user?.username }}</p>
-            <img :src="authStore.user?.imagem_perfil" :alt="authStore.user?.name">
+            <AppImage :src="authStore.user?.imagem_perfil" :alt="authStore.user?.name" />
             <button @click="authStore.logout()">Sair</button>
         </div>
         <div class="a">
@@ -34,10 +34,10 @@ onMounted(async () => {
                         {{ a.user.name }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
                     </p>
 
-                    <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
-                        <img :src="a.imagem_perfil.file" :alt="a.nome">
+                    <a v-if="a.imagem_perfil" :href="a.imagem_perfil?.file" target="_blank">
+                        <AppImage :src="a.imagem_perfil?.file" :alt="a.nome" />
                     </a>
-                    <img v-else src="/img/default2.jpg" alt="Imagem padrão">
+                    <AppImage v-else alt="Imagem padrão" />
                 </li>
             </ul>
         </div>
@@ -49,10 +49,10 @@ onMounted(async () => {
                         {{ a.user.name }} | {{ a.ativo ? 'Ativo' : 'Inativo' }}
                     </p>
 
-                    <a v-if="a.imagem_perfil" :href="a.imagem_perfil.file" target="_blank">
-                        <img :src="a.imagem_perfil.file" :alt="a.nome">
+                    <a v-if="a.imagem_perfil" :href="a.imagem_perfil?.file" target="_blank">
+                        <AppImage :src="a.imagem_perfil?.file" :alt="a.nome" />
                     </a>
-                    <img v-else src="/img/default2.jpg" alt="Imagem padrão">
+                    <AppImage v-else alt="Imagem padrão" />
                 </li>
             </ul>
         </div>
@@ -63,10 +63,10 @@ onMounted(async () => {
                     <p>
                         {{ a.nome }}
                     </p>
-                    <a v-if="a.logo" :href="a.logo.file" target="_blank">
-                        <img :src="a.logo.file" :alt="a.nome">
+                    <a v-if="a.logo" :href="a.logo?.file" target="_blank">
+                        <AppImage :src="a.logo?.file" :alt="a.nome" />
                     </a>
-                    <img v-else src="/img/default2.jpg" alt="Imagem padrão">
+                    <AppImage v-else alt="Imagem padrão" />
                 </li>
             </ul>
         </div>

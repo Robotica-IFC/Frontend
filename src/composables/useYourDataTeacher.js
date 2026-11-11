@@ -15,7 +15,7 @@ export function useYourDataTeacher() {
   const buscaInstituicao = ref('')
   const passwordValue = ref('')
   const passwordValue2 = ref('')
-  const previewImage = ref('/img/default2.jpg')
+  const previewImage = ref('')
   const file = ref(null)
   const showImageSheet = ref(false)
 

@@ -125,7 +125,7 @@ onMounted(async () => {
             :to="{ name: 'teamDetails', params: { id: actualProject.equipe_id } }"
             :aria-label="`Ver equipe ${actualProject.equipe}`"
           >
-            <img :src="actualProject.equipe_image" :alt="actualProject.equipe">
+            <AppImage placeholder="team" :src="actualProject.equipe_image" :alt="actualProject.equipe" />
             <div class="names">
               <h2 class="team-name">{{ actualProject.equipe }}</h2>
               <h3 v-if="p.aluno_criador">Por: {{ p.aluno_criador.name }}</h3>
@@ -151,7 +151,7 @@ onMounted(async () => {
 
         <div class="post-image post-media" v-if="p.images && p.images.length === 1">
           <button type="button" class="post-image-open" aria-label="Ampliar imagem do post" @click="viewedImages = { images: p.images, index: 0 }">
-            <img :src="p.images[0].url" alt="Imagem do post" loading="lazy">
+            <AppImage :src="p.images[0].url" alt="Imagem do post" loading="lazy" />
           </button>
         </div>
 
@@ -161,7 +161,7 @@ onMounted(async () => {
           <div class="carousel-container" :id="`carousel-${p.id}`">
             <div v-for="(img, index) in p.images" :key="index" class="carousel-item">
               <button type="button" class="post-image-open" :aria-label="`Ampliar imagem ${index + 1} do post`" @click="viewedImages = { images: p.images, index }">
-                <img :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy">
+                <AppImage :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy" />
               </button>
             </div>
           </div>

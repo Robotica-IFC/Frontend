@@ -76,26 +76,18 @@ function closeComments() {
             :to="{ name: 'teamDetails', params: { id: post.equipe_id } }"
             :aria-label="`Ver equipe ${post.equipe}`"
           >
-            <img
-              v-if="post.equipe_image"
+            <AppImage placeholder="team"
               :src="post.equipe_image"
-              :alt="`Logo da equipe ${post.equipe}`"
-            />
-            <span v-else class="team-placeholder mdi mdi-account-group" aria-hidden="true"></span>
+              :alt="`Logo da equipe ${post.equipe}`" />
             <strong>{{ post.equipe }}</strong>
           </RouterLink>
           <strong v-else class="post-team">Comunidade</strong>
           <time :datetime="post.criado_em">{{ formatDate(post.criado_em) }}</time>
         </header>
-        <img
-          v-if="post.images?.some((image) => image.url)"
+        <AppImage
           class="post-image"
-          :src="post.images.find((image) => image.url).url"
-          :alt="post.legenda || 'Imagem da publicação'"
-        />
-        <div v-else class="post-image image-placeholder" aria-label="Publicação sem imagem">
-          <span class="mdi mdi-image-outline" aria-hidden="true"></span>
-        </div>
+          :src="post.images?.find((image) => image.url)?.url"
+          :alt="post.legenda || 'Imagem da publicação'" />
         <p class="post-caption">{{ post.legenda }}</p>
         <div class="post-actions">
           <button type="button" @click="selectedComments = post">

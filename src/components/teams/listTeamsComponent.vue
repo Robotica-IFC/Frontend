@@ -23,10 +23,9 @@ onMounted(() => {
         <div class="card-mobile" @click="openTeam(t.id)">
           <div class="primeiro">
             <div class="img">
-              <img
-                :src="t.image_perfil?.url || 'https://via.placeholder.com/58'"
-                alt="image_equipe"
-              />
+              <AppImage placeholder="team"
+                :src="t.image_perfil?.url || t.image_perfil?.file"
+                alt="image_equipe" />
             </div>
 
             <div class="info">
@@ -75,9 +74,7 @@ onMounted(() => {
         <div class="card-desktop">
           <div class="img-desktop">
             <div class="img">
-              <img v-if="t.image_perfil?.url" :src="t.image_perfil.url" alt="image_equipe" />
-
-              <span v-else class="mdi mdi-account-group"></span>
+              <AppImage placeholder="team" :src="t.image_perfil?.url || t.image_perfil?.file" alt="image_equipe" />
             </div>
           </div>
 

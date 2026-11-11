@@ -38,14 +38,11 @@ const notificationsStore = useNotificationsStore();
         </picture>
       </li>
       <li>
-        <img
+        <AppImage
           @click="router.push('/edit')"
-          v-if="authStore.user?.imagem_perfil"
           class="perfil"
           :src="authStore.user?.imagem_perfil"
-          :alt="authStore.user?.name"
-        />
-        <span v-else class="mdi mdi-account-circle-outline" @click="router.push('/edit')"></span>
+          :alt="authStore.user?.name" />
       </li>
     </ul>
   </header>

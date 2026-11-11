@@ -6,6 +6,7 @@ import ConfirmActionModal from '@/components/ConfirmActionModal.vue'
 import NotificationToast from '@/components/notifications/NotificationToast.vue'
 import { useConfirmation } from '@/composables/useConfirmation'
 import { watch } from 'vue'
+import PageLoading from '@/components/common/PageLoading.vue'
 const { pending, busy, error, accept, cancel } = useConfirmation()
 
 // Pega as informações da página que está ativa no momento
@@ -14,6 +15,7 @@ watch(() => route.fullPath, cancel)
 </script>
 
 <template>
+  <PageLoading />
   <appHeaderComponent v-if="!route.meta.hideHeader" />
 
   <main :class="{ 'no-header': route.meta.hideHeader }">

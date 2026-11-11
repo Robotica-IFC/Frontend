@@ -97,12 +97,9 @@ function goToTeacher(id) {
               @click="goToTeacher(teacher.id || teacher.user?.id)"
             >
               <div class="avatar-wrap">
-                <img
-                  v-if="getPersonImage(teacher)"
+                <AppImage
                   :src="getPersonImage(teacher)"
-                  :alt="getPersonName(teacher)"
-                />
-                <span v-else class="mdi mdi-account"></span>
+                  :alt="getPersonName(teacher)" />
               </div>
 
               <div class="participant-info">
@@ -127,12 +124,9 @@ function goToTeacher(id) {
               @click="goToStudent(student.id || student.user?.id)"
             >
               <div class="avatar-wrap">
-                <img
-                  v-if="getPersonImage(student)"
+                <AppImage
                   :src="getPersonImage(student)"
-                  :alt="getPersonName(student)"
-                />
-                <span v-else class="mdi mdi-account"></span>
+                  :alt="getPersonName(student)" />
               </div>
 
               <div class="participant-info">

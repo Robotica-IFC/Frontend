@@ -57,12 +57,9 @@ function goToTeam(id) {
       <ul class="t">
         <li v-for="t in teamsUser" :key="t.id" @click="goToTeam(t.id)">
           <!-- Imagem de perfil -->
-          <img
-            v-if="t.image_perfil?.url || t.image_perfil?.file"
-            :src="t.image_perfil.url || t.image_perfil.file"
-            :alt="t.nome"
-          />
-          <img v-else src="/img/Default.webp" alt="Sem imagem" />
+          <AppImage placeholder="team"
+            :src="t.image_perfil?.url || t.image_perfil?.file"
+            :alt="t.nome" />
 
           <!-- Lado esquerdo do card -->
           <div class="left">

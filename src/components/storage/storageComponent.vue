@@ -29,12 +29,9 @@ onMounted(async () => {
   </div>
 
   <div v-if="storage && storage.equipe" class="team-details">
-    <img
-      v-if="storage.equipe.image_perfil?.file || storage.equipe.image_perfil?.url"
-      :src="storage.equipe.image_perfil.file || storage.equipe.image_perfil.url"
-      :alt="storage.equipe.nome"
-    />
-    <img v-else src="/img/Default.webp" alt="Equipe sem imagem" />
+    <AppImage placeholder="team"
+      :src="storage.equipe.image_perfil?.file || storage.equipe.image_perfil?.url"
+      :alt="storage.equipe.nome" />
 
     <div class="nome">
       <h2>{{ storage.equipe.nome }}</h2>

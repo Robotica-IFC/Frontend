@@ -106,7 +106,7 @@ const {
             <div class="form-interno">
               <div class="avatar-container">
                 <button type="button" class="avatar-label" @click="showImageSheet = true">
-                  <img :src="previewImage" alt="Logo" class="profile-pic" />
+                  <AppImage :src="previewImage" alt="Logo" class="profile-pic" />
                   <div class="upload-icon"><i class="mdi mdi-camera"></i></div>
                 </button>
                 <span>Logo do instituto</span>

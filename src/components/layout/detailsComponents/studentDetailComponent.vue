@@ -75,14 +75,10 @@ const student = computed(
           <div class="name-image">
             <!-- IMAGEM DO ALUNO -->
             <div class="profile-image-container">
-              <img
-                v-if="student.imagem_perfil?.url || student.imagem_perfil?.file"
+              <AppImage
                 class="profile-image"
-                :src="`${student.imagem_perfil.url || student.imagem_perfil.file}?t=${cacheBust}`"
-                :alt="student.user?.name"
-              />
-
-              <span v-else class="mdi mdi-account-circle profile-placeholder"></span>
+                :src="student.imagem_perfil?.url || student.imagem_perfil?.file ? `${student.imagem_perfil?.url || student.imagem_perfil?.file}?t=${cacheBust}` : ''"
+                :alt="student.user?.name" />
             </div>
 
             <div>
@@ -104,13 +100,9 @@ const student = computed(
           <li v-for="t in student.teams" :key="t.id" @click="openTeam(t.id)">
             <!-- IMAGEM DA EQUIPE -->
             <div class="team-image">
-              <img
-                v-if="t.image_perfil?.url || t.image_perfil?.file"
-                :src="t.image_perfil.url || t.image_perfil.file"
-                :alt="t.nome"
-              />
-
-              <span v-else class="mdi mdi-account-multiple-outline"></span>
+              <AppImage placeholder="team"
+                :src="t.image_perfil?.url || t.image_perfil?.file"
+                :alt="t.nome" />
             </div>
 
             <h2>{{ t.nome }}</h2>

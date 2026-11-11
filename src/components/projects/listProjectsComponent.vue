@@ -35,15 +35,9 @@ onMounted(() => {
       >
         <div class="left">
           <div class="image">
-            <img
-              v-if="project.image_perfil"
-              :src="project.image_perfil.url || project.image_perfil.file"
-              :alt="project.titulo"
-            />
-
-            <div v-else class="no-image">
-              <span class="mdi mdi-robot-outline"></span>
-            </div>
+            <AppImage
+              :src="project.image_perfil?.url || project.image_perfil?.file"
+              :alt="project.titulo" />
           </div>
         </div>
 
