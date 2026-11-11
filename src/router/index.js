@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { nextTick } from 'vue'
 import { useAuthStore } from '@/store/authStore'
+import { useHomeHighlightsStore } from '@/store/homeHighlightsStore'
+import { getHomeReturnSection } from '@/utils/homeNavigation'
 
 import VerifyEmailView from '@/views/verifyEmailView.vue'
 import welcomeView from '@/views/welcomeView.vue'
@@ -23,7 +26,19 @@ import NotificationsView from '@/views/notificationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior(to, from, savedPosition) {
+  async scrollBehavior(to, from, savedPosition) {
+    if (!from.matched.length) return { top: 0, left: 0 }
+
+    const homeSection = getHomeReturnSection(to, from, window.history.state)
+    if (homeSection) {
+      await useHomeHighlightsStore().refresh()
+      await nextTick()
+      return { el: `#${homeSection}`, top: 90 }
+    }
+
+    // A publicação é posicionada depois que os dados do projeto carregam.
+    if (to.name === 'projectDetails' && /^#post-\d+$/.test(to.hash)) return false
+
     // Quando usa o botão Voltar/Avançar do navegador ou router.back()
     if (savedPosition) {
       return savedPosition
