@@ -14,7 +14,7 @@ defineEmits(['edit'])
     <div class="item-info">
       <img
         v-if="item.imagem_detail?.file || item.imagem_detail?.url"
-        :src="item.imagem_detail.file || item.imagem_detail.url"
+        :src="item.imagem_detail.url || item.imagem_detail.file"
         :alt="item.nome"
         class="item-img"
       />

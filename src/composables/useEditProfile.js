@@ -53,6 +53,10 @@ export function useEditProfile() {
 
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown)
+    if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+    if (previewImageInstitute.value.startsWith('blob:')) {
+      URL.revokeObjectURL(previewImageInstitute.value)
+    }
   })
 
   const instituicaoExata = computed(() =>
@@ -150,10 +154,12 @@ export function useEditProfile() {
         name: formData.value.name,
         username: formData.value.username,
       }
+      let uploadedImageUrl
 
       if (imageFile.value) {
         const uploadStore = authStore.user?.tipo === 'aluno' ? studentStore : teacherStore
         const imageResponse = await uploadStore.uploadImage(imageFile.value)
+        uploadedImageUrl = imageResponse?.url
         const uploadedImageKey =
           imageResponse?.id || imageResponse?.attachment_key || imageResponse?.image
         if (uploadedImageKey) profilePayload.imagem_perfil = uploadedImageKey
@@ -176,16 +182,21 @@ export function useEditProfile() {
       const freshProfile =
         authStore.user?.tipo === 'aluno' ? studentStore.actualStudent : teacherStore.actualTeacher
       const updatedDataForStore = {
-        name: freshProfile?.usuario?.name || formData.value.name,
-        username: freshProfile?.usuario?.username || formData.value.username,
+        name: freshProfile?.user?.name || formData.value.name,
+        username: freshProfile?.user?.username || formData.value.username,
         descricao: freshProfile?.descricao,
         telefone: freshProfile?.telefone,
         instituicao: freshProfile?.instituicao,
-        imagem_perfil: imagePreview.value,
+        imagem_perfil:
+          freshProfile?.imagem_perfil?.url ||
+          uploadedImageUrl ||
+          (imageFile.value ? null : authStore.user?.imagem_perfil),
       }
 
       authStore.updateUserData(updatedDataForStore)
       localStorage.setItem('user_profile_cache', JSON.stringify(updatedDataForStore))
+      if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+      imagePreview.value = updatedDataForStore.imagem_perfil || ''
       imageFile.value = null
       alert('Perfil e usuário atualizados com sucesso!')
       closeEdit()

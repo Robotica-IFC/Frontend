@@ -40,7 +40,29 @@ export const useAuthStore = defineStore('auth', () => {
 
     const cache = localStorage.getItem('user_profile_cache')
     if (cache && user.value) {
-      user.value = { ...user.value, ...JSON.parse(cache) }
+      try {
+        const cachedProfile = JSON.parse(cache)
+        const hasTemporaryImage = cachedProfile.imagem_perfil?.startsWith('blob:')
+        if (hasTemporaryImage) delete cachedProfile.imagem_perfil
+        user.value = { ...user.value, ...cachedProfile }
+        localStorage.setItem('user_profile_cache', JSON.stringify(cachedProfile))
+        if (hasTemporaryImage) {
+          const profileId = user.value.id
+          const endpoint = user.value.tipo === 'aluno' ? 'alunos' : 'professores'
+          api.get(`${endpoint}/${profileId}/`).then(({ data }) => {
+            if (user.value?.id !== profileId) return
+            const imagem_perfil = data.imagem_perfil?.url || null
+            user.value.imagem_perfil = imagem_perfil
+            const latestCache = JSON.parse(localStorage.getItem('user_profile_cache') || '{}')
+            localStorage.setItem(
+              'user_profile_cache',
+              JSON.stringify({ ...latestCache, imagem_perfil }),
+            )
+          }).catch((error) => console.error('Erro ao recuperar imagem do perfil:', error))
+        }
+      } catch {
+        localStorage.removeItem('user_profile_cache')
+      }
     }
   }
 

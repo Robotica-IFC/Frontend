@@ -35,7 +35,7 @@ function openTeam(id) {
         <div class="name-image">
           <img
             class="profile-image"
-            :src="user?.imagem_perfil ? `${user.imagem_perfil}?t=${Date.now()}` : ''"
+            :src="user?.imagem_perfil || ''"
             :alt="user?.name"
           />
           <div>
