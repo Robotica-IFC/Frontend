@@ -14,7 +14,7 @@ div.top {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 50px;
   min-width: 0;
 }
 
@@ -193,6 +193,9 @@ div.info ul.categories li {
     width: 100%;
     max-width: 1180px;
     padding: 65px 45px 90px;
+  }
+    div.top{
+    margin: 8px;
   }
 
   div.info {
