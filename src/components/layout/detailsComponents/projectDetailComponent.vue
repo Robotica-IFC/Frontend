@@ -25,16 +25,31 @@ const viewedImages = ref(null)
 const editingProject = ref(false)
 const isParticipantsModalOpen = ref(false)
 const errorMessage = ref('')
-const currentUserId = computed(() => authStore.user?.user_id)
-const canEditProject = computed(() => Boolean(authStore.user?.tipo === 'professor' && actualProject.value?.professores?.some(p => p.user_id === currentUserId.value || p.user?.id === currentUserId.value || p.id === authStore.user?.id)))
+const currentUserId = computed(() => authStore.user?.user_id ?? authStore.user?.id)
+const canEditProject = computed(() =>
+  Boolean(
+    authStore.user?.tipo === 'professor' &&
+      actualProject.value?.professores?.some(
+        (p) =>
+          (currentUserId.value != null &&
+            (String(p.user_id) === String(currentUserId.value) ||
+              String(p.user?.id) === String(currentUserId.value))) ||
+          (authStore.user?.id != null &&
+            String(p.id) === String(authStore.user.id)),
+      ),
+  ),
+)
 function canEditPost(post) {
   // A permissão é calculada pelo backend usando a participação atual na equipe.
-  return Boolean(post.pode_editar)
+  return Boolean(post?.pode_editar)
 }
 async function toggleLike(post) {
   errorMessage.value = ''
-  try { await postStore.toggleLike(post) }
-  catch { errorMessage.value = 'Não foi possível atualizar a curtida.' }
+  try {
+    await postStore.toggleLike(post)
+  } catch {
+    errorMessage.value = 'Não foi possível atualizar a curtida.'
+  }
 }
 
 const actualProject = ref(null)
@@ -57,15 +72,24 @@ const fetchProject = async () => {
   actualProject.value = await projectStore.getProjectById(props.id)
 
   const loggedUser = authStore.user
+  const userId = loggedUser?.user_id ?? loggedUser?.id
 
   onTheTeam.value = false
   if (actualProject.value && loggedUser) {
     const isStudentInTeam = actualProject.value.alunos?.some(
-      (aluno) => aluno.id === loggedUser.id || aluno.user_id === loggedUser.id
+      (aluno) =>
+        (loggedUser.id != null && String(aluno.id) === String(loggedUser.id)) ||
+        (userId != null &&
+          (String(aluno.user_id) === String(userId) ||
+            String(aluno.user?.id) === String(userId))),
     )
 
     const isTeacherInTeam = actualProject.value.professores?.some(
-      (prof) => prof.id === loggedUser.id || prof.user_id === loggedUser.id
+      (prof) =>
+        (loggedUser.id != null && String(prof.id) === String(loggedUser.id)) ||
+        (userId != null &&
+          (String(prof.user_id) === String(userId) ||
+            String(prof.user?.id) === String(userId))),
     )
 
     onTheTeam.value = Boolean(isStudentInTeam || isTeacherInTeam)
@@ -78,7 +102,7 @@ const scrollCarousel = (postId, direction) => {
   const scrollAmount = container.clientWidth
   container.scrollBy({
     left: direction === 'next' ? scrollAmount : -scrollAmount,
-    behavior: 'smooth'
+    behavior: 'smooth',
   })
 }
 
@@ -92,12 +116,11 @@ onMounted(async () => {
 })
 </script>
 
-<template v-if="actualProject">
+<template>
   <div class="page project-detail-page" v-if="actualProject">
 
     <div class="project-intro">
-
-    <appArrow class="project-back" @back="router.back()"  />
+      <appArrow class="project-back" @back="router.back()" />
 
       <div class="project-heading-row">
         <h1>{{ actualProject.titulo }}</h1>
@@ -112,9 +135,7 @@ onMounted(async () => {
     </div>
 
     <div class="action-bar" v-if="onTheTeam">
-      <appButton :font="'14px'" @click="isModalOpen = true">
-        Adicionar post
-      </appButton>
+      <appButton :font="'14px'" @click="isModalOpen = true"> Adicionar post </appButton>
     </div>
 
     <ul class="posts">
@@ -193,6 +214,7 @@ onMounted(async () => {
       @close="isModalOpen = false"
       @created="fetchProject"
     />
+
   </div>
 </template>
 
@@ -210,7 +232,10 @@ onMounted(async () => {
   background: transparent;
   cursor: zoom-in;
 }
-.post-image-open:focus-visible { outline: 3px solid #004369; outline-offset: -3px; }
+.post-image-open:focus-visible {
+  outline: 3px solid #004369;
+  outline-offset: -3px;
+}
 .post-actions {
   display:flex;
   justify-content:space-between;
