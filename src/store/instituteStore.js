@@ -2,8 +2,10 @@ import { defineStore } from 'pinia'
 import imageApi from '@/api/imageApi'
 import instituteApi from '@/api/instituteApi'
 import { computed, reactive } from 'vue'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const useInstituteStore = defineStore('institute', () => {
+  const limits = useFormLimits()
   const state = reactive({
     institute: {
       nome: '',
@@ -33,21 +35,22 @@ export const useInstituteStore = defineStore('institute', () => {
   }
 
   // Função interna de upload
-  async function uploadImage(file) {
+  async function uploadImage(file, options) {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('description', `Logo de ${state.institute.nome}`)
     
-    const response = await imageApi.uploadImage(formData)
+    const response = await imageApi.uploadImage(formData, options)
     return response.data
   }
 
   // Função "Submit" do Instituto
-  async function createInstitute(file) {
+  async function createInstitute(file, { validateLimits = true } = {}) {
     try {
+      if (validateLimits) await limits.assertValid('instituicao', state.institute)
       // Se o usuário enviou uma imagem, faz o upload e troca a padrão
       if (file) {
-        const image = await uploadImage(file)
+        const image = await uploadImage(file, { validateLimits })
         state.institute.logo = image.attachment_key
       }else {
         state.institute.logo = '90e0ddf1-2504-4ba6-a936-457c1a668935'

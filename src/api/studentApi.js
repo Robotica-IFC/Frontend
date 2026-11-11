@@ -1,6 +1,9 @@
 import api from "./config";
 
 const studentsApi = {
+    search(term) {
+        return api.get('alunos/', { params: { search: term } })
+    },
     getAll() {
         return api.get('alunos/')
     },

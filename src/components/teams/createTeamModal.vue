@@ -1,8 +1,13 @@
 <script setup>
+import UploadHint from '@/components/form/UploadHint.vue'
 import { useCreateTeamModal } from '@/composables/useCreateTeamModal'
 import appButton from '../form/appButton.vue'
 import appInput from '../form/appInput.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+
+const limits = useFormLimits()
 
 const emit = defineEmits(['close', 'created'])
 
@@ -38,11 +43,12 @@ const {
       </div>
 
       <form @submit.prevent="handleSubmit" class="modal-body">
-        <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
+        <p v-if="errorMessage" role="alert" class="error-msg">{{ errorMessage }}</p>
 
         <!-- Upload de Imagem Personalizado com Preview -->
         <div class="form-group align-center">
-          <label>Imagem da Equipe *</label>
+          <label>Imagem da equipe (opcional)</label>
+          <UploadHint />
           <div class="image-upload-wrapper">
             <button type="button" class="image-preview-container" @click="showImageSheet = true">
               <img
@@ -70,7 +76,7 @@ const {
 
         <div class="form-group">
           <label>Nome da Equipe *</label>
-          <appInput
+          <appInput resource="equipe" field="nome"
             placeholder="Nome da equipe"
             icon="mdi mdi-account-group"
             v-model="form.nome"
@@ -80,7 +86,7 @@ const {
 
         <!-- Autocomplete de Múltiplas Categorias -->
         <div class="form-group cat-container">
-          <label>Categorias *</label>
+          <label>Categorias (opcional)</label>
 
           <!-- Badges de Categorias Selecionadas -->
           <div v-if="selectedCategories.length > 0" class="selected-tags-container">
@@ -93,7 +99,7 @@ const {
           </div>
 
           <div class="search-box">
-            <appInput
+            <appInput resource="categoria" field="nome"
               placeholder="Pesquisar ou criar Categoria"
               icon="mdi mdi-tag-outline"
               v-model="buscaCategoria"
@@ -120,7 +126,7 @@ const {
           <!-- Cadastro Rápido de Categoria -->
           <div class="new-cat" v-if="newCategory">
             <div class="form-interno">
-              <appInput
+              <appInput resource="categoria" field="nome"
                 placeholder="Nome da Categoria"
                 icon="mdi mdi-tag-plus"
                 v-model="buscaCategoria"
@@ -136,10 +142,12 @@ const {
         <div class="form-group">
           <label>Descrição</label>
           <textarea
+            v-bind="limits.attrs('equipe', 'descricao')"
             v-model="form.descricao"
             rows="3"
             placeholder="Descrição da equipe..."
           ></textarea>
+          <FieldHint resource="equipe" field="descricao" :value="form.descricao" />
         </div>
 
         <div class="modal-actions">

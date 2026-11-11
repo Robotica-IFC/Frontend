@@ -4,7 +4,10 @@ import api from '@/api/config'
 import { computed, ref } from 'vue'
 import router from '@/router'
 import { jwtDecode } from 'jwt-decode'
+import { useInvitesStore } from './invitesStore'
+import { useFormLimits } from '@/composables/useFormLimits'
 import { getProfileImageUrl } from '@/utils/profileImage'
+
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(localStorage.getItem('access_token') || null)
@@ -136,6 +139,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function updateUserAccount(userId, data) {
     try {
+      await useFormLimits().assertValid('usuario', data)
       const response = await api.patch(`/usuarios/${userId}/`, data, {
         headers: {
           Authorization: `Bearer ${accessToken.value}`,
@@ -184,6 +188,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    useInvitesStore().clear()
     clearPendingVerification()
     accessToken.value = null
     refreshToken.value = null

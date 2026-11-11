@@ -19,6 +19,7 @@ import storageView from '@/views/storageView.vue'
 import myTeamsView from '@/views/myTeamsView.vue'
 import TutorialView from '@/views/tutorialView.vue'
 import TeacherView from '@/views/teacherView.vue'
+import NotificationsView from '@/views/notificationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,7 @@ const router = createRouter({
   },
 
   routes: [
+    { path: '/notifications', name: 'notifications', component: NotificationsView },
     {
       path: '/verificar-email',
       component: VerifyEmailView,

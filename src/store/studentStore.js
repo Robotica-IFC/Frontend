@@ -6,6 +6,7 @@ import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
 import { useTemplateStore } from './template'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
@@ -68,10 +69,10 @@ export const useStudentStore = defineStore('student', () => {
     }
   }
 
-  async function uploadImage(file) {
+  async function uploadImage(file, options) {
     const formData = new FormData()
     formData.append('file', file)
-    const response = await imageApi.uploadImage(formData)
+    const response = await imageApi.uploadImage(formData, options)
     return response.data
   }
 
@@ -90,7 +91,7 @@ export const useStudentStore = defineStore('student', () => {
 
     try {
       if (file) {
-        const image = await uploadImage(file)
+        const image = await uploadImage(file, { validateLimits: false })
         state.student.imagem_perfil = image.attachment_key
       } else {
         state.student.imagem_perfil = '8d7c4190-fb43-46e1-a094-6e400c9365b2'
@@ -129,6 +130,7 @@ export const useStudentStore = defineStore('student', () => {
 
   async function updateStudent(id, data) {
     try {
+      await useFormLimits().assertValid('aluno', data)
       const response = await studentsApi.update(id, data) // Chama o PATCH da API
       return response.data
     } catch (error) {

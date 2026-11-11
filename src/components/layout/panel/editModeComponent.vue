@@ -1,12 +1,18 @@
 <script setup>
+import UploadHint from '@/components/form/UploadHint.vue'
 import { useEditProfile } from '@/composables/useEditProfile'
 import appArrow from '@/components/appArrow.vue'
 import appButton from '@/components/form/appButton.vue'
 import appInput from '@/components/form/appInput.vue'
 import imagesourcesheet from '@/components/imagesourcesheet.vue'
+import FieldHint from '@/components/form/FieldHint.vue'
+import { useFormLimits } from '@/composables/useFormLimits'
+
+const limits = useFormLimits()
 
 const {
   instituteStore,
+  errorMessage,
   user,
   loading,
   formData,
@@ -54,22 +60,27 @@ const {
           </button>
         </div>
         <p>Toque na foto para alterar</p>
+        <UploadHint />
       </div>
 
-      <form class="edit-form" @submit.prevent>
+      <form id="profile-edit-form" class="edit-form" @submit.prevent="handleSave">
+        <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
         <div class="input-group">
           <label>Nome Completo</label>
-          <input v-model="formData.name" type="text" placeholder="Seu nome" />
+          <input v-model="formData.name" v-bind="limits.attrs('usuario', 'name')" type="text" placeholder="Seu nome" />
+          <FieldHint resource="usuario" field="name" :value="formData.name" />
         </div>
 
         <div class="input-group">
           <label>Username</label>
-          <input v-model="formData.username" type="text" placeholder="@usuario" />
+          <input v-model="formData.username" v-bind="limits.attrs('usuario', 'username')" type="text" placeholder="@usuario" />
+          <FieldHint resource="usuario" field="username" :value="formData.username" />
         </div>
 
         <div class="input-group">
           <label>Telefone</label>
-          <input v-model="formData.telefone" type="text" placeholder="Apenas números" />
+          <input v-model="formData.telefone" v-bind="limits.attrs(user?.tipo || 'aluno', 'telefone')" type="tel" placeholder="Apenas números" />
+          <FieldHint :resource="user?.tipo || 'aluno'" field="telefone" :value="formData.telefone" />
         </div>
 
         <div v-if="user?.tipo === 'professor'" class="input-group inst-container">
@@ -116,14 +127,14 @@ const {
               </div>
 
               <div class="sub-input-group">
-                <appInput
+                <appInput resource="instituicao" field="nome"
                   placeholder="Nome do instituto"
                   icon="mdi mdi-town-hall"
                   v-model="instituteStore.state.institute.nome"
                 />
               </div>
               <div class="sub-input-group">
-                <appInput
+                <appInput resource="instituicao" field="sigla"
                   placeholder="Sigla (Ex: USP)"
                   icon="mdi mdi-label-outline"
                   v-model="instituteStore.state.institute.sigla"
@@ -145,7 +156,7 @@ const {
               </div>
 
               <div class="sub-input-group">
-                <appInput
+                <appInput resource="instituicao" field="cidade"
                   placeholder="Cidade"
                   icon="mdi mdi-city"
                   v-model="instituteStore.state.institute.cidade"
@@ -165,14 +176,16 @@ const {
         <div class="input-group">
           <label>Descrição (Bio)</label>
           <textarea
+            v-bind="limits.attrs(user?.tipo || 'aluno', 'descricao')"
             v-model="formData.descricao"
             rows="4"
             placeholder="Conte um pouco sobre você..."
           ></textarea>
+          <FieldHint :resource="user?.tipo || 'aluno'" field="descricao" :value="formData.descricao" />
         </div>
       </form>
 
-      <button class="save-btn" @click="handleSave" :disabled="loading">
+      <button class="save-btn" type="submit" form="profile-edit-form" :disabled="loading">
         {{ loading ? 'Salvando...' : 'Salvar' }}
       </button>
       <appButton width="65%" @click="closeEdit" variant="danger">Cancelar</appButton>

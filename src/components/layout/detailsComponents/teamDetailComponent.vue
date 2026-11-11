@@ -1,26 +1,21 @@
+
 <script setup>
-import { defineProps, computed, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import appArrow from '@/components/appArrow.vue'
 import requestToParticipateComponent from '@/components/requestToParticipateComponent.vue'
 import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
 import createProjectModal from '@/components/projects/createProjectModal.vue'
-import { useTeamStore } from '@/store/teamStore'
-import { useProjectStore } from '@/store/projectsStore.js'
-import router from '@/router'
-import { useAuthStore } from '@/store/authStore'
-import { useStorageStore } from '@/store/storageStore'
+import EditTeamModal from '@/components/teams/EditTeamModal.vue'
+import InviteTeamModal from '@/components/teams/InviteTeamModal.vue'
+import teamSuggestionsComponent from '@/components/teams/teamSuggestionsComponent.vue'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 import membersOfTeamComponent from './membersOfTeamComponent.vue'
-import teamSuggestionsComponent from '@/components/teams/teamSuggestionsComponent.vue'
 
-const teamStore = useTeamStore()
-const projectStore = useProjectStore()
-const authStore = useAuthStore()
-const storageStore = useStorageStore()
-
-const isModalOpen = ref(false)
-const selectedSuggestion = ref(null)
-const showSuggestions = ref(false)
+import { useTeamStore } from '@/store/teamStore'
+import { useProjectStore } from '@/store/projectsStore.js'
+import { useAuthStore } from '@/store/authStore'
+import { useStorageStore } from '@/store/storageStore'
+import router from '@/router'
 
 const props = defineProps({
   id: {
@@ -29,14 +24,36 @@ const props = defineProps({
   },
 })
 
+const teamStore = useTeamStore()
+const projectStore = useProjectStore()
+const authStore = useAuthStore()
+const storageStore = useStorageStore()
+
+const isModalOpen = ref(false)
+const isEditOpen = ref(false)
+const isInviteOpen = ref(false)
+
+const selectedSuggestion = ref(null)
+const showSuggestions = ref(false)
+
 const team = computed(() => teamStore.actualTeam || {})
 
 const isTeacher = computed(
-  () => authStore.isAuthenticated && authStore.user?.tipo?.trim().toLowerCase() === 'professor',
+  () =>
+    authStore.isAuthenticated &&
+    authStore.user?.tipo?.trim().toLowerCase() === 'professor',
 )
 
 function sameId(first, second) {
-  if (first == null || second == null || first === '' || second === '') return false
+  if (
+    first == null ||
+    second == null ||
+    first === '' ||
+    second === ''
+  ) {
+    return false
+  }
+
   return (
     String(first).replaceAll('-', '').toLowerCase() ===
     String(second).replaceAll('-', '').toLowerCase()
@@ -48,15 +65,24 @@ const isTeacherInTeam = computed(() => {
     !isTeacher.value ||
     !sameId(team.value.id, props.id) ||
     !Array.isArray(team.value.professores)
-  )
+  ) {
     return false
+  }
+
   return team.value.professores.some((teacher) => {
     const profileId = teacher?.id ?? teacher
+
     const userId =
       teacher?.user?.id ??
       teacher?.user_id ??
-      (typeof teacher?.user === 'object' ? null : teacher?.user)
-    return sameId(profileId, authStore.user.id) || sameId(userId, authStore.user.user_id)
+      (typeof teacher?.user === 'object'
+        ? null
+        : teacher?.user)
+
+    return (
+      sameId(profileId, authStore.user?.id) ||
+      sameId(userId, authStore.user?.user_id)
+    )
   })
 })
 
@@ -78,13 +104,17 @@ const isStudentInTeam = computed(() => {
   })
 })
 
-const isMemberOfTeam = computed(() => isTeacherInTeam.value || isStudentInTeam.value)
+const isMemberOfTeam = computed(
+  () => isTeacherInTeam.value || isStudentInTeam.value,
+)
 
 watch(
   () => props.id,
   () => {
     showSuggestions.value = false
     isModalOpen.value = false
+    isEditOpen.value = false
+    isInviteOpen.value = false
     selectedSuggestion.value = null
   },
 )
@@ -92,10 +122,8 @@ watch(
 watch(
   () => props.id,
   async () => {
-    // 1. Busca os dados da equipe primeiro para poder avaliar os membros
     await teamStore.getTeamById(props.id, false)
 
-    // 2. Se o usuário NÃO for membro da equipe, envia a requisição de visualização
     if (!isMemberOfTeam.value) {
       await teamStore.incrementView(props.id)
     }
@@ -119,20 +147,32 @@ function closeSuggestions() {
 }
 
 async function goToStorage() {
-  const storageId = await storageStore.getOrCreateStorage(team.value.id)
+  const storageId = await storageStore.getOrCreateStorage(
+    team.value.id,
+  )
 
   if (storageId) {
-    router.push({ name: 'storage', params: { id: storageId } })
+    router.push({
+      name: 'storage',
+      params: { id: storageId },
+    })
   }
 }
 </script>
 
 <template>
   <div class="page">
-    <div class="top">
-      <appArrow @click="router.back()"></appArrow>
-      <requestToParticipateComponent v-if="!isMemberOfTeam"></requestToParticipateComponent>
-      <exitTeamComponent v-if="isMemberOfTeam" :teamId="props.id"></exitTeamComponent>
+    <div class="top" style="padding-top: 20px">
+      <appArrow @click="router.back()" />
+
+      <requestToParticipateComponent
+        v-if="!isMemberOfTeam"
+      />
+
+      <exitTeamComponent
+        v-if="isMemberOfTeam"
+        :teamId="props.id"
+      />
     </div>
 
     <div class="info">
@@ -144,12 +184,31 @@ async function goToStorage() {
             alt="Logo da equipe"
           />
 
-          <span v-else class="mdi mdi-account-group"></span>
+          <span
+            v-else
+            class="mdi mdi-account-group"
+          ></span>
         </div>
+
         <div class="principal-text">
-          <h1>
-            {{ team.nome }}
-          </h1>
+          <div class="team-title-row">
+            <h1>{{ team.nome }}</h1>
+
+            <button
+              v-if="isTeacherInTeam"
+              type="button"
+              class="edit-team-btn"
+              aria-label="Editar equipe"
+              title="Editar equipe"
+              @click="isEditOpen = true"
+            >
+              <i
+                class="mdi mdi-pencil-outline"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </div>
+
           <h2>
             <span class="mdi mdi-map-marker"></span>
             {{ team.professores?.[0]?.instituicao?.nome }} -
@@ -157,7 +216,10 @@ async function goToStorage() {
               team.professores?.[0]?.instituicao?.estado
             }}
           </h2>
-          <h3 class="views">Visualizações: {{ team.views }}</h3>
+
+          <h3 class="views">
+            Visualizações: {{ team.views }}
+          </h3>
         </div>
       </div>
 
@@ -166,19 +228,49 @@ async function goToStorage() {
       </p>
 
       <ul class="categories">
-        <li v-for="c in team.categorias" :key="c.id">
+        <li
+          v-for="c in team.categorias"
+          :key="c.id"
+        >
           {{ c.nome }}
         </li>
       </ul>
+
+      <div class="members-title-bar">
+        <h3>Participantes</h3>
+
+        <button
+          v-if="isTeacherInTeam"
+          type="button"
+          class="invite-team-btn"
+          @click="isInviteOpen = true"
+        >
+          <i
+            class="mdi mdi-account-plus-outline"
+            aria-hidden="true"
+          ></i>
+          Convidar
+        </button>
+      </div>
+
       <membersOfTeamComponent
         :teachers="team.professores"
         :students="team.alunos"
-      ></membersOfTeamComponent>
+        :owner-id="team.criador"
+      />
     </div>
+
     <div class="creates">
-      <button v-if="isMemberOfTeam" class="createProject" @click="goToStorage()">
-        <span class="mdi mdi-archive"></span> Estoque da equipe
+      <button
+        v-if="isMemberOfTeam"
+        type="button"
+        class="createProject"
+        @click="goToStorage"
+      >
+        <span class="mdi mdi-archive"></span>
+        Estoque da equipe
       </button>
+
       <button
         v-if="isMemberOfTeam"
         id="toggle-team-suggestions"
@@ -188,11 +280,21 @@ async function goToStorage() {
         aria-controls="team-suggestions"
         @click="showSuggestions = !showSuggestions"
       >
-        <span class="mdi mdi-lightbulb-on-outline" aria-hidden="true"></span>
+        <span
+          class="mdi mdi-lightbulb-on-outline"
+          aria-hidden="true"
+        ></span>
         Ver sugestões
       </button>
-      <button v-if="isTeacherInTeam" class="createProject" @click="openCreateProject()">
-        <span class="mdi mdi-plus"></span> Criar projeto
+
+      <button
+        v-if="isTeacherInTeam"
+        type="button"
+        class="createProject"
+        @click="openCreateProject()"
+      >
+        <span class="mdi mdi-plus"></span>
+        Criar projeto
       </button>
     </div>
 
@@ -215,11 +317,102 @@ async function goToStorage() {
         :suggestion="selectedSuggestion"
         @close="isModalOpen = false"
         @created="handleProjectCreated"
-      ></createProjectModal>
+      />
     </div>
 
-    <teamProjectsComponent :team-id="props.id" />
+    <teamProjectsComponent
+      :team-id="props.id"
+    />
+
+    <EditTeamModal
+      v-if="isEditOpen"
+      :team="team"
+      @close="isEditOpen = false"
+      @saved="teamStore.getTeamById(props.id)"
+    />
+
+    <InviteTeamModal
+      v-if="isInviteOpen"
+      :team="team"
+      @close="isInviteOpen = false"
+    />
   </div>
 </template>
+
+<style scoped>
+.team-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.edit-team-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  padding: 0;
+  border: 1px solid #bed4e0;
+  border-radius: 8px;
+  background: #f3f9fc;
+  color: #004369;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.edit-team-btn:hover {
+  background: #e1eff7;
+}
+
+.edit-team-btn:focus-visible,
+.invite-team-btn:focus-visible {
+  outline: 2px solid #004369;
+  outline-offset: 2px;
+}
+
+.members-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0 10px;
+}
+
+.members-title-bar h3 {
+  color: #004369;
+  font-size: 18px;
+}
+
+.invite-team-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #004369;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@media (max-width: 650px) {
+  .edit-team-btn {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+    font-size: 17px;
+  }
+
+  .invite-team-btn {
+    font-size: 12px;
+    padding: 9px 11px;
+  }
+}
+</style>
 
 <style scoped src="./teamDetailComponent.css"></style>
