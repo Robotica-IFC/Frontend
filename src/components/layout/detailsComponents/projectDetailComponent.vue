@@ -28,7 +28,8 @@ const errorMessage = ref('')
 const currentUserId = computed(() => authStore.user?.user_id)
 const canEditProject = computed(() => Boolean(authStore.user?.tipo === 'professor' && actualProject.value?.professores?.some(p => p.user_id === currentUserId.value || p.user?.id === currentUserId.value || p.id === authStore.user?.id)))
 function canEditPost(post) {
-  return Boolean(currentUserId.value && (post.aluno_criador?.user_id === currentUserId.value || post.professor_criador?.user_id === currentUserId.value || post.aluno_criador?.id === authStore.user?.id || post.professor_criador?.id === authStore.user?.id))
+  // A permissão é calculada pelo backend usando a participação atual na equipe.
+  return Boolean(post.pode_editar)
 }
 async function toggleLike(post) {
   errorMessage.value = ''
@@ -100,7 +101,6 @@ onMounted(async () => {
           <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
         </button>
       </div>
-      <h1>{{ actualProject.titulo }}</h1>
       <projectSuggestionBadge v-if="actualProject.sugestao" />
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true">Ver Participantes</appButton>
