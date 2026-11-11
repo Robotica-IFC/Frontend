@@ -1,91 +1,245 @@
+
 <script setup>
 import { computed, ref } from 'vue'
 import router from '@/router'
 
 const props = defineProps({
-  teachers: {
-    required: true,
-  },
-  students: {
-    required: true,
-  },
+  teachers: { type: Array, default: () => [] },
+  students: { type: Array, default: () => [] },
+  ownerId: { type: [String, Number], default: null },
 })
 
 const teachersExpanded = ref(false)
 const studentsExpanded = ref(false)
 
+const previewCount = 4
+
 const visibleTeachers = computed(() => {
   const teachers = props.teachers || []
-  return teachersExpanded.value ? teachers : teachers.slice(0, 4)
+
+  return teachersExpanded.value
+    ? teachers
+    : teachers.slice(0, previewCount)
 })
 
 const visibleStudents = computed(() => {
   const students = props.students || []
-  return studentsExpanded.value ? students : students.slice(0, 4)
+
+  return studentsExpanded.value
+    ? students
+    : students.slice(0, previewCount)
 })
 
 function goToStudent(id) {
-  router.push({ name: 'studentDetails', params: { id } })
+  router.push({
+    name: 'studentDetails',
+    params: { id },
+  })
 }
 
 function goToTeacher(id) {
-  router.push({ name: 'teacherDetails', params: { id } })
+  router.push({
+    name: 'teacherDetails',
+    params: { id },
+  })
 }
 </script>
+
 <template>
   <div class="members">
-    <div v-if="props.teachers?.length" class="member-group">
+    <section
+      v-if="teachers.length"
+      class="member-group"
+    >
       <div class="group-header">
-        <span class="mdi mdi-account-tie"></span>
+        <i
+          class="mdi mdi-account-tie-outline"
+          aria-hidden="true"
+        ></i>
+
         <h3>Professores</h3>
+
+        <span class="group-count">
+          {{ teachers.length }}
+        </span>
       </div>
 
       <ul class="teachers">
-        <li v-for="t in visibleTeachers" :key="t.id" @click="goToTeacher(t.id)">
-          <img
-            class="image-teacher"
-            :src="t.imagem_perfil?.url || t.imagem_perfil?.file"
-            :alt="t.user?.name"
-          />
-          <div class="text">
-            <h2>Professor: {{ t.user?.name }}</h2>
-            <h3>{{ t.user?.email }}</h3>
-          </div>
+        <li
+          v-for="teacher in visibleTeachers"
+          :key="teacher.id"
+        >
+          <button
+            type="button"
+            class="member-link"
+            :aria-label="
+              'Ver professor ' +
+              (teacher.user?.name || '')
+            "
+            @click="goToTeacher(teacher.id)"
+          >
+            <img
+              v-if="
+                teacher.imagem_perfil?.url ||
+                teacher.imagem_perfil?.file
+              "
+              :src="
+                teacher.imagem_perfil.url ||
+                teacher.imagem_perfil.file
+              "
+              :alt="teacher.user?.name || 'Professor'"
+            />
+
+            <span
+              v-else
+              class="avatar-placeholder mdi mdi-account"
+              aria-hidden="true"
+            ></span>
+
+            <span class="member-label">
+              <strong :title="teacher.user?.name">
+                {{ teacher.user?.name || 'Professor' }}
+              </strong>
+
+              <small
+                v-if="
+                  ownerId != null &&
+                  String(teacher.id) === String(ownerId)
+                "
+                class="owner-badge"
+              >
+                OWNER
+              </small>
+
+              <small :title="teacher.user?.email">
+                {{ teacher.user?.email }}
+              </small>
+            </span>
+          </button>
         </li>
       </ul>
 
       <button
-        v-if="props.teachers.length > 5"
+        v-if="teachers.length > previewCount"
         type="button"
         class="show-more"
+        :aria-expanded="teachersExpanded"
         @click="teachersExpanded = !teachersExpanded"
       >
-        {{ teachersExpanded ? 'Ver menos' : 'Ver mais' }}
-      </button>
-    </div>
+        {{
+          teachersExpanded
+            ? 'Ver menos'
+            : 'Ver todos os professores'
+        }}
 
-    <div v-if="props.students?.length" class="member-group">
+        <i
+          :class="
+            teachersExpanded
+              ? 'mdi mdi-chevron-up'
+              : 'mdi mdi-chevron-down'
+          "
+          aria-hidden="true"
+        ></i>
+      </button>
+    </section>
+
+    <section
+      v-if="students.length"
+      class="member-group"
+    >
       <div class="group-header">
-        <span class="mdi mdi-account-group"></span>
+        <i
+          class="mdi mdi-account-group-outline"
+          aria-hidden="true"
+        ></i>
+
         <h3>Alunos</h3>
+
+        <span class="group-count">
+          {{ students.length }}
+        </span>
       </div>
 
       <ul class="students">
-        <li v-for="s in visibleStudents" :key="s.id" @click="goToStudent(s.id)">
-          <img :src="s.imagem_perfil?.url || s.imagem_perfil?.file" :alt="s.user?.name" />
-          <h2>{{ s.user?.name }}</h2>
+        <li
+          v-for="student in visibleStudents"
+          :key="student.id"
+        >
+          <button
+            type="button"
+            class="member-link"
+            :aria-label="
+              'Ver aluno ' +
+              (student.user?.name || '')
+            "
+            @click="goToStudent(student.id)"
+          >
+            <img
+              v-if="
+                student.imagem_perfil?.url ||
+                student.imagem_perfil?.file
+              "
+              :src="
+                student.imagem_perfil.url ||
+                student.imagem_perfil.file
+              "
+              :alt="student.user?.name || 'Aluno'"
+            />
+
+            <span
+              v-else
+              class="avatar-placeholder mdi mdi-account"
+              aria-hidden="true"
+            ></span>
+
+            <span class="member-label">
+              <strong :title="student.user?.name">
+                {{ student.user?.name || 'Aluno' }}
+              </strong>
+            </span>
+          </button>
         </li>
       </ul>
 
       <button
-        v-if="props.students.length > 5"
+        v-if="students.length > previewCount"
         type="button"
         class="show-more"
+        :aria-expanded="studentsExpanded"
         @click="studentsExpanded = !studentsExpanded"
       >
-        {{ studentsExpanded ? 'Ver menos' : 'Ver mais' }}
+        {{
+          studentsExpanded
+            ? 'Ver menos'
+            : 'Ver todos os alunos'
+        }}
+
+        <i
+          :class="
+            studentsExpanded
+              ? 'mdi mdi-chevron-up'
+              : 'mdi mdi-chevron-down'
+          "
+          aria-hidden="true"
+        ></i>
       </button>
-    </div>
+    </section>
+
+    <p
+      v-if="!teachers.length && !students.length"
+      class="empty-members"
+    >
+      Nenhum participante cadastrado.
+    </p>
   </div>
 </template>
+
 <style scoped src="./membersOfTeamComponent.css"></style>
+
+<style scoped>
+.owner-badge {
+  color: #004369;
+  font-weight: 700;
+  font-size: 10px;
+}
+</style>

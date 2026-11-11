@@ -79,7 +79,17 @@ function goToTeacher(id) {
           <span class="title-kicker">Equipe</span>
           <h2>{{ teamName }}</h2>
         </div>
-        <button type="button" class="close-btn" @click="emit('close')">&times;</button>
+<button
+  type="button"
+  class="close-btn"
+  aria-label="Fechar participantes"
+  @click="emit('close')"
+>
+  <i
+    class="mdi mdi-close"
+    aria-hidden="true"
+  ></i>
+</button>lose-btn" @click="emit('close')">&times;</button>
       </div>
 
       <div class="modal-body">

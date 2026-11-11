@@ -6,6 +6,7 @@ import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
 import { useTemplateStore } from './template'
+import { useFormLimits } from '@/composables/useFormLimits'
 
 export const useTeacherStore = defineStore('teacher', () => {
   const state = reactive({
@@ -20,7 +21,7 @@ export const useTeacherStore = defineStore('teacher', () => {
       telefone: '',
       data_nascimento: '',
       ativo: true,
-      email_verificado: true,
+      email_verificado: false,
       imagem_perfil: '',
     },
     teachers: [],
@@ -71,7 +72,6 @@ export const useTeacherStore = defineStore('teacher', () => {
         instituicao: intuicaoId,
         imagem_perfil: imagemId || null,
         ativo: state.teacher.ativo,
-        email_verificado: state.teacher.email_verificado,
 
         // GAMBIARRA NECESSÁRIA: Enviamos vazio/nulo para passar pelo validador do Django.
         // O método 'create' do backend vai ignorar esse valor e vincular o user correto.
@@ -80,22 +80,18 @@ export const useTeacherStore = defineStore('teacher', () => {
 
       const response = await teacherApi.create(payload)
 
-      const credentials = reactive({
-        email: state.teacher.email,
-        password: state.teacher.password,
-      })
-
-      await authStore.login(credentials)
+      authStore.setPendingEmail(state.teacher.email, 'professor')
+      await router.push('/verificar-email')
     } catch (error) {
       console.error('Erro detalhado vindo do servidor:', error.response?.data)
       throw error
     }
   }
 
-  async function uploadImage(file) {
+  async function uploadImage(file, options) {
     const formData = new FormData()
     formData.append('file', file)
-    const response = await imageApi.uploadImage(formData)
+    const response = await imageApi.uploadImage(formData, options)
     return response.data
   }
 
@@ -114,9 +110,9 @@ export const useTeacherStore = defineStore('teacher', () => {
 
     try {
       if (file) {
-        const image = await uploadImage(file)
+        const image = await uploadImage(file, { validateLimits: false })
         state.teacher.imagem_perfil = image.attachment_key
-      }else {
+      } else {
         state.teacher.imagem_perfil = '8d7c4190-fb43-46e1-a094-6e400c9365b2'
       }
 
@@ -133,11 +129,10 @@ export const useTeacherStore = defineStore('teacher', () => {
         telefone: '',
         data_nascimento: '',
         ativo: true,
-        email_verificado: true,
+        email_verificado: false,
         imagem_perfil: '',
       })
       templateStore.sign = 0
-    
     } catch (error) {
       console.error('Falha no processo de criação:', error)
       const backendError = error.response?.data
@@ -161,6 +156,7 @@ export const useTeacherStore = defineStore('teacher', () => {
     try {
       // Cria uma cópia dos dados para não modificar diretamente o formulário na tela
       const payload = { ...data }
+      await useFormLimits().assertValid('professor', payload)
 
       // Se a instituição veio como um objeto, extrai apenas o ID (UUID) string
       if (payload.instituicao && typeof payload.instituicao === 'object') {
@@ -181,16 +177,16 @@ export const useTeacherStore = defineStore('teacher', () => {
     }
   }
 
-    async function getTeacherById(id) {
+  async function getTeacherById(id) {
     try {
-      state.actualStudent = []
+      state.actualTeacher = null
       const response = await teacherApi.getById(id)
 
       const teacherData = response.data
 
-      const userId = teacherData.user?.id;
+      const userId = teacherData.user?.id
 
-      if(userId){
+      if (userId) {
         const teamUser = await teamStore.getTeamByUserId(userId)
 
         teacherData.teams = teamUser

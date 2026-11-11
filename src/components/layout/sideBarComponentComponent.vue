@@ -3,9 +3,11 @@ import { RouterLink } from 'vue-router';
 import { useTemplateStore } from "@/store/template";
 import appButtonComponent from "@/components/form/appButton.vue";
 import { useAuthStore } from '@/store/authStore';
+import { useNotificationsStore } from '@/store/notificationsStore';
 
 const templateStore = useTemplateStore();
 const authStore = useAuthStore();
+const notificationsStore = useNotificationsStore();
 </script>
 
 <template>
@@ -34,6 +36,11 @@ const authStore = useAuthStore();
         <span class="mdi mdi-account-tie"></span> Professor
       </RouterLink>
 
+      <RouterLink to="/notifications" class="nav-link" @click="templateStore.sidebar = false">
+        <span class="mdi mdi-bell-outline"></span> Notificações
+        <span v-if="notificationsStore.unread" class="notification-count" :aria-label="`${notificationsStore.unread} notificações não lidas`">{{ notificationsStore.unread }}</span>
+      </RouterLink>
+
       <RouterLink to="/myTeams" class="nav-link">
         <span class="mdi mdi-account-group-outline"></span> Meus times
       </RouterLink>
@@ -60,4 +67,20 @@ const authStore = useAuthStore();
   </aside>
 </template>
 
+<style scoped>
+.nav-link .notification-count {
+  display:inline-grid;
+  place-items:center;
+  min-width:20px;
+  height:20px;
+  width:auto;
+  padding:0 5px;
+  margin-left:6px;
+  background:#d53b4c;
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  border-radius:12px
+}
+</style>
 <style scoped src="./sideBarComponentComponent.css"></style>

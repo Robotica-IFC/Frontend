@@ -1,6 +1,12 @@
-import api from './config'
+import api from './config.js'
 
 const projectsApi = {
+  getHighlights(signal) {
+    return api.get('/projetos/destaques/', { signal })
+  },
+  delete(id) {
+    return api.delete(`/projetos/${id}/`)
+  },
    getAll(page) {
     return api.get(`/projetos/?page=${page}`)
   },
@@ -12,6 +18,9 @@ const projectsApi = {
   },
   getById(id) {
     return api.get(`/projetos/${id}`)
+  },
+  update(id, payload) {
+    return api.patch(`/projetos/${id}/`, payload)
   },
   create(payload) {
     return api.post('projetos/', payload)

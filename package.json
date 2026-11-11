@@ -7,6 +7,10 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
+    "test:confirmation": "node tests/confirmation.test.js",
+    "test:forms": "node tests/form-validation.test.js",
+    "test:notifications": "node --test tests/notifications.test.js tests/activity-notifications.test.js tests/auth-session.test.js",
+    "test:highlights": "node tests/home-highlights.test.js",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
@@ -22,9 +26,9 @@
     "vue-router": "^5.0.3"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.5",
     "@vitejs/plugin-vue": "^6.0.4",
-    "eslint": "^10.0.2",
+    "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.50.0",
     "eslint-plugin-vue": "~10.8.0",
@@ -33,7 +37,7 @@
     "oxlint": "~1.50.0",
     "prettier": "3.8.1",
     "vite": "^7.3.1",
-    "vite-plugin-pwa": "^1.2.0",
+    "vite-plugin-pwa": "^1.1.0",
     "vite-plugin-vue-devtools": "^8.0.6"
   },
   "engines": {

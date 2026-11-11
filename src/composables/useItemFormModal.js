@@ -1,9 +1,12 @@
 import { computed, reactive, ref } from 'vue'
 import { useItemStore } from '@/store/itemStore'
 import { ITEM_CATEGORIES } from '@/constants/itemCategories'
+import { useConfirmation } from '@/composables/useConfirmation'
+import { formatApiError } from '@/utils/formValidation'
 
 export function useItemFormModal(props, emit) {
   const itemStore = useItemStore()
+  const { confirm } = useConfirmation()
   const isEdit = computed(() => !!props.item)
   const loading = ref(false)
   const deleting = ref(false)
@@ -11,7 +14,7 @@ export function useItemFormModal(props, emit) {
   const selectedFile = ref(null)
   const imageRemoved = ref(false)
   const imagePreview = ref(
-    props.item?.imagem_detail?.file || props.item?.imagem_detail?.url || null,
+    props.item?.imagem_detail?.url || props.item?.imagem_detail?.file || null,
   )
   const form = reactive({
     nome: props.item?.nome || '',
@@ -39,9 +42,7 @@ export function useItemFormModal(props, emit) {
   async function handleSubmit() {
     errorMessage.value = ''
     if (!form.nome.trim()) return (errorMessage.value = 'O nome do item é obrigatório.')
-    if (form.nome.length > 40)
-      return (errorMessage.value = 'O nome deve ter no máximo 40 caracteres.')
-    if (form.quantidade === null || form.quantidade === '' || Number(form.quantidade) < 0) {
+    if (form.quantidade === null || form.quantidade === '' || !Number.isSafeInteger(Number(form.quantidade)) || Number(form.quantidade) < 0) {
       return (errorMessage.value = 'Informe uma quantidade válida.')
     }
     if (!form.categoria) return (errorMessage.value = 'Selecione uma categoria.')
@@ -68,26 +69,27 @@ export function useItemFormModal(props, emit) {
       emit('close')
     } catch (error) {
       console.error('Erro ao salvar item:', error)
-      errorMessage.value = error.response?.data?.detail || 'Erro ao salvar o item.'
+      errorMessage.value = formatApiError(error, 'Erro ao salvar o item.')
     } finally {
       loading.value = false
     }
   }
 
   async function handleDelete() {
-    if (!isEdit.value) return
-    if (!confirm('Deseja realmente excluir este item?')) return
-    try {
-      deleting.value = true
-      await itemStore.deleteItem(props.item.id)
-      emit('deleted', props.item.id)
-      emit('close')
-    } catch (error) {
-      console.error('Erro ao excluir item:', error)
-      errorMessage.value = 'Erro ao excluir o item.'
-    } finally {
-      deleting.value = false
-    }
+    if (!isEdit.value || deleting.value || loading.value) return
+    await confirm({
+      title: 'Excluir item?',
+      message: `O item “${props.item.nome}” será excluído permanentemente do estoque. Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir item',
+      onConfirm: async () => {
+        deleting.value = true
+        try {
+          await itemStore.deleteItem(props.item.id)
+          emit('deleted', props.item.id)
+          emit('close')
+        } finally { deleting.value = false }
+      },
+    })
   }
 
   return {

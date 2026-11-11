@@ -60,6 +60,35 @@
   flex-direction: column;
   gap: 6px;
 }
+.form-group :deep(.input) {
+  width: 100%;
+}
+.source-suggestion {
+  padding: 14px;
+  border-left: 4px solid var(--principal-claro);
+  border-radius: 6px;
+  background: #f4f7fa;
+  overflow-wrap: anywhere;
+}
+.source-suggestion h3 {
+  color: var(--principal-claro);
+  font-size: 14px;
+}
+.source-suggestion p,
+.source-suggestion a {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.source-suggestion p,
+.source-suggestion ul {
+  margin-top: 8px;
+}
+.source-suggestion ul {
+  list-style: none;
+}
+.source-suggestion a {
+  color: var(--principal-claro);
+}
 
 .align-center {
   align-items: center;
@@ -187,7 +216,21 @@
   border-radius: 6px;
   cursor: pointer;
 }
- /* ========== DESKTOP ========== */
+.btn-save {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--principal-claro);
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+/* ========== DESKTOP ========== */
 @media (min-width: 950px) {
   .modal-container {
     max-width: 600px;

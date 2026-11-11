@@ -227,3 +227,40 @@
     height: 58px;
   }
 }
+
+/* Garante que o modal respeite os limites da tela */
+.modal-backdrop {
+  box-sizing: border-box;
+  z-index: 1200;
+}
+
+.modal-container {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Permite nomes e e-mails longos sem cortar o conteúdo */
+.participant-info strong,
+.participant-info small {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 600px) {
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-container {
+    width: 100%;
+    max-height: 85dvh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal-body {
+    max-height: calc(85dvh - 82px);
+  }
+}
+

@@ -5,9 +5,15 @@ import { useInstituteStore } from '@/store/instituteStore'
 import { useStudentStore } from '@/store/studentStore'
 import { useTeacherStore } from '@/store/teacherStore'
 import { useTemplateStore } from '@/store/template'
+import { useFormLimits } from '@/composables/useFormLimits'
+import { formatApiError } from '@/utils/formValidation'
+import { getProfileImageUrl } from '@/utils/profileImage'
+
 
 export function useEditProfile() {
   const authStore = useAuthStore()
+  const limits = useFormLimits()
+  const errorMessage = ref('')
   const studentStore = useStudentStore()
   const teacherStore = useTeacherStore()
   const instituteStore = useInstituteStore()
@@ -29,7 +35,14 @@ export function useEditProfile() {
     telefone: user.value?.telefone || '',
     instituicao: user.value?.instituicao || '',
   })
-  const imagePreview = ref(user.value?.imagem_perfil || '')
+  const imagePreview = ref(getProfileImageUrl(user.value?.imagem_perfil))
+
+  watch(
+    () => user.value?.imagem_perfil,
+    (image) => {
+      if (!imageFile.value) imagePreview.value = getProfileImageUrl(image)
+    },
+  )
 
   const closeEdit = () => {
     useTemplateStore().panel = true
@@ -41,7 +54,7 @@ export function useEditProfile() {
 
   onMounted(async () => {
     window.addEventListener('keydown', handleKeydown)
-    await instituteStore.getInstitutes()
+    await Promise.allSettled([instituteStore.getInstitutes(), authStore.refreshUserProfile()])
 
     if (user.value?.tipo === 'professor' && user.value?.instituicao) {
       buscaInstituicao.value =
@@ -53,6 +66,10 @@ export function useEditProfile() {
 
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown)
+    if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+    if (previewImageInstitute.value.startsWith('blob:')) {
+      URL.revokeObjectURL(previewImageInstitute.value)
+    }
   })
 
   const instituicaoExata = computed(() =>
@@ -109,6 +126,7 @@ export function useEditProfile() {
   }
 
   const handleCreateInstitute = async () => {
+    errorMessage.value = ''
     try {
       loading.value = true
       const novoInst = await instituteStore.createInstitute(fileInstitute.value)
@@ -118,7 +136,7 @@ export function useEditProfile() {
       alert('Nova instituição cadastrada e vinculada!')
     } catch (error) {
       console.error('Erro ao criar instituto:', error)
-      alert('Falha ao cadastrar instituição.')
+      errorMessage.value = formatApiError(error, 'Falha ao cadastrar instituição.')
     } finally {
       loading.value = false
     }
@@ -131,8 +149,10 @@ export function useEditProfile() {
   }
 
   const handleSave = async () => {
+    if (loading.value) return
+    errorMessage.value = ''
     if (user.value?.tipo === 'professor' && !formData.value.instituicao) {
-      alert('Por favor, selecione ou cadastre uma instituição primeiro!')
+      errorMessage.value = 'Selecione ou cadastre uma instituição primeiro.'
       return
     }
 
@@ -150,13 +170,16 @@ export function useEditProfile() {
         name: formData.value.name,
         username: formData.value.username,
       }
+      await limits.assertValid(authStore.user?.tipo === 'aluno' ? 'aluno' : 'professor', profilePayload)
+      await limits.assertValid('usuario', userPayload)
 
       if (imageFile.value) {
         const uploadStore = authStore.user?.tipo === 'aluno' ? studentStore : teacherStore
         const imageResponse = await uploadStore.uploadImage(imageFile.value)
         const uploadedImageKey =
           imageResponse?.id || imageResponse?.attachment_key || imageResponse?.image
-        if (uploadedImageKey) profilePayload.imagem_perfil = uploadedImageKey
+        if (!uploadedImageKey) throw new Error('Não foi possível enviar a foto de perfil.')
+        profilePayload.imagem_perfil = uploadedImageKey
       }
 
       if (authStore.user?.tipo === 'aluno') {
@@ -167,39 +190,19 @@ export function useEditProfile() {
 
       await authStore.updateUserAccount(userId, userPayload)
 
-      if (authStore.user?.tipo === 'aluno') {
-        await studentStore.getStudentById(profileId)
-      } else {
-        await teacherStore.getTeacherById(profileId)
-      }
-
-      const freshProfile =
-        authStore.user?.tipo === 'aluno' ? studentStore.actualStudent : teacherStore.actualTeacher
-      const updatedDataForStore = {
-        name: freshProfile?.usuario?.name || formData.value.name,
-        username: freshProfile?.usuario?.username || formData.value.username,
-        descricao: freshProfile?.descricao,
-        telefone: freshProfile?.telefone,
-        instituicao: freshProfile?.instituicao,
-        imagem_perfil: imagePreview.value,
-      }
-
-      authStore.updateUserData(updatedDataForStore)
-      localStorage.setItem('user_profile_cache', JSON.stringify(updatedDataForStore))
+      await authStore.refreshUserProfile()
+      if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+      imagePreview.value = getProfileImageUrl(authStore.user?.imagem_perfil)
       imageFile.value = null
       alert('Perfil e usuário atualizados com sucesso!')
       closeEdit()
     } catch (error) {
       const backendErrors = error.response?.data
-      if (backendErrors && backendErrors.username) {
-        alert('Este nome de usuário já está em uso. Escolha outro!')
-      } else if (backendErrors && backendErrors.refresh) {
+      if (backendErrors && backendErrors.refresh) {
         alert('Sua sessão expirou. Por favor, faça login novamente.')
         authStore.logout()
-      } else if (backendErrors) {
-        alert(`Erro na validação:\n${Object.values(backendErrors).flat().join('\n')}`)
       } else {
-        alert('Erro ao salvar as alterações. Verifique os dados.')
+        errorMessage.value = formatApiError(error, 'Erro ao salvar as alterações. Verifique os dados.')
       }
     } finally {
       loading.value = false
@@ -208,6 +211,7 @@ export function useEditProfile() {
 
   return {
     authStore,
+    errorMessage,
     instituteStore,
     user,
     loading,

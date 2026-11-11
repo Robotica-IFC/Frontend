@@ -66,7 +66,7 @@ export function useYourDataTeacher() {
 
   async function handleCreateInstitute() {
     try {
-      const novoInst = await instituteStore.createInstitute(file.value)
+      const novoInst = await instituteStore.createInstitute(file.value, { validateLimits: false })
       teacherStore.teacher.instituicao = novoInst.id
       buscaInstituicao.value = novoInst.nome
       newInstitute.value = false
