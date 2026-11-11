@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useTeamStore } from '@/store/teamStore'
+import { useConfirmation } from '@/composables/useConfirmation'
 
 const teamStore = useTeamStore()
+const { confirm } = useConfirmation()
 const errorMessage = ref('')
 const isLeaving = ref(false)
 
@@ -29,6 +31,15 @@ function getErrorMessage(value) {
   return Object.values(value).map(getErrorMessage).filter(Boolean).join(' ')
 }
 
+async function confirmExit() {
+  await confirm({
+    title: 'Sair da equipe?',
+    message: 'Você perderá o acesso às ações e ao estoque da equipe. Para voltar, será necessário aceitar um novo convite. Se você é o OWNER, transfira a responsabilidade antes de sair.',
+    confirmLabel: 'Sair da equipe',
+    onConfirm: exitTeam,
+  })
+}
+
 async function exitTeam() {
   errorMessage.value = ''
   isLeaving.value = true
@@ -42,6 +53,7 @@ async function exitTeam() {
       getErrorMessage(responseData) ||
       error.message ||
       'Não foi possível sair da equipe. Tente novamente.'
+    throw error
   } finally {
     isLeaving.value = false
   }
@@ -49,7 +61,7 @@ async function exitTeam() {
 </script>
 <template>
   <div class="exit-team">
-    <button type="button" :disabled="isLeaving" @click="exitTeam">
+    <button type="button" :disabled="isLeaving" @click="confirmExit">
       <span class="mdi mdi-account-remove-outline"></span>
       {{ isLeaving ? 'Saindo...' : 'Sair da equipe' }}
     </button>

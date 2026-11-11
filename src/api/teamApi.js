@@ -1,6 +1,12 @@
 import api from './config'
 
 const teamApi = {
+  delete(id) {
+    return api.delete(`/equipes/${id}/`)
+  },
+  transferOwner(id, professorId) {
+    return api.post(`/equipes/${id}/transferir-owner/`, { professor: professorId })
+  },
   getAll(page, pageSize) {
     let url = `/equipes/?page=${page}`
 
@@ -9,6 +15,12 @@ const teamApi = {
     }
 
     return api.get(url)
+  },
+  removeMember(teamId, memberId, type) {
+    return api.delete(`/equipes/${teamId}/membros/${memberId}/`, { params: { tipo: type } })
+  },
+  update(id, payload) {
+    return api.patch(`/equipes/${id}/`, payload)
   },
   getOptions(search = '', page = 1, signal) {
     return api.get('equipes/opcoes/', {

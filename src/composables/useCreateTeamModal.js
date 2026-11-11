@@ -1,6 +1,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useAuthStore } from '@/store/authStore'
 import { useTeamStore } from '@/store/teamStore'
+import { formatApiError } from '@/utils/formValidation'
 
 export function useCreateTeamModal(emit) {
   const authStore = useAuthStore()
@@ -87,7 +88,7 @@ export function useCreateTeamModal(emit) {
       buscaCategoria.value = ''
       newCategory.value = false
     } catch (error) {
-      errorMessage.value = 'Erro ao criar categoria.'
+      errorMessage.value = formatApiError(error, 'Erro ao criar categoria.')
     } finally {
       loading.value = false
     }
@@ -111,11 +112,6 @@ export function useCreateTeamModal(emit) {
       return
     }
 
-    if (!selectedFile.value) {
-      errorMessage.value = 'A imagem da equipe é obrigatória.'
-      return
-    }
-
     const professorId = authStore.user?.id
 
     try {
@@ -136,7 +132,7 @@ export function useCreateTeamModal(emit) {
       emit('close')
     } catch (error) {
       console.error('Erro ao criar equipe:', error)
-      errorMessage.value = error.response?.data?.detail || 'Erro ao processar a requisição.'
+      errorMessage.value = formatApiError(error, 'Erro ao processar a requisição.')
     } finally {
       loading.value = false
     }
