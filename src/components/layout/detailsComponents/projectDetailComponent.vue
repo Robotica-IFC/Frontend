@@ -13,6 +13,7 @@ import ProjectParticipantsModal from '@/components/layout/detailsComponents/proj
 import { usePostStore } from '@/store/postsStore'
 import appArrow from '@/components/appArrow.vue'
 import router from '@/router'
+import projectSuggestionBadge from '@/components/projects/projectSuggestionBadge.vue'
 
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
@@ -99,6 +100,8 @@ onMounted(async () => {
           <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
         </button>
       </div>
+      <h1>{{ actualProject.titulo }}</h1>
+      <projectSuggestionBadge v-if="actualProject.sugestao" />
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true">Ver Participantes</appButton>
     </div>

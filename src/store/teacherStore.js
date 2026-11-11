@@ -179,7 +179,7 @@ export const useTeacherStore = defineStore('teacher', () => {
 
   async function getTeacherById(id) {
     try {
-      state.actualStudent = []
+      state.actualTeacher = null
       const response = await teacherApi.getById(id)
 
       const teacherData = response.data

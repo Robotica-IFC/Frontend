@@ -11,17 +11,26 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  embedded: { type: Boolean, default: false },
+  initialAuthor: { type: Object, default: null },
 })
+const emit = defineEmits(['close'])
+
+function closeProfile() {
+  if (props.embedded) emit('close')
+  else router.back()
+}
 
 // Evita baixar a imagem novamente a cada renderização
 const cacheBust = Date.now()
 
 function openTeam(id) {
+  if (props.embedded) emit('close')
   router.push({ name: 'teamDetails', params: { id } })
 }
 
 function handleKeydown(e) {
-  if (e.key === 'Escape') router.back()
+  if (e.key === 'Escape') closeProfile()
 }
 
 onMounted(async () => {
@@ -33,17 +42,32 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
 })
 
-const teacher = computed(() => teacherStore.actualTeacher)
+const loadedTeacher = computed(() => {
+  const profile = teacherStore.actualTeacher
+  return profile?.user && String(profile.id) === props.id ? profile : null
+})
+const teacher = computed(
+  () =>
+    loadedTeacher.value ||
+    (props.initialAuthor
+      ? {
+          user: props.initialAuthor,
+          imagem_perfil: props.initialAuthor.imagem_perfil,
+        }
+      : null),
+)
 </script>
 
 <template>
-  <div class="modal-backdrop" @click.self="router.back()">
+  <div class="modal-backdrop" @click.self="closeProfile">
     <div class="page" v-if="teacher && teacher.user">
       <!-- X de fechar: aparece só no desktop -->
-      <button type="button" class="close-btn" @click="router.back()">&times;</button>
+      <button type="button" class="close-btn" aria-label="Fechar perfil" @click="closeProfile">
+        &times;
+      </button>
 
       <div class="top">
-        <appArrow @back="router.back"></appArrow>
+        <appArrow @back="closeProfile"></appArrow>
       </div>
 
       <div class="data">
@@ -63,22 +87,23 @@ const teacher = computed(() => teacherStore.actualTeacher)
 
             <div>
               <h1>{{ teacher.user?.username }}</h1>
-              <h2>{{ teacher.user?.email }}</h2>
+              <h2 v-if="teacher.user?.email">{{ teacher.user.email }}</h2>
               <h3>{{ teacher.user?.name }}</h3>
-              <h4>
+              <h4 v-if="loadedTeacher">
                 {{ teacher.instituicao?.nome || teacher.instituicao || 'Não informada' }}
               </h4>
             </div>
           </div>
 
-          <p class="desc">
+          <p v-if="loadedTeacher" class="desc">
             {{ teacher.descricao || 'Sem descrição 😢' }}
           </p>
+          <p v-else role="status">Carregando perfil do professor...</p>
         </div>
       </div>
 
       <!-- EQUIPES -->
-      <div class="team" v-if="teacher.teams && teacher.teams.length > 0">
+      <div class="team" v-if="loadedTeacher && teacher.teams && teacher.teams.length > 0">
         <h1 class="team-title">Equipes Orientadas:</h1>
 
         <ul class="teams">
@@ -100,7 +125,7 @@ const teacher = computed(() => teacherStore.actualTeacher)
       </div>
 
       <!-- SEM EQUIPES -->
-      <div class="no-teams" v-else>
+      <div class="no-teams" v-else-if="loadedTeacher">
         <h2>
           O(A) professor(a) {{ teacher.user.name }}
           não orienta nenhuma equipe no momento.

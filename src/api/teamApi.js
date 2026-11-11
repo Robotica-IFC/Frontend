@@ -22,6 +22,12 @@ const teamApi = {
   update(id, payload) {
     return api.patch(`/equipes/${id}/`, payload)
   },
+  getOptions(search = '', page = 1, signal) {
+    return api.get('equipes/opcoes/', {
+      params: { ativo: true, search, page, page_size: 15 },
+      signal,
+    })
+  },
   create(payload) {
     return api.post('equipes/', payload)
   },
@@ -31,7 +37,7 @@ const teamApi = {
   getOne(id) {
     return api.get(`equipes/${id}`)
   },
-  getTeamByUserId(id){
+  getTeamByUserId(id) {
     return api.get(`equipes/usuario/${id}`)
   },
   postView(id) {
@@ -39,7 +45,7 @@ const teamApi = {
   },
   exitTeam(id) {
     return api.post(`equipes/${id}/sair/`)
-  }
+  },
 }
 
 export default teamApi

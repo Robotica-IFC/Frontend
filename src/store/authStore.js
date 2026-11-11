@@ -6,6 +6,8 @@ import router from '@/router'
 import { jwtDecode } from 'jwt-decode'
 import { useInvitesStore } from './invitesStore'
 import { useFormLimits } from '@/composables/useFormLimits'
+import { getProfileImageUrl } from '@/utils/profileImage'
+
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(localStorage.getItem('access_token') || null)
@@ -15,6 +17,19 @@ export const useAuthStore = defineStore('auth', () => {
   const pendingType = ref(sessionStorage.getItem('pending_type') || 'aluno')
 
   const isAuthenticated = computed(() => !!accessToken.value)
+
+  function readCachedProfile() {
+    try {
+      const profile = JSON.parse(localStorage.getItem('user_profile_cache') || '{}')
+      if (!profile || typeof profile !== 'object' || Array.isArray(profile)) return {}
+      const imageUrl = getProfileImageUrl(profile.imagem_perfil)
+      if (/^(blob:|data:)/.test(imageUrl)) delete profile.imagem_perfil
+      return profile
+    } catch {
+      localStorage.removeItem('user_profile_cache')
+      return {}
+    }
+  }
 
   function setUserFromToken(token) {
     try {
@@ -31,19 +46,15 @@ export const useAuthStore = defineStore('auth', () => {
         descricao: payload.descricao,
         imagem_perfil: payload.imagem_perfil,
         instituicao: payload.instituicao,
+        ...readCachedProfile(),
       }
-    } catch (e) {
+    } catch {
       user.value = null
     }
   }
 
   if (accessToken.value) {
     setUserFromToken(accessToken.value)
-
-    const cache = localStorage.getItem('user_profile_cache')
-    if (cache && user.value) {
-      user.value = { ...user.value, ...JSON.parse(cache) }
-    }
   }
 
   function setPendingEmail(email, tipo = 'aluno') {
@@ -83,6 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
       const { access, refresh } = response.data
       accessToken.value = access
       refreshToken.value = refresh
+      localStorage.removeItem('user_profile_cache')
       setUserFromToken(access)
       localStorage.setItem('access_token', access)
       localStorage.setItem('refresh_token', refresh)
@@ -142,8 +154,37 @@ export const useAuthStore = defineStore('auth', () => {
 
   function updateUserData(newData) {
     if (user.value) {
-      user.value = { ...user.value, ...newData }
+      const profileData = { ...newData }
+      if ('imagem_perfil' in profileData) {
+        const imageUrl = getProfileImageUrl(profileData.imagem_perfil)
+        if (/^(blob:|data:)/.test(imageUrl)) delete profileData.imagem_perfil
+        else profileData.imagem_perfil = imageUrl
+      }
+      user.value = { ...user.value, ...profileData }
+      const cachedProfile = readCachedProfile()
+      localStorage.setItem(
+        'user_profile_cache',
+        JSON.stringify({ ...cachedProfile, ...profileData }),
+      )
     }
+  }
+
+  async function refreshUserProfile() {
+    const account = user.value
+    const endpoint = { aluno: 'alunos', professor: 'professores' }[account?.tipo]
+    if (!endpoint || !account.id) return null
+
+    const { data } = await api.get(`${endpoint}/${account.id}/`)
+    if (user.value?.user_id !== account.user_id) return null
+    updateUserData({
+      name: data.user?.name ?? account.name,
+      username: data.user?.username ?? account.username,
+      descricao: data.descricao,
+      telefone: data.telefone,
+      instituicao: data.instituicao,
+      imagem_perfil: getProfileImageUrl(data.imagem_perfil),
+    })
+    return data
   }
 
   function logout() {
@@ -175,5 +216,6 @@ export const useAuthStore = defineStore('auth', () => {
     refreshUserSession,
     updateUserAccount,
     updateUserData,
+    refreshUserProfile,
   }
 })

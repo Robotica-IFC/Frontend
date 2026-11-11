@@ -7,6 +7,8 @@ import { useTeacherStore } from '@/store/teacherStore'
 import { useTemplateStore } from '@/store/template'
 import { useFormLimits } from '@/composables/useFormLimits'
 import { formatApiError } from '@/utils/formValidation'
+import { getProfileImageUrl } from '@/utils/profileImage'
+
 
 export function useEditProfile() {
   const authStore = useAuthStore()
@@ -33,7 +35,14 @@ export function useEditProfile() {
     telefone: user.value?.telefone || '',
     instituicao: user.value?.instituicao || '',
   })
-  const imagePreview = ref(user.value?.imagem_perfil || '')
+  const imagePreview = ref(getProfileImageUrl(user.value?.imagem_perfil))
+
+  watch(
+    () => user.value?.imagem_perfil,
+    (image) => {
+      if (!imageFile.value) imagePreview.value = getProfileImageUrl(image)
+    },
+  )
 
   const closeEdit = () => {
     useTemplateStore().panel = true
@@ -45,7 +54,7 @@ export function useEditProfile() {
 
   onMounted(async () => {
     window.addEventListener('keydown', handleKeydown)
-    await instituteStore.getInstitutes()
+    await Promise.allSettled([instituteStore.getInstitutes(), authStore.refreshUserProfile()])
 
     if (user.value?.tipo === 'professor' && user.value?.instituicao) {
       buscaInstituicao.value =
@@ -57,6 +66,7 @@ export function useEditProfile() {
 
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown)
+    if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
   })
 
   const instituicaoExata = computed(() =>
@@ -165,7 +175,8 @@ export function useEditProfile() {
         const imageResponse = await uploadStore.uploadImage(imageFile.value)
         const uploadedImageKey =
           imageResponse?.id || imageResponse?.attachment_key || imageResponse?.image
-        if (uploadedImageKey) profilePayload.imagem_perfil = uploadedImageKey
+        if (!uploadedImageKey) throw new Error('Não foi possível enviar a foto de perfil.')
+        profilePayload.imagem_perfil = uploadedImageKey
       }
 
       if (authStore.user?.tipo === 'aluno') {
@@ -176,25 +187,9 @@ export function useEditProfile() {
 
       await authStore.updateUserAccount(userId, userPayload)
 
-      if (authStore.user?.tipo === 'aluno') {
-        await studentStore.getStudentById(profileId)
-      } else {
-        await teacherStore.getTeacherById(profileId)
-      }
-
-      const freshProfile =
-        authStore.user?.tipo === 'aluno' ? studentStore.actualStudent : teacherStore.actualTeacher
-      const updatedDataForStore = {
-        name: freshProfile?.usuario?.name || formData.value.name,
-        username: freshProfile?.usuario?.username || formData.value.username,
-        descricao: freshProfile?.descricao,
-        telefone: freshProfile?.telefone,
-        instituicao: freshProfile?.instituicao,
-        imagem_perfil: imagePreview.value,
-      }
-
-      authStore.updateUserData(updatedDataForStore)
-      localStorage.setItem('user_profile_cache', JSON.stringify(updatedDataForStore))
+      await authStore.refreshUserProfile()
+      if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+      imagePreview.value = getProfileImageUrl(authStore.user?.imagem_perfil)
       imageFile.value = null
       alert('Perfil e usuário atualizados com sucesso!')
       closeEdit()
