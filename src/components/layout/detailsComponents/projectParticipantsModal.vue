@@ -1,3 +1,4 @@
+
 <script setup>
 import { computed } from 'vue'
 import router from '@/router'
@@ -63,98 +64,187 @@ function getPersonEmail(person) {
 }
 
 function goToStudent(id) {
-  router.push({ name: 'studentDetails', params: { id } })
+  if (id == null) return
+
+  emit('close')
+
+  router.push({
+    name: 'studentDetails',
+    params: { id },
+  })
 }
 
 function goToTeacher(id) {
-  router.push({ name: 'teacherDetails', params: { id } })
+  if (id == null) return
+
+  emit('close')
+
+  router.push({
+    name: 'teacherDetails',
+    params: { id },
+  })
 }
 </script>
 
 <template>
-  <div v-if="isOpen" class="modal-backdrop" @click.self="emit('close')">
-    <div class="modal-container">
+  <div
+    v-if="isOpen"
+    class="modal-backdrop"
+    @click.self="emit('close')"
+  >
+    <div
+      class="modal-container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="participants-modal-title"
+    >
       <div class="modal-header">
         <div class="header-text">
-          <span class="title-kicker">Equipe</span>
-          <h2>{{ teamName }}</h2>
+          <span class="title-kicker">
+            Equipe
+          </span>
+
+          <h2 id="participants-modal-title">
+            {{ teamName }}
+          </h2>
         </div>
-<button
-  type="button"
-  class="close-btn"
-  aria-label="Fechar participantes"
-  @click="emit('close')"
->
-  <i
-    class="mdi mdi-close"
-    aria-hidden="true"
-  ></i>
-</button>lose-btn" @click="emit('close')">&times;</button>
+
+        <button
+          type="button"
+          class="close-btn"
+          aria-label="Fechar participantes"
+          @click="emit('close')"
+        >
+          <i
+            class="mdi mdi-close"
+            aria-hidden="true"
+          ></i>
+        </button>
       </div>
 
       <div class="modal-body">
-        <section v-if="teachersList.length" class="participants-section">
+        <!-- Professores -->
+        <section
+          v-if="teachersList.length"
+          class="participants-section"
+        >
           <div class="section-title">
-            <span class="mdi mdi-account-tie"></span>
+            <span
+              class="mdi mdi-account-tie"
+              aria-hidden="true"
+            ></span>
+
             <h3>Professores</h3>
           </div>
 
           <ul class="participant-list">
             <li
               v-for="teacher in teachersList"
-              :key="teacher.id || teacher.user?.id"
+              :key="teacher.id ?? teacher.user?.id"
               class="participant-item"
-              @click="goToTeacher(teacher.id || teacher.user?.id)"
             >
-              <div class="avatar-wrap">
-                <img
-                  v-if="getPersonImage(teacher)"
-                  :src="getPersonImage(teacher)"
-                  :alt="getPersonName(teacher)"
-                />
-                <span v-else class="mdi mdi-account"></span>
-              </div>
+              <button
+                type="button"
+                class="participant-link"
+                :aria-label="`Ver professor ${getPersonName(teacher)}`"
+                :disabled="(teacher.id ?? teacher.user?.id) == null"
+                @click="goToTeacher(teacher.id ?? teacher.user?.id)"
+              >
+                <div class="avatar-wrap">
+                  <img
+                    v-if="getPersonImage(teacher)"
+                    :src="getPersonImage(teacher)"
+                    :alt="getPersonName(teacher)"
+                    loading="lazy"
+                  />
 
-              <div class="participant-info">
-                <strong>{{ getPersonName(teacher) }}</strong>
-                <small>{{ getPersonEmail(teacher) }}</small>
-              </div>
+                  <span
+                    v-else
+                    class="mdi mdi-account"
+                    aria-hidden="true"
+                  ></span>
+                </div>
+
+                <div class="participant-info">
+                  <strong>
+                    {{ getPersonName(teacher) }}
+                  </strong>
+
+                  <small>
+                    {{ getPersonEmail(teacher) }}
+                  </small>
+                </div>
+              </button>
             </li>
           </ul>
         </section>
 
-        <section v-if="studentsList.length" class="participants-section">
+        <!-- Alunos -->
+        <section
+          v-if="studentsList.length"
+          class="participants-section"
+        >
           <div class="section-title">
-            <span class="mdi mdi-account-group"></span>
+            <span
+              class="mdi mdi-account-group"
+              aria-hidden="true"
+            ></span>
+
             <h3>Alunos</h3>
           </div>
 
           <ul class="participant-list students-list">
             <li
               v-for="student in studentsList"
-              :key="student.id || student.user?.id"
+              :key="student.id ?? student.user?.id"
               class="participant-item student-item"
-              @click="goToStudent(student.id || student.user?.id)"
             >
-              <div class="avatar-wrap">
-                <img
-                  v-if="getPersonImage(student)"
-                  :src="getPersonImage(student)"
-                  :alt="getPersonName(student)"
-                />
-                <span v-else class="mdi mdi-account"></span>
-              </div>
+              <button
+                type="button"
+                class="participant-link"
+                :aria-label="`Ver aluno ${getPersonName(student)}`"
+                :disabled="(student.id ?? student.user?.id) == null"
+                @click="goToStudent(student.id ?? student.user?.id)"
+              >
+                <div class="avatar-wrap">
+                  <img
+                    v-if="getPersonImage(student)"
+                    :src="getPersonImage(student)"
+                    :alt="getPersonName(student)"
+                    loading="lazy"
+                  />
 
-              <div class="participant-info">
-                <strong>{{ getPersonName(student) }}</strong>
-                <small>{{ getPersonEmail(student) }}</small>
-              </div>
+                  <span
+                    v-else
+                    class="mdi mdi-account"
+                    aria-hidden="true"
+                  ></span>
+                </div>
+
+                <div class="participant-info">
+                  <strong>
+                    {{ getPersonName(student) }}
+                  </strong>
+
+                  <small v-if="getPersonEmail(student) !== 'Professor'">
+                    {{ getPersonEmail(student) }}
+                  </small>
+                </div>
+              </button>
             </li>
           </ul>
         </section>
 
-        <div v-if="!teachersList.length && !studentsList.length" class="empty-state">
-          <span class="mdi mdi-account-off"></span>
+        <!-- Nenhum participante -->
+        <div
+          v-if="!teachersList.length && !studentsList.length"
+          class="empty-state"
+        >
+          <span
+            class="mdi mdi-account-off"
+            aria-hidden="true"
+          ></span>
+
           <p>Nenhum participante cadastrado.</p>
         </div>
       </div>
@@ -163,3 +253,35 @@ function goToTeacher(id) {
 </template>
 
 <style scoped src="./projectParticipantsModal.css"></style>
+
+<style scoped>
+.participant-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.participant-link:focus-visible {
+  outline: 2px solid var(--principal-claro, #0f4b70);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.participant-link:disabled {
+  cursor: default;
+}
+
+.participant-info {
+  flex: 1;
+  min-width: 0;
+}
+</style>
