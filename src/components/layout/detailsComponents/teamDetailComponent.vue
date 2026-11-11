@@ -38,10 +38,6 @@ const showSuggestions = ref(false)
 
 const team = computed(() => teamStore.actualTeam || {})
 
-const currentUserId = computed(
-  () => authStore.user?.user_id || authStore.user?.id,
-)
-
 const isTeacher = computed(
   () =>
     authStore.isAuthenticated &&
@@ -91,16 +87,21 @@ const isTeacherInTeam = computed(() => {
 })
 
 const isStudentInTeam = computed(() => {
-  if (!team.value.alunos || !currentUserId.value) {
-    return false
-  }
-
-  return team.value.alunos.some(
-    (student) =>
-      sameId(student.user?.id, currentUserId.value) ||
-      sameId(student.id, currentUserId.value) ||
-      sameId(student.user_id, currentUserId.value),
+  if (
+    !authStore.isAuthenticated ||
+    authStore.user?.tipo?.trim().toLowerCase() !== 'aluno' ||
+    !sameId(team.value.id, props.id) ||
+    !Array.isArray(team.value.alunos)
   )
+    return false
+  return team.value.alunos.some((student) => {
+    const profileId = student?.id ?? student
+    const userId =
+      student?.user?.id ??
+      student?.user_id ??
+      (typeof student?.user === 'object' ? null : student?.user)
+    return sameId(profileId, authStore.user.id) || sameId(userId, authStore.user.user_id)
+  })
 })
 
 const isMemberOfTeam = computed(
@@ -135,6 +136,7 @@ async function handleProjectCreated() {
 }
 
 function openCreateProject(suggestion = null) {
+  if (!isTeacherInTeam.value) return
   selectedSuggestion.value = suggestion
   isModalOpen.value = true
 }
@@ -270,7 +272,7 @@ async function goToStorage() {
       </button>
 
       <button
-        v-if="isTeacherInTeam"
+        v-if="isMemberOfTeam"
         id="toggle-team-suggestions"
         type="button"
         class="createProject"
@@ -296,26 +298,20 @@ async function goToStorage() {
       </button>
     </div>
 
-    <p
-      v-if="isTeacher && team.id && !isTeacherInTeam"
-      class="team-access-message"
-    >
-      As sugestões ficam disponíveis aos professores
-      vinculados a esta equipe.
+    <p v-if="isTeacher && team.id && !isTeacherInTeam" class="team-access-message">
+      As sugestões ficam disponíveis aos participantes vinculados a esta equipe.
     </p>
 
     <teamSuggestionsComponent
-      v-if="isTeacherInTeam && showSuggestions"
+      v-if="isMemberOfTeam && showSuggestions"
       id="team-suggestions"
       :team-id="props.id"
+      :can-manage="isTeacherInTeam"
       @create="openCreateProject"
       @close="closeSuggestions"
     />
 
-    <div
-      v-if="team.id && isModalOpen"
-      class="project-overlay"
-    >
+    <div v-if="isTeacherInTeam && isModalOpen" class="project-overlay">
       <createProjectModal
         :id="props.id"
         :suggestion="selectedSuggestion"
