@@ -64,7 +64,7 @@ const value = computed({
       :aria-label="attrs['aria-label'] || label || placeholder"
       :list="list"
       v-model="value"
-      autocomplete="off"
+      :autocomplete="attrs.autocomplete || 'off'"
     />
 
     <slot />

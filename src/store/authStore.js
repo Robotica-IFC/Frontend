@@ -199,6 +199,16 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/')
   }
 
+  async function accountDeletionEligibility() {
+    const { data } = await authApi.accountDeletionEligibility()
+    return data
+  }
+
+  async function deleteAccount() {
+    await authApi.deleteAccount()
+    logout()
+  }
+
   return {
     pendingEmail,
     pendingType,
@@ -212,6 +222,8 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     login,
     logout,
+    accountDeletionEligibility,
+    deleteAccount,
     refreshAccessToken,
     refreshUserSession,
     updateUserAccount,

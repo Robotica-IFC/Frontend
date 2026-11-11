@@ -1,52 +1,11 @@
 <script setup>
-import { computed, nextTick, onUnmounted, ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
+import verifyCodeComponent from '@/components/verifyCodeComponent.vue'
 import robotImage from '@/assets/gif/acenar.gif'
 import { useAuthStore } from '@/store/authStore'
 const auth = useAuthStore()
 const email = ref(auth.pendingEmail)
-const digits = ref(Array(6).fill(''))
-const codigo = computed(() => digits.value.join(''))
-const inputs = []
-
-function enterDigit(event, index) {
-  const numbers = event.target.value.replace(/[^0-9]/g, '')
-  if (numbers.length > 1) {
-    fillDigits(numbers, index)
-    return
-  }
-  digits.value[index] = numbers
-  event.target.value = numbers
-  if (numbers && index < 5) inputs[index + 1]?.focus()
-}
-
-async function fillDigits(text, index = 0) {
-  const numbers = text.replace(/[^0-9]/g, '').slice(0, 6 - index)
-  if (!numbers) return
-  for (let offset = 0; offset < numbers.length; offset++) {
-    digits.value[index + offset] = numbers[offset]
-  }
-  await nextTick()
-  inputs[Math.min(index + numbers.length, 5)]?.focus()
-}
-
-function pasteDigits(event, index) {
-  event.preventDefault()
-  fillDigits(event.clipboardData.getData('text'), index)
-}
-
-function handleKey(event, index) {
-  if (event.key === 'Backspace' && !digits.value[index] && index > 0) {
-    event.preventDefault()
-    digits.value[index - 1] = ''
-    inputs[index - 1]?.focus()
-  } else if (event.key === 'ArrowLeft' && index > 0) {
-    event.preventDefault()
-    inputs[index - 1]?.focus()
-  } else if (event.key === 'ArrowRight' && index < 5) {
-    event.preventDefault()
-    inputs[index + 1]?.focus()
-  }
-}
+const codigo = ref('')
 const loading = ref(false)
 const loadingAction = ref('')
 const remainingSeconds = ref(0)
@@ -98,12 +57,16 @@ async function run(action) {
     } else {
       await auth.resendVerificationCode()
       startCooldown()
-      digits.value = Array(6).fill('')
+      codigo.value = ''
       message.value = 'Se houver uma conta pendente, um código será enviado. Confira também o spam.'
     }
   } catch (err) {
     const data = err.response?.data
-    if (action === 'resend' && err.response?.status === 429 && data?.detail?.includes('60 segundos')) {
+    if (
+      action === 'resend' &&
+      err.response?.status === 429 &&
+      data?.detail?.includes('60 segundos')
+    ) {
       startCooldown()
     }
     error.value =
@@ -118,7 +81,12 @@ async function run(action) {
 
 <template>
   <div class="verification">
-    <section class="verification-card" aria-labelledby="verification-title" :aria-busy="loading" :inert="loading">
+    <section
+      class="verification-card"
+      aria-labelledby="verification-title"
+      :aria-busy="loading"
+      :inert="loading"
+    >
       <RouterLink class="back-link" to="/" aria-label="Voltar para entrar">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
@@ -146,29 +114,18 @@ async function run(action) {
             :disabled="loading"
           />
         </div>
-        <fieldset class="code-fields" :disabled="loading">
-          <legend class="sr-only">Código de verificação de seis dígitos enviado por e-mail</legend>
-          <input
-            v-for="(_, index) in digits"
-            :key="index"
-            :ref="(element) => (inputs[index] = element)"
-            :value="digits[index]"
-            :aria-label="`Dígito ${index + 1} do código`"
-            :autocomplete="index === 0 ? 'one-time-code' : 'off'"
-            type="text"
-            inputmode="numeric"
-            pattern="[0-9]"
-            required
-            @input="enterDigit($event, index)"
-            @paste="pasteDigits($event, index)"
-            @keydown="handleKey($event, index)"
-            @focus="$event.target.select()"
-          />
-        </fieldset>
+        <verifyCodeComponent
+          v-model="codigo"
+          :disabled="loading"
+          :invalid="Boolean(error)"
+          :describedby="error ? 'verification-error' : undefined"
+          @update:model-value="error = ''"
+        />
         <p class="feedback">
-          Se o e-mail com o código não chegar à caixa de entrada principal, verifique a pasta de spam.
+          Se o e-mail com o código não chegar à caixa de entrada principal, verifique a pasta de
+          spam.
         </p>
-        <p v-if="error" role="alert" class="feedback error">{{ error }}</p>
+        <p v-if="error" id="verification-error" role="alert" class="feedback error">{{ error }}</p>
         <p v-if="message" role="status" class="feedback">{{ message }}</p>
         <div class="actions">
           <button type="button" :disabled="loading || remainingSeconds > 0" @click="run('resend')">
@@ -193,7 +150,9 @@ async function run(action) {
     <div v-if="loading" class="loading-overlay" role="status" aria-live="polite">
       <div class="loading-card">
         <span class="loading-spinner" aria-hidden="true"></span>
-        <p>{{ loadingAction === 'resend' ? 'Enviando seu código...' : 'Verificando seu código...' }}</p>
+        <p>
+          {{ loadingAction === 'resend' ? 'Enviando seu código...' : 'Verificando seu código...' }}
+        </p>
         <span>Aguarde um instante.</span>
       </div>
     </div>
@@ -237,10 +196,14 @@ async function run(action) {
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .loading-spinner { animation: none; }
+  .loading-spinner {
+    animation: none;
+  }
 }
 .verification {
   min-height: 100dvh;
@@ -293,31 +256,13 @@ h1 {
   flex-direction: column;
   align-items: center;
 }
-.code-fields {
-  display: flex;
-  justify-content: center;
+:deep(.code-fields) {
   gap: clamp(8px, 3.3vw, 14px);
-  border: 0;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
 }
-.code-fields input {
+:deep(.code-fields input) {
   width: 34px;
   height: 35px;
-  border: 1px solid #003d66;
-  border-radius: 8px;
-  background: #fff;
-  color: #003d66;
-  text-align: center;
-  font: inherit;
   font-size: 20px;
-  box-shadow: 0 4px 5px #0003;
-  padding: 0;
-}
-.code-fields input:focus-visible {
-  outline: 2px solid #6084b0;
-  outline-offset: 3px;
 }
 .actions {
   display: grid;

@@ -2,6 +2,21 @@ import api from './config'
 import axios from 'axios' // Importe o axios puro para a rota de refresh
 
 const authApi = {
+  accountDeletionEligibility() {
+    return api.get('usuarios/exclusao/')
+  },
+  deleteAccount() {
+    return api.delete('usuarios/me/')
+  },
+  requestPasswordReset(email) {
+    return api.post('recuperar-senha/', { email })
+  },
+  verifyPasswordResetCode(email, codigo) {
+    return api.post('recuperar-senha/verificar-codigo/', { email, codigo })
+  },
+  resetPassword(email, token, password, confirm_password) {
+    return api.post('redefinir-senha/', { email, token, password, confirm_password })
+  },
   verifyEmail(email, codigo) {
     return api.post('verificar-email/', { email, codigo })
   },

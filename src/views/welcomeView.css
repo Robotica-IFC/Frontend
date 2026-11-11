@@ -1,4 +1,11 @@
 /* ============ MOBILE (base) ============ */
+.password-reset-success {
+  color: #16723b;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 100%;
+}
 .page {
   display: flex;
   flex-direction: column;

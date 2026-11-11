@@ -10,7 +10,14 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token')
 
-    const publicAuth = ['token/', 'verificar-email/', 'reenviar-codigo/'].includes(config.url)
+    const publicAuth = [
+      'token/',
+      'verificar-email/',
+      'reenviar-codigo/',
+      'recuperar-senha/',
+      'recuperar-senha/verificar-codigo/',
+      'redefinir-senha/',
+    ].includes(config.url)
     if (token && !publicAuth) {
       config.headers.Authorization = `Bearer ${token}`
     }
