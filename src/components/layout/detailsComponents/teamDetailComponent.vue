@@ -7,6 +7,7 @@ import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
 import createProjectModal from '@/components/projects/createProjectModal.vue'
 import EditTeamModal from '@/components/teams/EditTeamModal.vue'
 import InviteTeamModal from '@/components/teams/InviteTeamModal.vue'
+import TeamJoinRequests from '@/components/teams/TeamJoinRequests.vue'
 import teamSuggestionsComponent from '@/components/teams/teamSuggestionsComponent.vue'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 import membersOfTeamComponent from './membersOfTeamComponent.vue'
@@ -35,6 +36,7 @@ const isInviteOpen = ref(false)
 
 const selectedSuggestion = ref(null)
 const showSuggestions = ref(false)
+const showJoinRequests = ref(false)
 
 const team = computed(() => teamStore.actualTeam || {})
 
@@ -112,6 +114,7 @@ watch(
   () => props.id,
   () => {
     showSuggestions.value = false
+    showJoinRequests.value = false
     isModalOpen.value = false
     isEditOpen.value = false
     isInviteOpen.value = false
@@ -166,7 +169,8 @@ async function goToStorage() {
       <appArrow @click="router.back()" />
 
       <requestToParticipateComponent
-        v-if="!isMemberOfTeam"
+        v-if="team.id && !isMemberOfTeam && authStore.isAuthenticated"
+        :team-id="props.id"
       />
 
       <exitTeamComponent
@@ -258,6 +262,7 @@ async function goToStorage() {
         :students="team.alunos"
         :owner-id="team.criador"
       />
+
     </div>
 
     <div class="creates">
@@ -269,6 +274,19 @@ async function goToStorage() {
       >
         <span class="mdi mdi-archive"></span>
         Estoque da equipe
+      </button>
+
+      <button
+        v-if="isTeacherInTeam"
+        id="toggle-team-requests"
+        type="button"
+        class="createProject"
+        :aria-expanded="showJoinRequests"
+        aria-controls="team-join-requests"
+        @click="showJoinRequests = !showJoinRequests"
+      >
+        <span class="mdi mdi-account-clock-outline" aria-hidden="true"></span>
+        {{ showJoinRequests ? 'Ocultar solicitações' : 'Ver solicitações' }}
       </button>
 
       <button
@@ -301,6 +319,13 @@ async function goToStorage() {
     <p v-if="isTeacher && team.id && !isTeacherInTeam" class="team-access-message">
       As sugestões ficam disponíveis aos participantes vinculados a esta equipe.
     </p>
+
+    <TeamJoinRequests
+      v-if="isTeacherInTeam && showJoinRequests"
+      id="team-join-requests"
+      :team-id="props.id"
+      @accepted="teamStore.getTeamById(props.id)"
+    />
 
     <teamSuggestionsComponent
       v-if="isMemberOfTeam && showSuggestions"

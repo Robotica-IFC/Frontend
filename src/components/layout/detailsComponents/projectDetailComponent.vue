@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, onMounted, ref, computed } from 'vue'
+import { defineProps, onMounted, nextTick, ref, computed } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
 import { useAuthStore } from '@/store/authStore'
 import { useTemplateStore } from '@/store/template'
@@ -28,7 +28,8 @@ const errorMessage = ref('')
 const currentUserId = computed(() => authStore.user?.user_id)
 const canEditProject = computed(() => Boolean(authStore.user?.tipo === 'professor' && actualProject.value?.professores?.some(p => p.user_id === currentUserId.value || p.user?.id === currentUserId.value || p.id === authStore.user?.id)))
 function canEditPost(post) {
-  return Boolean(currentUserId.value && (post.aluno_criador?.user_id === currentUserId.value || post.professor_criador?.user_id === currentUserId.value || post.aluno_criador?.id === authStore.user?.id || post.professor_criador?.id === authStore.user?.id))
+  // A permissão é calculada pelo backend usando a participação atual na equipe.
+  return Boolean(post.pode_editar)
 }
 async function toggleLike(post) {
   errorMessage.value = ''
@@ -83,6 +84,11 @@ const scrollCarousel = (postId, direction) => {
 
 onMounted(async () => {
   await fetchProject()
+  await nextTick()
+  const hash = router.currentRoute.value.hash
+  if (/^#post-\d+$/.test(hash)) {
+    document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' })
+  }
 })
 </script>
 
@@ -100,7 +106,6 @@ onMounted(async () => {
           <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
         </button>
       </div>
-      <h1>{{ actualProject.titulo }}</h1>
       <projectSuggestionBadge v-if="actualProject.sugestao" />
       <p>{{ actualProject.descricao }}</p>
       <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true">Ver Participantes</appButton>
@@ -113,16 +118,20 @@ onMounted(async () => {
     </div>
 
     <ul class="posts">
-      <li v-for="p in reversedPosts" :key="p.id" class="post-card" :class="p.formato_imagem === 'QUADRADO' ? 'post-square' : 'post-wide'">
+      <li v-for="p in reversedPosts" :id="`post-${p.id}`" :key="p.id" class="post-card" :class="p.formato_imagem === 'QUADRADO' ? 'post-square' : 'post-wide'">
         <div class="post-header">
-          <div class="post-header-left">
+          <RouterLink
+            class="post-header-left team-link"
+            :to="{ name: 'teamDetails', params: { id: actualProject.equipe_id } }"
+            :aria-label="`Ver equipe ${actualProject.equipe}`"
+          >
             <img :src="actualProject.equipe_image" :alt="actualProject.equipe">
             <div class="names">
               <h2 class="team-name">{{ actualProject.equipe }}</h2>
               <h3 v-if="p.aluno_criador">Por: {{ p.aluno_criador.name }}</h3>
               <h3 v-else-if="p.professor_criador">Por: {{ p.professor_criador.name }}</h3>
             </div>
-          </div>
+          </RouterLink>
           <div class="post-header-actions">
             <p class="date">{{ templateStore.formatDate(p.criado_em) }}</p>
             <button
@@ -188,6 +197,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.post-card {
+  scroll-margin-top: 90px;
+}
 .post-image-open {
   display: block;
   width: 100%;

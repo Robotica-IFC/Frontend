@@ -14,7 +14,7 @@ export function useItemFormModal(props, emit) {
   const selectedFile = ref(null)
   const imageRemoved = ref(false)
   const imagePreview = ref(
-    props.item?.imagem_detail?.file || props.item?.imagem_detail?.url || null,
+    props.item?.imagem_detail?.url || props.item?.imagem_detail?.file || null,
   )
   const form = reactive({
     nome: props.item?.nome || '',
