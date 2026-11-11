@@ -7,6 +7,7 @@ import teamProjectsComponent from '@/components/teams/teamProjectsComponent.vue'
 import createProjectModal from '@/components/projects/createProjectModal.vue'
 import EditTeamModal from '@/components/teams/EditTeamModal.vue'
 import InviteTeamModal from '@/components/teams/InviteTeamModal.vue'
+import TeamJoinRequests from '@/components/teams/TeamJoinRequests.vue'
 import teamSuggestionsComponent from '@/components/teams/teamSuggestionsComponent.vue'
 import exitTeamComponent from '@/components/teams/exitTeamComponent.vue'
 import membersOfTeamComponent from './membersOfTeamComponent.vue'
@@ -164,7 +165,8 @@ async function goToStorage() {
       <appArrow @click="router.back()" />
 
       <requestToParticipateComponent
-        v-if="!isMemberOfTeam"
+        v-if="team.id && !isMemberOfTeam && authStore.isAuthenticated"
+        :team-id="props.id"
       />
 
       <exitTeamComponent
@@ -255,6 +257,12 @@ async function goToStorage() {
         :teachers="team.professores"
         :students="team.alunos"
         :owner-id="team.criador"
+      />
+
+      <TeamJoinRequests
+        v-if="isTeacherInTeam"
+        :team-id="props.id"
+        @accepted="teamStore.getTeamById(props.id)"
       />
     </div>
 
