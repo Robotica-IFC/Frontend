@@ -67,6 +67,9 @@ export function useEditProfile() {
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown)
     if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+    if (previewImageInstitute.value.startsWith('blob:')) {
+      URL.revokeObjectURL(previewImageInstitute.value)
+    }
   })
 
   const instituicaoExata = computed(() =>

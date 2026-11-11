@@ -176,7 +176,11 @@ button:disabled {
   color: var(--principal-claro);
   font-size: 26px;
 }
-.favorite-suggestion[aria-pressed='true'] {
+.favorite-indicator {
+  font-size: 26px;
+}
+.favorite-suggestion[aria-pressed='true'],
+.favorite-indicator {
   color: #e5ac00;
 }
 h3 {

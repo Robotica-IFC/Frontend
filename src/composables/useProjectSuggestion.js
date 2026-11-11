@@ -6,7 +6,7 @@ import { useProjectSuggestionsStore } from '@/store/projectSuggestionsStore'
 export function useProjectSuggestion() {
   const authStore = useAuthStore()
   const suggestionsStore = useProjectSuggestionsStore()
-  const form = reactive({ titulo: '', descricao: '', anonimo: true })
+  const form = reactive({ titulo: '', descricao: '', anonimo: false })
   const selectedTeam = ref(null)
   const teams = ref([])
   const loadingTeams = ref(false)
@@ -83,7 +83,7 @@ export function useProjectSuggestion() {
   }
 
   function clearForm() {
-    Object.assign(form, { titulo: '', descricao: '', anonimo: true })
+    Object.assign(form, { titulo: '', descricao: '', anonimo: false })
     selectedTeam.value = null
     attachments.value = []
     errors.value = {}

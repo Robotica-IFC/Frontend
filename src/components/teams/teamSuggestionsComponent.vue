@@ -7,6 +7,7 @@ import Pagination from '@/components/paginationComponent.vue'
 
 const props = defineProps({
   teamId: { type: [String, Number], required: true },
+  canManage: { type: Boolean, default: false },
 })
 const emit = defineEmits(['create', 'close'])
 const suggestionsStore = useProjectSuggestionsStore()
@@ -20,11 +21,11 @@ const suggestionsPerPage = 4
 const currentPage = ref(1)
 const activeTab = ref('sugestoes')
 const pendingActions = ref(new Set())
-const tabs = [
+const tabs = computed(() => [
   { id: 'sugestoes', label: 'Sugestões' },
   { id: 'favoritas', label: 'Favoritas' },
-  { id: 'recusadas', label: 'Recusadas' },
-]
+  ...(props.canManage ? [{ id: 'recusadas', label: 'Recusadas' }] : []),
+])
 const selectedAuthor = ref(null)
 const profileDialog = ref(null)
 let authorTrigger
@@ -81,6 +82,7 @@ async function changePage(page) {
 }
 
 async function switchTab(tab, focus = false) {
+  if (!tabs.value.some((item) => item.id === tab)) return
   activeTab.value = tab
   if (focus) {
     await nextTick()
@@ -89,12 +91,12 @@ async function switchTab(tab, focus = false) {
 }
 
 function moveTab(tab, offset) {
-  const index = tabs.findIndex((item) => item.id === tab)
-  return switchTab(tabs[(index + offset + tabs.length) % tabs.length].id, true)
+  const index = tabs.value.findIndex((item) => item.id === tab)
+  return switchTab(tabs.value[(index + offset + tabs.value.length) % tabs.value.length].id, true)
 }
 
 async function updateSuggestion(suggestion, update) {
-  if (pendingActions.value.has(suggestion.id)) return
+  if (!props.canManage || pendingActions.value.has(suggestion.id)) return
   const requestController = controller
   pendingActions.value.add(suggestion.id)
   actionErrorMessage.value = ''
@@ -126,6 +128,10 @@ function toggleFavorite(suggestion) {
   return updateSuggestion(suggestion, () =>
     suggestionsStore.setFavoriteSuggestion(suggestion.id, !suggestion.favorita),
   )
+}
+
+function createProject(suggestion) {
+  if (props.canManage) emit('create', suggestion)
 }
 
 function normalize(value) {
@@ -197,6 +203,12 @@ watch([search, activeTab], () => {
 watch(totalPages, (pages) => {
   currentPage.value = Math.min(currentPage.value, pages)
 })
+watch(
+  () => props.canManage,
+  () => {
+    if (!tabs.value.some((tab) => tab.id === activeTab.value)) activeTab.value = 'sugestoes'
+  },
+)
 
 watch(
   () => props.teamId,
@@ -222,6 +234,9 @@ onBeforeUnmount(() => controller?.abort())
       <div>
         <h2 id="team-suggestions-heading">Sugestões de projetos</h2>
         <p>Ideias enviadas para esta equipe.</p>
+        <p v-if="!props.canManage">
+          Somente visualização. As favoritas são as sugestões marcadas pelos professores da equipe.
+        </p>
       </div>
       <div class="suggestions-header-actions">
         <button
@@ -253,7 +268,7 @@ onBeforeUnmount(() => controller?.abort())
         @keydown.left.prevent="moveTab(tab.id, -1)"
         @keydown.right.prevent="moveTab(tab.id, 1)"
         @keydown.home.prevent="switchTab('sugestoes', true)"
-        @keydown.end.prevent="switchTab('recusadas', true)"
+        @keydown.end.prevent="switchTab(tabs[tabs.length - 1].id, true)"
       >
         {{ tab.label }}
         <span class="tab-count">{{ tabCounts[tab.id] }}</span>
@@ -305,7 +320,7 @@ onBeforeUnmount(() => controller?.abort())
               <div class="suggestion-card-meta">
                 <time :datetime="suggestion.criado_em">{{ formatDate(suggestion.criado_em) }}</time>
                 <button
-                  v-if="!suggestion.recusada"
+                  v-if="props.canManage && !suggestion.recusada"
                   type="button"
                   class="favorite-suggestion"
                   :aria-pressed="Boolean(suggestion.favorita)"
@@ -319,6 +334,13 @@ onBeforeUnmount(() => controller?.abort())
                     aria-hidden="true"
                   ></span>
                 </button>
+                <span
+                  v-else-if="suggestion.favorita && !suggestion.recusada"
+                  class="favorite-indicator mdi mdi-star"
+                  role="img"
+                  aria-label="Sugestão favorita"
+                  title="Sugestão favorita"
+                ></span>
               </div>
             </header>
             <button
@@ -387,7 +409,7 @@ onBeforeUnmount(() => controller?.abort())
                 </li>
               </ul>
             </div>
-            <div class="suggestion-card-actions">
+            <div v-if="props.canManage" class="suggestion-card-actions">
               <button
                 v-if="suggestion.recusada"
                 type="button"
@@ -415,7 +437,7 @@ onBeforeUnmount(() => controller?.abort())
                   class="create-suggestion-project"
                   :disabled="pendingActions.has(suggestion.id)"
                   :aria-label="`Criar projeto a partir de ${suggestion.titulo}`"
-                  @click="emit('create', suggestion)"
+                  @click="createProject(suggestion)"
                 >
                   <span class="mdi mdi-plus" aria-hidden="true"></span> Criar
                 </button>
