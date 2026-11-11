@@ -64,6 +64,38 @@ li:last-child {
   z-index: 1001;
 }
 
+.menu-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.menu-toggle:focus-visible {
+  outline: 3px solid #3184b4;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #d53b4c;
+}
+
 /* ========== DESKTOP ========== */
 @media (min-width: 950px) {
   header {

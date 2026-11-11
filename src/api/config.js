@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { clearSessionTokens, getSessionToken } from '../utils/authSession.js'
 
 const url = import.meta.env?.VITE_URL_BACKEND
 
@@ -8,7 +9,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token')
+    const token = getSessionToken('access_token')
 
     const publicAuth = ['token/', 'verificar-email/', 'reenviar-codigo/'].includes(config.url)
     if (token && !publicAuth) {
@@ -26,8 +27,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && error.config?.url !== 'token/') {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
+      clearSessionTokens()
       window.location.href = '/'
     }
     return Promise.reject(error)

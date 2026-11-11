@@ -5,13 +5,15 @@ import { computed, ref } from 'vue'
 import router from '@/router'
 import { jwtDecode } from 'jwt-decode'
 import { useInvitesStore } from './invitesStore'
+import { useNotificationsStore } from './notificationsStore'
 import { useFormLimits } from '@/composables/useFormLimits'
 import { getProfileImageUrl } from '@/utils/profileImage'
+import { clearSessionTokens, getSessionToken, saveSessionToken } from '@/utils/authSession'
 
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref(localStorage.getItem('access_token') || null)
-  const refreshToken = ref(localStorage.getItem('refresh_token') || null)
+  const accessToken = ref(getSessionToken('access_token') || null)
+  const refreshToken = ref(getSessionToken('refresh_token') || null)
   const user = ref(null)
   const pendingEmail = ref(sessionStorage.getItem('pending_email') || '')
   const pendingType = ref(sessionStorage.getItem('pending_type') || 'aluno')
@@ -20,13 +22,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   function readCachedProfile() {
     try {
-      const profile = JSON.parse(localStorage.getItem('user_profile_cache') || '{}')
+      const profile = JSON.parse(sessionStorage.getItem('user_profile_cache') || '{}')
       if (!profile || typeof profile !== 'object' || Array.isArray(profile)) return {}
       const imageUrl = getProfileImageUrl(profile.imagem_perfil)
       if (/^(blob:|data:)/.test(imageUrl)) delete profile.imagem_perfil
       return profile
     } catch {
-      localStorage.removeItem('user_profile_cache')
+      sessionStorage.removeItem('user_profile_cache')
       return {}
     }
   }
@@ -34,6 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
   function setUserFromToken(token) {
     try {
       const payload = jwtDecode(token)
+      if (user.value?.user_id !== payload.user_id) useNotificationsStore().clear()
       user.value = {
         id: payload.aluno_id || payload.professor_id,
         user_id: payload.user_id,
@@ -75,9 +78,9 @@ export const useAuthStore = defineStore('auth', () => {
     const { data } = await authApi.verifyEmail(pendingEmail.value, codigo)
     accessToken.value = data.access
     refreshToken.value = data.refresh
-    localStorage.removeItem('user_profile_cache')
-    localStorage.setItem('access_token', data.access)
-    localStorage.setItem('refresh_token', data.refresh)
+    sessionStorage.removeItem('user_profile_cache')
+    saveSessionToken('access_token', data.access)
+    saveSessionToken('refresh_token', data.refresh)
     setUserFromToken(data.access)
     clearPendingVerification()
     await router.push('/home-page')
@@ -94,10 +97,10 @@ export const useAuthStore = defineStore('auth', () => {
       const { access, refresh } = response.data
       accessToken.value = access
       refreshToken.value = refresh
-      localStorage.removeItem('user_profile_cache')
+      sessionStorage.removeItem('user_profile_cache')
       setUserFromToken(access)
-      localStorage.setItem('access_token', access)
-      localStorage.setItem('refresh_token', refresh)
+      saveSessionToken('access_token', access)
+      saveSessionToken('refresh_token', refresh)
       router.push('/home-page')
     } catch (error) {
       if (error.response?.data?.code === 'email_not_verified') {
@@ -112,7 +115,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function refreshAccessToken() {
     try {
-      const rToken = localStorage.getItem('refresh_token')
+      const rToken = getSessionToken('refresh_token')
       if (!rToken) {
         console.warn('Nenhum refresh token encontrado no localStorage')
         throw new Error('No refresh token')
@@ -122,7 +125,7 @@ export const useAuthStore = defineStore('auth', () => {
       const { access } = response.data
 
       accessToken.value = access
-      localStorage.setItem('access_token', access)
+      saveSessionToken('access_token', access)
       setUserFromToken(access)
 
       return access
@@ -162,7 +165,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       user.value = { ...user.value, ...profileData }
       const cachedProfile = readCachedProfile()
-      localStorage.setItem(
+      sessionStorage.setItem(
         'user_profile_cache',
         JSON.stringify({ ...cachedProfile, ...profileData }),
       )
@@ -189,13 +192,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout() {
     useInvitesStore().clear()
+    useNotificationsStore().clear()
     clearPendingVerification()
     accessToken.value = null
     refreshToken.value = null
     user.value = null
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    localStorage.clear()
+    clearSessionTokens()
+    sessionStorage.removeItem('user_profile_cache')
     router.push('/')
   }
 
