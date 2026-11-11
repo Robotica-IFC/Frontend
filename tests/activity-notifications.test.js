@@ -143,3 +143,24 @@ test('aviso aparece para novas atividades e fechar não marca como lida', async 
   notifications.clear()
   assert.equal(notifications.toast, null)
 })
+
+test('abrir a atividade mais recente não anuncia novamente as antigas não lidas', async () => {
+  const notifications = store()
+  api.defaults.adapter = async () => response({ nao_lidas: 3, ultima_nao_lida: 12 })
+  await notifications.refreshCount()
+  notifications.dismissToast()
+
+  api.defaults.adapter = async config => config.url.endsWith('/ler/')
+    ? response({ id: 12, lida_em: readDate })
+    : response({ nao_lidas: 2, ultima_nao_lida: 11 })
+  await notifications.markRead({ id: 12, lida_em: null })
+  await notifications.refreshCount()
+  assert.equal(notifications.unread, 2)
+  assert.equal(notifications.toast, null)
+
+  api.defaults.adapter = async () => response({ nao_lidas: 0, ultima_nao_lida: null })
+  await notifications.refreshCount()
+  api.defaults.adapter = async () => response({ nao_lidas: 1, ultima_nao_lida: 13 })
+  await notifications.refreshCount()
+  assert.equal(notifications.toast.id, 13)
+})

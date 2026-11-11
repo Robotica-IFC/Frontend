@@ -27,7 +27,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
       if (session === generation && version === readVersion) {
         unread.value = data.nao_lidas
         if (!data.nao_lidas) toast.value = null
-        else if (data.ultima_nao_lida && data.ultima_nao_lida !== lastAnnounced) {
+        // Ler a mais recente pode revelar um ID antigo: isso não é uma nova atividade.
+        else if (data.ultima_nao_lida && (lastAnnounced === null || data.ultima_nao_lida > lastAnnounced)) {
           lastAnnounced = data.ultima_nao_lida
           toast.value = { id: data.ultima_nao_lida, count: data.nao_lidas }
         }
