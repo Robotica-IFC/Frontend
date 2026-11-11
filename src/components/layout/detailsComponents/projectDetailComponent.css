@@ -146,6 +146,20 @@
   color:#1a3448;
   overflow-wrap:anywhere
 }
+.project-detail-page .team-link {
+  color:inherit;
+  text-decoration:none;
+  cursor:pointer
+}
+.project-detail-page .team-link:is(:hover, :focus-visible) .team-name {
+  text-decoration:underline;
+  text-underline-offset:3px
+}
+.project-detail-page .team-link:focus-visible {
+  outline:2px solid var(--principal-claro);
+  outline-offset:4px;
+  border-radius:6px
+}
 .project-detail-page .post-header-left h3 {
   font-size:11px;
   margin:0;

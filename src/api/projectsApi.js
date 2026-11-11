@@ -1,6 +1,9 @@
-import api from './config'
+import api from './config.js'
 
 const projectsApi = {
+  getHighlights(signal) {
+    return api.get('/projetos/destaques/', { signal })
+  },
   delete(id) {
     return api.delete(`/projetos/${id}/`)
   },

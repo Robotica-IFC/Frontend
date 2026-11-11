@@ -1,6 +1,9 @@
-import api from './config'
+import api from './config.js'
 
 const postsApi = {
+  getHighlights(signal) {
+    return api.get('/posts/destaques/', { signal })
+  },
   update(id, payload) {
     return api.patch(`/posts/${id}/`, payload)
   },
