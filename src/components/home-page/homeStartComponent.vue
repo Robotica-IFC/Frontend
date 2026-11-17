@@ -23,7 +23,7 @@ const router = useRouter()
             conteúdos, acompanhe projetos e interaja com a comunidade de forma simples e dinâmica. </p>
     </div>
 
-        <img src="/img/home/Home-robo.png" alt="robo">
+        <img src="/img/home/home-introducao-robotica.png" alt="Robô processando dados e exibindo gráficos">
 
     </div>
 

@@ -39,6 +39,11 @@ div.card {
   width: 80%;
 }
 
+.card.tutorial img {
+  aspect-ratio: 90 / 53;
+  object-fit: cover;
+}
+
 .card .btn {
   margin-top: 10px;
   width: 100%;

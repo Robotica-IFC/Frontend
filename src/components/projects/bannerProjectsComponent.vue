@@ -25,7 +25,7 @@ const router = useRouter()
     </div>
 
     <div class="right">
-      <img src="/img/project/autofalante.png" alt="Autofalante" />
+      <img src="/img/project/projetos-banner-divulgacao.png" alt="Celular e megafone representando a divulgação de projetos" />
     </div>
   </section>
 </template>

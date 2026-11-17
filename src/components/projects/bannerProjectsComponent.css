@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 50px;
+  gap: 32px;
 
   border-bottom: 2px solid var(--principal-claro);
 }
@@ -67,11 +67,6 @@
   width: 100%;
   max-width: 420px;
   height: auto;
-  transition: transform .3s ease;
-}
-
-.right img:hover {
-  transform: translateY(-6px);
 }
 
 @media (min-width: 950px) {
@@ -85,7 +80,7 @@
     max-width: 1700px;
     margin: 50px auto;
     padding: 25px 0 50px;
-    gap: 50px;
+    gap: 32px;
     border-bottom: none;
   }
 
@@ -121,7 +116,7 @@
 
   .right {
     flex: 0 0 340px;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .right img {
