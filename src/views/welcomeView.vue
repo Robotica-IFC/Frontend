@@ -4,10 +4,14 @@ import appArrow from "@/components/appArrow.vue";
 import appButton from "@/components/form/appButton.vue";
 import { ref, reactive, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "@/store/authStore";
+import { usePasswordResetStore } from "@/store/passwordResetStore";
 import router from "@/router";
 
 const authStore = useAuthStore();
 const showPassword = ref(false);
+const passwordReset = usePasswordResetStore();
+const passwordResetSuccess = ref(passwordReset.completed);
+passwordReset.completed = false;
 
 const credentials = reactive({
   email: '',
@@ -76,6 +80,9 @@ onUnmounted(() => {
       </div>
 
       <form @submit.prevent="handleLogin">
+        <p v-if="passwordResetSuccess" class="password-reset-success" role="status">
+          Senha redefinida com sucesso. Entre com sua nova senha.
+        </p>
         <appInput
           v-model="credentials.email"
           name="email"

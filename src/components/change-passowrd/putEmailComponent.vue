@@ -1,32 +1,76 @@
 <script setup>
-import router from "@/router";
-import appArrow from '../appArrow.vue';
-import appButton from "../form/appButton.vue";
-import appInput from "../form/appInput.vue";
-import { useTemplateStore } from "@/store/template";
+import { onMounted, ref } from 'vue'
+import appInput from '../form/appInput.vue'
+import { useTemplateStore } from '@/store/template'
+import { usePasswordResetStore } from '@/store/passwordResetStore'
+import { formatApiError } from '@/utils/formValidation'
 
+const emit = defineEmits(['busy'])
 const store = useTemplateStore()
+const reset = usePasswordResetStore()
+const email = ref(reset.email)
+const loading = ref(false)
+const error = ref('')
 
+onMounted(() => {
+  if (reset.email) {
+    const input = document.getElementById('reset-email')
+    input?.focus()
+    input?.select()
+  }
+})
+
+async function submit() {
+  if (loading.value) return
+  error.value = ''
+  const address = email.value.trim()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+    error.value = 'Informe um e-mail válido.'
+    return
+  }
+  loading.value = true
+  emit('busy', true)
+  try {
+    await reset.requestCode(address)
+    store.changePassword = 1
+  } catch (err) {
+    if (
+      err.response?.status === 429 &&
+      err.response.data?.retry_after &&
+      address.toLowerCase() === reset.email
+    ) {
+      store.changePassword = 1
+    } else {
+      error.value = formatApiError(err, 'Não foi possível enviar o código. Tente novamente.')
+    }
+  } finally {
+    loading.value = false
+    emit('busy', false)
+  }
+}
 </script>
 
 <template>
-
-    <div class="page"> <!--Página geral Ass: Laura-->
-        <div class="arrow"> <!--Botão para voltar à página anterior Ass: Laura-->
-            <appArrow @click="router.push('/')"></appArrow>
-        </div>
-
-        <img src="/src/assets/gif/acenar.gif" alt="Robo-acenando" /> 
-        <h2>Confirme seu e-mail</h2> 
-
-        <appInput name="email" style="margin-bottom: 20px;" :placeholder="'E-Mail'" :icon="'mdi mdi-email-outline'">
-        </appInput> <!--input que puxa o email Ass: Laura-->
-
-
-        <div class="btn-continuar">
-            <appButton variant="primary" label="Continuar" @click="store.changePassword = 1"></appButton> <!--Botão que leva para a próxima página Ass: Laura-->
-        </div>
-    </div>
+  <form class="reset-form" novalidate @submit.prevent="submit">
+    <appInput
+      v-model="email"
+      name="reset-email"
+      type="email"
+      autocomplete="email"
+      placeholder="Digite seu E-mail"
+      icon="mdi mdi-email-outline"
+      :class="{ invalid: error }"
+      :disabled="loading"
+      :aria-invalid="Boolean(error)"
+      :aria-describedby="error ? 'reset-email-error' : undefined"
+      @input="error = ''"
+    />
+    <p v-if="error" id="reset-email-error" class="error" role="alert">{{ error }}</p>
+    <button class="continue-button" type="submit" :disabled="loading">
+      {{ loading ? 'Enviando código...' : 'Continuar' }}
+    </button>
+  </form>
 </template>
 
+<style scoped src="./passwordResetForm.css"></style>
 <style scoped src="./putEmailComponent.css"></style>

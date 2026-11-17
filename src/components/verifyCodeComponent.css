@@ -1,4 +1,43 @@
-div.inputs{
-        display: flex;
-        gap: 10px;
-    }
+.code-fields {
+  display: flex;
+  justify-content: center;
+  gap: clamp(6px, 2vw, 14px);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.code-fields input {
+  width: clamp(32px, 3.6vw, 52px);
+  height: clamp(40px, 4vw, 56px);
+  min-width: 0;
+  border: 1px solid var(--principal-claro);
+  border-radius: 8px;
+  background: white;
+  color: var(--principal-claro);
+  text-align: center;
+  font: inherit;
+  font-size: 24px;
+  box-shadow: 0 3px 5px #0002;
+  padding: 0;
+}
+.code-fields.invalid input {
+  border: 2px solid var(--danger-claro);
+  color: var(--danger-claro);
+}
+.code-fields input:focus-visible {
+  outline: 2px solid var(--destaque-claro);
+  outline-offset: 3px;
+}
+.code-fields.invalid input:focus-visible {
+  outline-color: var(--danger-claro);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
