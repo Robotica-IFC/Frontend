@@ -45,7 +45,7 @@ function goToTeam(id) {
             <span class="mdi mdi-account-group"></span>
             {{ teamsUser.length }}
           </strong>
-          <span>Suas equipes</span>
+          <span>{{ teamsUser.length === 1 ? 'equipe' : 'equipes' }}</span>
         </div>
       </div>
       <img src="/img/team/Coworking-rafiki 1.png" alt="Coworking" />
