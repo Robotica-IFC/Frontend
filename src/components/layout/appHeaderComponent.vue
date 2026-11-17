@@ -3,9 +3,11 @@ import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
 import sideBarComponent from "./sideBarComponentComponent.vue";
 import { useTemplateStore } from "@/store/template";
+import { useNotificationsStore } from '@/store/notificationsStore';
 
 const templateStore = useTemplateStore();
 const authStore = useAuthStore();
+const notificationsStore = useNotificationsStore();
 </script>
 
 <template>
@@ -18,10 +20,16 @@ const authStore = useAuthStore();
   <header>
     <ul>
       <li>
-        <span
-          class="mdi mdi-menu"
+        <button
+          type="button"
+          class="menu-toggle"
+          :aria-expanded="templateStore.sidebar"
+          :aria-label="notificationsStore.unread ? `Abrir menu, ${notificationsStore.unread} notificações não lidas` : 'Abrir menu'"
           @click="templateStore.sidebar = !templateStore.sidebar"
-        ></span>
+        >
+          <span class="mdi mdi-menu" aria-hidden="true"></span>
+          <span v-if="notificationsStore.unread" class="notification-dot" aria-hidden="true"></span>
+        </button>
       </li>
       <li @click="router.push('/home-page')">
         <picture>

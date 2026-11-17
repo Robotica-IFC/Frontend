@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test:confirmation": "node tests/confirmation.test.js",
     "test:forms": "node tests/form-validation.test.js",
-    "test:notifications": "node tests/notifications.test.js",
+    "test:notifications": "node --test tests/notifications.test.js tests/activity-notifications.test.js tests/auth-session.test.js",
     "test:highlights": "node tests/home-highlights.test.js",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
