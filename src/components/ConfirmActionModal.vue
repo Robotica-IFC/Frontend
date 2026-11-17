@@ -40,7 +40,7 @@ onBeforeUnmount(() => {
         <p v-if="error" class="error" role="alert">{{ error }}</p>
         <footer>
           <button ref="cancelButton" type="button" :disabled="busy" @click="emit('cancel')">{{ cancelLabel }}</button>
-          <button type="button" class="primary" :class="{ danger }" :disabled="busy" @click="emit('confirm')">
+          <button v-if="confirmLabel" type="button" class="primary" :class="{ danger }" :disabled="busy" @click="emit('confirm')">
             {{ busy ? busyLabel : confirmLabel }}
           </button>
         </footer>

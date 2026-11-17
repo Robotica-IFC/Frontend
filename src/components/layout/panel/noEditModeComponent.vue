@@ -12,6 +12,7 @@ import { useTeamStore } from '@/store/teamStore'
 
 import { useConfirmation } from '@/composables/useConfirmation'
 import { getProfileImageUrl } from '@/utils/profileImage'
+import { formatApiError } from '@/utils/formValidation'
 
 import router from '@/router'
 
@@ -23,6 +24,7 @@ const { confirm } = useConfirmation()
 const { user } = storeToRefs(authStore)
 
 const teamsUser = ref(null)
+const checkingDeletion = ref(false)
 
 const profileImageUrl = computed(() =>
   getProfileImageUrl(user.value?.imagem_perfil),
@@ -36,6 +38,44 @@ function confirmLogout() {
     danger: false,
     onConfirm: () => authStore.logout(),
   })
+}
+
+async function confirmDeleteAccount() {
+  if (checkingDeletion.value) return
+  checkingDeletion.value = true
+  try {
+    const eligibility = await authStore.accountDeletionEligibility()
+    if (!eligibility.pode_excluir) {
+      await confirm({
+        title: 'Não é possível excluir a conta',
+        message: eligibility.detail,
+        confirmLabel: '',
+        cancelLabel: 'Entendi',
+      })
+      return
+    }
+    const teacherNotice = user.value?.tipo === 'professor'
+      ? '\n\nSe você for o responsável principal de uma equipe, essa responsabilidade será transferida para outro professor da equipe.'
+      : ''
+    await confirm({
+      title: 'Excluir conta permanentemente?',
+      message: 'Sua conta, seu perfil, suas publicações, comentários e convites serão excluídos permanentemente. Esta ação não pode ser desfeita.' + teacherNotice,
+      confirmLabel: 'Excluir conta',
+      cancelLabel: 'Cancelar',
+      busyLabel: 'Excluindo conta...',
+      danger: true,
+      onConfirm: () => authStore.deleteAccount(),
+    })
+  } catch (error) {
+    await confirm({
+      title: 'Não foi possível verificar a conta',
+      message: formatApiError(error, 'Tente novamente em instantes.'),
+      confirmLabel: '',
+      cancelLabel: 'Fechar',
+    })
+  } finally {
+    checkingDeletion.value = false
+  }
 }
 
 onMounted(async () => {
@@ -175,7 +215,7 @@ function openTeam(id) {
         <span>Sair da conta</span>
       </button>
 
-      <button class="danger">
+      <button class="danger" :disabled="checkingDeletion" @click="confirmDeleteAccount">
         <span class="mdi mdi-trash-can-outline"></span>
         <span>Excluir conta</span>
       </button>
