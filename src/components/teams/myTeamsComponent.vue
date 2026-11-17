@@ -4,7 +4,6 @@ import { useTeamStore } from '@/store/teamStore'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import appArrow from '../appArrow.vue'
-import appButton from '@/components/form/appButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -104,9 +103,11 @@ function goToTeam(id) {
             </ul>
           </div>
 
-          <!-- Botão (apenas desktop). O clique sobe para o <li> e abre a equipe -->
+          <!-- Botão (apenas desktop) -->
           <div class="details-btn">
-            <appButton variant="border" label="Ver Detalhes" />
+            <button type="button" class="details-button" @click.stop="goToTeam(t.id)">
+              Ver Detalhes
+            </button>
           </div>
 
           <!-- Ícone da seta no final do card -->

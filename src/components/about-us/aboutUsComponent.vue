@@ -1,4 +1,9 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import appArrow from '@/components/appArrow.vue'
+
+const router = useRouter()
+
 const devs = [
   {
     nome: 'Laura Eloysa da Silva',
@@ -40,6 +45,8 @@ const devs = [
 
 <template>
   <section class="about-us" aria-labelledby="about-title">
+    <appArrow class="about-back" @back="router.back()" />
+
     <div class="top">
       <div class="left">
         <h1 id="about-title">Sobre nós</h1>

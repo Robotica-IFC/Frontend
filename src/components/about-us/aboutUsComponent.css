@@ -3,6 +3,10 @@
   font-family: Arial, sans-serif;
 }
 
+.about-back {
+  margin-bottom: 16px;
+}
+
 .top {
   display: flex;
   position: relative;

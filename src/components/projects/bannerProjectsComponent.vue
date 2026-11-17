@@ -1,5 +1,20 @@
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+</script>
+
 <template>
   <section class="tudo">
+    <button
+      type="button"
+      class="back-button"
+      aria-label="Voltar para a página anterior"
+      @click="router.back()"
+    >
+      <span class="mdi mdi-arrow-left" aria-hidden="true"></span>
+    </button>
+
     <div class="left">
       <h1>Explore os projetos da Robótica IFC</h1>
 

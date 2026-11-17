@@ -13,7 +13,7 @@ const router = useRouter()
        <h1>Crie, teste e tranforme ideias em <span>algo real.</span> </h1>
 
         <div class="btn">
-                <appButton variant="primary" label="Saiba mais"></appButton>
+                <appButton variant="primary" label="Saiba mais" @click="router.push('/team')"></appButton>
 
                 <appButton variant="border" class="explorar"
                 label="Explorar projetos" @click="router.push('/projects')"></appButton>

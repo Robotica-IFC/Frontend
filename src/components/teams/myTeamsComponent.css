@@ -6,7 +6,8 @@
 }
 
 .top {
-  display: none;
+  display: flex;
+  padding-bottom: 16px;
 }
 
 div.static {
@@ -286,11 +287,6 @@ div.static {
     font-family: inherit;
   }
 
-  .top {
-    display: flex;
-    padding-bottom: 16px;
-  }
-
   div.static {
     justify-content: space-between;
     gap: 40px;
@@ -443,11 +439,8 @@ div.static {
         grid-row: 6;
         align-self: end;
 
-        & :deep(.btn) {
-          margin-top: 0;
-        }
-
-        & :deep(button) {
+        & button {
+          width: 100%;
           padding: 10px;
           border-width: 1px;
           border-radius: 6px;

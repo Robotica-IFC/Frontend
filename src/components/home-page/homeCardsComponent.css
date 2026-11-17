@@ -48,6 +48,70 @@ div.card {
   width: 50%;
 }
 
+.card :deep(button.card) {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card :deep(button.card:hover:not(:active)) {
+    background-color: var(--hover-principal-claro);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 61, 102, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card :deep(button.card) {
+    transition: none;
+  }
+
+  .card :deep(button.card:hover:not(:active)) {
+    transform: none;
+  }
+}
+
+@media (max-width: 949px) {
+  .page {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  div.card {
+    width: 100%;
+    min-width: 0;
+    min-height: 250px;
+    height: auto;
+    gap: 12px;
+  }
+
+  .card img {
+    height: 85px;
+    object-fit: contain;
+  }
+
+  .card .info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+  }
+
+  .card p {
+    margin: 8px auto 0;
+  }
+
+  .card .info > .btn {
+    margin-top: auto;
+    padding-top: 10px;
+  }
+}
+
 @media (min-width: 950px) {
   .page {
     width: 100%;
