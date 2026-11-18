@@ -69,6 +69,27 @@
   height: auto;
 }
 
+@media (max-width: 949px) {
+  .tudo {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin: 24px auto;
+    padding: 32px 0 24px;
+  }
+  .left { min-width: 0; }
+  .left h1 {
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+  }
+  .left p { font-size: 13px; line-height: 1.4; }
+  .right { flex: 0 0 45%; max-width: 160px; }
+  .right img { display: block; }
+}
+
 @media (min-width: 950px) {
   .back-button {
     left: 0;

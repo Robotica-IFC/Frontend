@@ -12,8 +12,8 @@ const projectsApi = {
       params: { page, ...(pageSize ? { page_size: pageSize } : {}) },
     })
   },
-  getByTeam(id) {
-    return api.get(`/projetos/?equipe=${id}`)
+  getByTeam(id, page = 1, pageSize = 2) {
+    return api.get('/projetos/', { params: { equipe: id, page, page_size: pageSize } })
   },
   uploadImage(formData) {
     return api.post('media/images/', formData)

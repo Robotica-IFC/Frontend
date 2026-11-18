@@ -4,6 +4,7 @@ import { useProjectStore } from '@/store/projectsStore'
 import router from '@/router'
 import projectSuggestionBadge from './projectSuggestionBadge.vue'
 import Pagination from '@/components/paginationComponent.vue'
+import ExpandablePostCaption from '@/components/posts/ExpandablePostCaption.vue'
 
 const store = useProjectStore()
 const projectsSection = ref(null)
@@ -92,9 +93,7 @@ onBeforeUnmount(() => {
             <h2>{{ project.titulo }}</h2>
             <projectSuggestionBadge v-if="project.sugestao" />
 
-            <p class="desc-curta">
-              {{ project.desc_curta }}
-            </p>
+            <ExpandablePostCaption class="desc-curta" :text="project.desc_curta" desktop-clamp :desktop-lines="2" />
 
             <div class="team">
               <div class="info-item">

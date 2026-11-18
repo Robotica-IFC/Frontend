@@ -71,6 +71,19 @@ header p { margin:6px 0 0; font-size:13px; color:#627e90; }
 }
 button:disabled { opacity:.6; cursor:wait; }
 button:focus-visible { outline:3px solid #3184b4; outline-offset:3px; }
+@media(max-width:767px) {
+  header {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 12px 10px;
+    align-items: start;
+  }
+  header > .mdi { line-height: 1.2; }
+  header > div { min-width: 0; }
+  h1 { font-size: 24px; line-height: 1.3; }
+  header p { line-height: 1.5; }
+  .refresh-button { grid-column: 2; justify-self: start; margin-left: 0; }
+}
 @media(min-width:768px) {
   .notifications-page { padding:80px 40px; }
   h1 { font-size:30px; }

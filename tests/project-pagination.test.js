@@ -112,3 +112,72 @@ test('erro preserva a página atual e permite tentar carregar a próxima novamen
   assert.deepEqual(store.projects.map(project => project.id), [5, 6, 7, 8])
   assert.equal(store.errorMessage, '')
 })
+
+test('projetos da equipe: paginação de dois itens permite acessar além dos dez primeiros', async () => {
+  const store = useProjectStore()
+  const seen = []
+  const adapter = api.defaults.adapter
+  api.defaults.adapter = (config) => {
+    assert.equal(config.params.equipe, 'team-a')
+    assert.equal(config.params.page_size, 2)
+    return adapter(config)
+  }
+  for (let page = 1; page <= Math.ceil(projects.length / 2); page++) {
+    assert.equal(await store.getProjectsByTeam('team-a', page), true)
+    assert.equal(store.teamCurrentPage, page)
+    assert.equal(store.teamTotalPages, 7)
+    assert.ok(store.teamProjects.length <= 2)
+    seen.push(...store.teamProjects.map(project => project.id))
+  }
+  assert.deepEqual(seen, projects.map(project => project.id))
+  assert.equal(store.teamLoading, false)
+  await store.getProjectsByTeam('team-a')
+  assert.equal(store.teamCurrentPage, 1)
+})
+
+test('erro ao paginar os projetos da equipe preserva os itens e permite tentar novamente', async () => {
+  const store = useProjectStore()
+  await store.getProjectsByTeam('team-a')
+  const adapter = api.defaults.adapter
+  api.defaults.adapter = async () => { throw new Error('Sem conexão') }
+  assert.equal(await store.getProjectsByTeam('team-a', 2), false)
+  assert.equal(store.teamCurrentPage, 1)
+  assert.deepEqual(store.teamProjects.map(project => project.id), [1, 2])
+  assert.ok(store.teamErrorMessage)
+  assert.equal(store.teamLoading, false)
+  api.defaults.adapter = adapter
+  assert.equal(await store.getProjectsByTeam('team-a', 2), true)
+  assert.equal(store.teamCurrentPage, 2)
+  assert.deepEqual(store.teamProjects.map(project => project.id), [3, 4])
+  assert.equal(store.teamErrorMessage, '')
+})
+
+for (const staleFirst of [true, false]) {
+  test(`trocar de equipe ignora a resposta antiga, chegando ${staleFirst ? 'antes' : 'depois'} da atual`, async () => {
+    const store = useProjectStore()
+    const requests = []
+    api.defaults.adapter = config => new Promise(resolve => requests.push({ config, resolve }))
+    const oldTeam = store.getProjectsByTeam('old-team')
+    const newTeam = store.getProjectsByTeam('new-team')
+    await setImmediate()
+    const resolveOld = () => requests[0].resolve(response(requests[0].config, {
+      page: 1, total_pages: 5, results: [{ id: 1 }],
+    }))
+    if (staleFirst) {
+      resolveOld()
+      assert.equal(await oldTeam, false)
+      assert.equal(store.teamLoading, true)
+    }
+    requests[1].resolve(response(requests[1].config, {
+      page: 1, total_pages: 2, results: [{ id: 21 }, { id: 22 }],
+    }))
+    assert.equal(await newTeam, true)
+    if (!staleFirst) {
+      resolveOld()
+      assert.equal(await oldTeam, false)
+    }
+    assert.deepEqual(store.teamProjects.map(project => project.id), [21, 22])
+    assert.equal(store.teamTotalPages, 2)
+    assert.equal(store.teamLoading, false)
+  })
+}

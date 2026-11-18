@@ -101,4 +101,20 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .pagination span { font-size: 13px; color: #004369; }
 .pagination button { display: inline-flex; align-items: center; gap: 4px; }
 @media (max-width: 470px) { .pagination { gap: 8px; } .pagination button { font-size: 12px; padding: 8px; } }
+@media (max-width: 949px) {
+  .request-heading { align-items: flex-start; flex-wrap: nowrap; }
+  .request-heading h3 { flex: 1; min-width: 0; font-size: 16px; line-height: 1.35; }
+  .request-heading > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 32px;
+    padding: 5px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
 </style>

@@ -8,6 +8,7 @@ import CreatePostModal from '@/components/posts/CreatePostModal.vue'
 import PostCommentsSheet from '@/components/posts/PostCommentsSheet.vue'
 import EditPostModal from '@/components/posts/EditPostModal.vue'
 import PostImageViewer from '@/components/posts/PostImageViewer.vue'
+import ExpandablePostCaption from '@/components/posts/ExpandablePostCaption.vue'
 import EditProjectModal from '@/components/projects/EditProjectModal.vue'
 import ProjectParticipantsModal from '@/components/layout/detailsComponents/projectParticipantsModal.vue'
 import { usePostStore } from '@/store/postsStore'
@@ -130,7 +131,7 @@ onMounted(async () => {
         </button>
       </div>
       <projectSuggestionBadge v-if="actualProject.sugestao" />
-      <p>{{ actualProject.descricao }}</p>
+      <ExpandablePostCaption class="project-description" :text="actualProject.descricao" />
       <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true">Ver Participantes</appButton>
     </div>
 
@@ -168,7 +169,7 @@ onMounted(async () => {
           </div>
         </div>
 
-        <p class="legenda">{{ p.legenda }}</p>
+        <ExpandablePostCaption class="legenda" :text="p.legenda" />
 
         <div class="post-image post-media" v-if="p.images && p.images.length === 1">
           <button type="button" class="post-image-open" aria-label="Ampliar imagem do post" @click="viewedImages = { images: p.images, index: 0 }">

@@ -43,15 +43,37 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   const teamProjects = ref([])
+  const teamCurrentPage = ref(1)
+  const teamTotalPages = ref(1)
+  const teamLoading = ref(false)
+  const teamErrorMessage = ref('')
+  let teamRequestId = 0
+  let loadedTeamId
 
-  async function getProjectsByTeam(id) {
-    loading.value = true
+  async function getProjectsByTeam(id, page = 1) {
+    const requestId = ++teamRequestId
+    if (loadedTeamId !== String(id)) {
+      loadedTeamId = String(id)
+      teamProjects.value = []
+      teamCurrentPage.value = 1
+      teamTotalPages.value = 1
+    }
+    teamLoading.value = true
+    teamErrorMessage.value = ''
 
     try {
-      const response = await projectApi.getByTeam(id)
+      const response = await projectApi.getByTeam(id, page, 2)
+      if (requestId !== teamRequestId) return false
       teamProjects.value = response.data.results
+      teamCurrentPage.value = response.data.page
+      teamTotalPages.value = response.data.total_pages
+      return true
+    } catch {
+      if (requestId !== teamRequestId) return false
+      teamErrorMessage.value = 'Não foi possível carregar os projetos da equipe. Tente novamente.'
+      return false
     } finally {
-      loading.value = false
+      if (requestId === teamRequestId) teamLoading.value = false
     }
   }
 
@@ -125,6 +147,10 @@ export const useProjectStore = defineStore('project', () => {
     total,
     getProjects,
     teamProjects,
+    teamCurrentPage,
+    teamTotalPages,
+    teamLoading,
+    teamErrorMessage,
     getProjectsByTeam,
     getProjectById,
     createProject,
