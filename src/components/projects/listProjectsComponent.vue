@@ -4,6 +4,7 @@ import { useProjectStore } from '@/store/projectsStore'
 import router from '@/router'
 import projectSuggestionBadge from './projectSuggestionBadge.vue'
 import Pagination from '@/components/paginationComponent.vue'
+import { scrollAfterPagination } from '@/utils/paginationScroll'
 
 const store = useProjectStore()
 const projectsSection = ref(null)
@@ -17,10 +18,7 @@ async function loadPage(page, scroll = false) {
   if (!loaded || !scroll) return
 
   await nextTick()
-  projectsSection.value?.scrollIntoView({
-    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-    block: 'start',
-  })
+  if (projectsSection.value) scrollAfterPagination()
 }
 
 function changePage(page) {
@@ -52,7 +50,9 @@ onBeforeUnmount(() => {
     <p v-if="store.loading" class="section-message" role="status">Carregando projetos...</p>
     <p v-else-if="store.errorMessage" class="section-message" role="alert">
       {{ store.errorMessage }}
-      <button type="button" @click="loadPage(requestedPage)">Tentar novamente</button>
+      <button type="button" @click="loadPage(requestedPage, requestedPage !== store.currentPage)">
+        Tentar novamente
+      </button>
     </p>
     <p v-else-if="!store.projects.length" class="section-message">Nenhum projeto encontrado.</p>
 

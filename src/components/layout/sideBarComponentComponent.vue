@@ -28,10 +28,6 @@ const notificationsStore = useNotificationsStore();
         <span class="mdi mdi-laptop"></span> Projetos
       </RouterLink>
 
-      <RouterLink to="/tutorials" class="nav-link">
-        <span class="mdi mdi-play-box-multiple"></span> Tutoriais
-      </RouterLink>
-
       <RouterLink v-if="authStore.user?.tipo == 'professor'" to="/teacher" class="nav-link">
         <span class="mdi mdi-account-tie"></span> Professor
       </RouterLink>

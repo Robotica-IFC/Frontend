@@ -4,6 +4,7 @@ import { useProjectSuggestionsStore } from '@/store/projectSuggestionsStore'
 import studentDetailComponent from '@/components/layout/detailsComponents/studentDetailComponent.vue'
 import teacherDetailComponent from '@/components/layout/detailsComponents/teacherDetailComponent.vue'
 import Pagination from '@/components/paginationComponent.vue'
+import { scrollAfterPagination } from '@/utils/paginationScroll'
 
 const props = defineProps({
   teamId: { type: [String, Number], required: true },
@@ -75,10 +76,7 @@ async function changePage(page) {
 
   currentPage.value = page
   await nextTick()
-  suggestionsSection.value?.scrollIntoView({
-    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-    block: 'start',
-  })
+  scrollAfterPagination(suggestionsSection.value)
 }
 
 async function switchTab(tab, focus = false) {

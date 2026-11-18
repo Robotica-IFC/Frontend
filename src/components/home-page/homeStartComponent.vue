@@ -1,8 +1,10 @@
 <script setup>
 import appButton from '../form/appButton.vue';
 import { useRouter } from "vue-router";
+import { useTemplateStore } from '@/store/template'
 
 const router = useRouter()
+const templateStore = useTemplateStore()
 </script>
 
 <template>
@@ -23,7 +25,10 @@ const router = useRouter()
             conteúdos, acompanhe projetos e interaja com a comunidade de forma simples e dinâmica. </p>
     </div>
 
-        <img src="/img/home/home-introducao-robotica.png" alt="Robô processando dados e exibindo gráficos">
+        <img
+            :src="templateStore.darkMode ? '/img/home/Home-robo-dark.png' : '/img/home/home-introducao-robotica.png'"
+            alt="Robô processando dados e exibindo gráficos"
+        >
 
     </div>
 

@@ -240,6 +240,25 @@ button.details-button:active:not(:disabled) {
   color: var(--cor-principal);
 }
 
+:root[data-theme="dark"] .about-us .devv .username {
+  color: var(--cor-fonte-secundaria);
+}
+
+@media (min-width: 950px) {
+  :root[data-theme="dark"] .about-us .devv {
+    background-color: #1C2735;
+    color: var(--cor-fonte);
+    box-shadow: 0 0 0 1px var(--cor-borda), 0 4px 12px #0003;
+  }
+}
+
+@media (min-width: 950px) and (hover: hover) and (pointer: fine) {
+  :root[data-theme="dark"] .about-us .devv:hover {
+    background-color: #21364D;
+    box-shadow: 0 0 0 1px var(--cor-destaque), 0 6px 18px #0006;
+  }
+}
+
 :root[data-theme="dark"] main :is(
   .card-mobile p, .card-mobile .projects, .card-desktop .info-grid p,
   .t > li :is(.leader-name, .place-team, .total-members, .total-projects, .no-projects)

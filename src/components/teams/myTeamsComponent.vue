@@ -1,6 +1,7 @@
 <script setup>
 import { useAuthStore } from '@/store/authStore'
 import { useTeamStore } from '@/store/teamStore'
+import { useTemplateStore } from '@/store/template'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import appArrow from '../appArrow.vue'
@@ -8,6 +9,7 @@ import appArrow from '../appArrow.vue'
 const router = useRouter()
 const authStore = useAuthStore()
 const teamStore = useTeamStore()
+const templateStore = useTemplateStore()
 
 const teamsUser = ref(null)
 
@@ -47,7 +49,10 @@ function goToTeam(id) {
           <span>{{ teamsUser.length === 1 ? 'equipe' : 'equipes' }}</span>
         </div>
       </div>
-      <img src="/img/team/Coworking-rafiki 1.png" alt="Coworking" />
+      <img
+        :src="templateStore.darkMode ? '/img/team/Coworking-rafiki-dark.png' : '/img/team/Coworking-rafiki 1.png'"
+        alt="Coworking"
+      />
     </div>
 
     <h2 class="my-team-title">Minhas equipes</h2>
