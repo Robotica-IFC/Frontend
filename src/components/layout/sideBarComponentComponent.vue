@@ -54,7 +54,14 @@ const notificationsStore = useNotificationsStore();
       <div class="dark-mode-toggle">
         <span class="mdi mdi-weather-night"></span>
         <span>Modo noturno</span>
-        <input type="checkbox" class="toggle-checkbox" id="dark-mode" />
+        <input
+          id="dark-mode"
+          type="checkbox"
+          class="toggle-checkbox"
+          aria-label="Modo noturno"
+          :checked="templateStore.darkMode"
+          @change="templateStore.setDarkMode($event.target.checked)"
+        />
         <label for="dark-mode" class="toggle-label"></label>
       </div>
       <div class="close-side">
