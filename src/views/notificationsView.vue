@@ -27,7 +27,7 @@ onUnmounted(() => {
 
 <template>
   <div class="notifications-page">
-    <appArrow @back="router.back()" />
+    <appArrow @back="router.push({ name: 'home-page', hash: '#activities-card' })" />
 
     <header>
       <i class="mdi mdi-bell-outline" aria-hidden="true"></i>

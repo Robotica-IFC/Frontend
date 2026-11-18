@@ -39,9 +39,9 @@ div.card {
   width: 80%;
 }
 
-.card.tutorial img {
-  aspect-ratio: 90 / 53;
-  object-fit: cover;
+.card.activities img {
+  aspect-ratio: 1;
+  object-fit: contain;
 }
 
 .card .btn {
