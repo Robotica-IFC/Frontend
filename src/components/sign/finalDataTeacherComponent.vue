@@ -1,12 +1,13 @@
 <script setup>
 import { useTeacherStore } from '@/store/teacherStore' // Alterado para Teacher
 import { useTemplateStore } from '@/store/template'
-import appArrow from '../appArrow.vue'
+import AuthLayout from '../layout/AuthLayout.vue'
 import appButton from '../form/appButton.vue'
 import AppInput from '../form/appInput.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
 import { ref } from 'vue'
 import stepComponent from '../stepComponent.vue'
+import RegistrationNotice from './RegistrationNotice.vue'
 
 const teacherStore = useTeacherStore() // Alterado para Teacher
 const templateStore = useTemplateStore()
@@ -14,6 +15,8 @@ const templateStore = useTemplateStore()
 const previewImage = ref('/img/default2.jpg')
 const file = ref(null)
 const showImageSheet = ref(false)
+const loading = ref(false)
+teacherStore.registrationFeedback = null
 
 function back() {
   templateStore.sign = 2 // Volta para a etapa dos dados
@@ -24,25 +27,32 @@ function handleFileSelected(selectedFile) {
   previewImage.value = URL.createObjectURL(selectedFile)
 }
 
-function submit() {
-  // Chama o submit do Teacher Store
-  teacherStore.submit(file.value)
+async function submit() {
+  if (loading.value) return
+  loading.value = true
+  try {
+    await teacherStore.submit(file.value)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <template>
-  <div class="page">
-    <div class="top">
-      <div class="arrow">
-        <app-arrow @back="back()" />
-      </div>
-
-      <img src="/src/assets/gif/digitando.gif" alt="Robo-acenando" class="gif-header" />
-
-      <h2>Quase lá, {{ teacherStore.state.teacher.name }}!</h2>
-    </div>
-
+  <AuthLayout
+    :title="`Quase lá, ${teacherStore.state.teacher.name}!`"
+    subtitle="Escolha sua foto e seu nome de usuário. Sua conta será criada após confirmar o e-mail."
+    icon="mdi-account-edit-outline"
+    :busy="loading"
+    loading-message="Enviando código de verificação..."
+    @back="back"
+  >
     <form @submit.prevent="submit" class="final">
+      <RegistrationNotice
+        v-if="teacherStore.registrationFeedback"
+        v-bind="teacherStore.registrationFeedback"
+        @edit-email="back"
+      />
       <div class="avatar-container">
         <button type="button" class="avatar-label" @click="showImageSheet = true">
           <img :src="previewImage" alt="Foto de perfil" class="profile-pic" />
@@ -60,25 +70,28 @@ function submit() {
         required=""
       />
 
-      <appButton type="submit">Finalizar Cadastro</appButton>
+      <appButton type="submit" :disabled="loading">{{
+        loading ? 'Enviando código...' : 'Verificar e-mail'
+      }}</appButton>
     </form>
 
-    <div class="bottom">
+    <template #progress>
       <stepComponent
         :step="2"
         first="Inserir dados"
         second="Perfil"
         third="Verificação de e-mail"
       />
-    </div>
+    </template>
+  </AuthLayout>
 
-    <imagesourcesheet
-      v-if="showImageSheet"
-      facing-mode="user"
-      @select="handleFileSelected"
-      @close="showImageSheet = false"
-    />
-  </div>
+  <imagesourcesheet
+    v-if="showImageSheet"
+    facing-mode="user"
+    @select="handleFileSelected"
+    @close="showImageSheet = false"
+  />
 </template>
 
 <style scoped src="./finalDataTeacherComponent.css"></style>
+<style scoped src="./registrationDataLayout.css"></style>

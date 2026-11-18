@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import teacherApi from '@/api/teacherApi'
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import router from '@/router'
 import imageApi from '@/api/imageApi'
 import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
 import { useTemplateStore } from './template'
 import { useFormLimits } from '@/composables/useFormLimits'
+import { getRegistrationFeedback } from '@/utils/registrationFeedback'
 
 export const useTeacherStore = defineStore('teacher', () => {
   const state = reactive({
@@ -28,6 +29,8 @@ export const useTeacherStore = defineStore('teacher', () => {
     meUser: null,
     actualTeacher: null,
   })
+
+  const registrationFeedback = ref(null)
 
   const teacher = computed(() => state.teacher)
   const teachers = computed(() => state.teachers)
@@ -79,7 +82,11 @@ export const useTeacherStore = defineStore('teacher', () => {
 
       const response = await teacherApi.create(payload)
 
-      authStore.setPendingEmail(state.teacher.email, 'professor')
+      authStore.setPendingEmail(
+        response.data.email || state.teacher.email,
+        'professor',
+        response.data.registration_token || '',
+      )
       await router.push('/verificar-email')
     } catch (error) {
       console.error('Erro detalhado vindo do servidor:', error.response?.data)
@@ -95,10 +102,14 @@ export const useTeacherStore = defineStore('teacher', () => {
   }
 
   async function submit(file) {
+    registrationFeedback.value = null
     const apenasNumeros = /^\d+$/
 
     if (state.teacher.telefone && !apenasNumeros.test(state.teacher.telefone)) {
-      alert('O telefone deve conter apenas números!')
+      registrationFeedback.value = {
+        message: 'O telefone deve conter apenas números!',
+        emailAlreadyRegistered: false,
+      }
       return
     }
 
@@ -129,20 +140,7 @@ export const useTeacherStore = defineStore('teacher', () => {
       templateStore.sign = 0
     } catch (error) {
       console.error('Falha no processo de criação:', error)
-      const backendError = error.response?.data
-      let mensagem = 'Falha ao criar conta.'
-
-      if (backendError) {
-        mensagem +=
-          ' Verifique os dados: ' +
-          Object.values(backendError)
-            .flat()
-            .map((err) => {
-              return typeof err === 'object' ? Object.values(err).flat().join(', ') : err
-            })
-            .join(', ')
-      }
-      alert(mensagem)
+      registrationFeedback.value = getRegistrationFeedback(error)
     }
   }
 
@@ -194,6 +192,7 @@ export const useTeacherStore = defineStore('teacher', () => {
 
   return {
     state,
+    registrationFeedback,
     teacher,
     teachers,
     actualTeacher,

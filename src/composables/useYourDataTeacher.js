@@ -18,9 +18,19 @@ export function useYourDataTeacher() {
   const previewImage = ref('/img/default2.jpg')
   const file = ref(null)
   const showImageSheet = ref(false)
+  const loadingInstitutes = ref(true)
+  const savingInstitute = ref(false)
+  const busy = computed(() => loadingInstitutes.value || savingInstitute.value)
+  const loadingMessage = computed(() =>
+    savingInstitute.value ? 'Salvando instituição...' : 'Carregando instituições...',
+  )
 
   onMounted(async () => {
-    await instituteStore.getInstitutes()
+    try {
+      await instituteStore.getInstitutes()
+    } finally {
+      loadingInstitutes.value = false
+    }
   })
 
   const institutosFiltrados = computed(() => {
@@ -65,6 +75,8 @@ export function useYourDataTeacher() {
   }
 
   async function handleCreateInstitute() {
+    if (busy.value) return
+    savingInstitute.value = true
     try {
       const novoInst = await instituteStore.createInstitute(file.value, { validateLimits: false })
       teacherStore.teacher.instituicao = novoInst.id
@@ -72,6 +84,8 @@ export function useYourDataTeacher() {
       newInstitute.value = false
     } catch (error) {
       console.error(error)
+    } finally {
+      savingInstitute.value = false
     }
   }
 
@@ -82,6 +96,7 @@ export function useYourDataTeacher() {
   }
 
   function validacao() {
+    if (busy.value) return
     if (passwordValue.value !== passwordValue2.value) {
       alert('As senhas não coincidem')
       return
@@ -109,6 +124,8 @@ export function useYourDataTeacher() {
     previewImage,
     file,
     showImageSheet,
+    busy,
+    loadingMessage,
     institutosFiltrados,
     instituicaoExata,
     mostrarBotaoNovo,

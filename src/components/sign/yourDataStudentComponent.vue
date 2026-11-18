@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useTemplateStore } from '@/store/template'
 import { useStudentStore } from '@/store/studentStore'
-import appArrow from '../appArrow.vue'
+import AuthLayout from '../layout/AuthLayout.vue'
 import appInput from '../form/appInput.vue'
 import appButton from '../form/appButton.vue'
 import stepComponent from '../stepComponent.vue'
@@ -25,15 +25,12 @@ function validacao() {
 </script>
 
 <template>
-  <div class="page registration-data">
-    <div class="top">
-      <div class="arrow">
-        <app-arrow @back="templateStore.sign = 0" />
-      </div>
-      <img src="/src/assets/gif/digitando.gif" alt="Robo-acenando" />
-      <h2>Informe seus dados:</h2>
-    </div>
-
+  <AuthLayout
+    title="Informe seus dados"
+    subtitle="Crie sua conta de aluno para começar."
+    icon="mdi-account-school-outline"
+    @back="templateStore.sign = 0"
+  >
     <form @submit.prevent="validacao()" class="mid">
       <div class="inputs">
         <appInput
@@ -89,16 +86,15 @@ function validacao() {
       <appButton type="submit">Continuar</appButton>
     </form>
 
-    <div class="bottom">
+    <template #progress>
       <stepComponent
         :step="1"
         first="Inserir dados"
         second="Perfil"
         third="Verificação de e-mail"
       />
-    </div>
-  </div>
+    </template>
+  </AuthLayout>
 </template>
 
-<style scoped src="./yourDataStudentComponent.css"></style>
 <style scoped src="./registrationDataLayout.css"></style>

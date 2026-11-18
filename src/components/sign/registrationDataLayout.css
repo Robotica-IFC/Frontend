@@ -1,34 +1,48 @@
-.page.registration-data {
+.mid,
+.final {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-bottom: 40px;
-}
-
-.registration-data > .top > .arrow,
-.registration-data > .mid {
+  align-items: stretch;
   width: 100%;
-  max-width: 300px;
-  margin-inline: auto;
+  max-width: none;
+  gap: 20px;
 }
 
-.registration-data .mid :deep(.input) {
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   width: 100%;
+  margin: 0;
 }
 
-.registration-data .mid :deep(input) {
+.mid :deep(.input),
+.final :deep(.input) {
+  width: 100%;
+  max-width: 100%;
+}
+
+.mid :deep(input),
+.final :deep(input) {
   min-width: 0;
 }
 
-.registration-data .inst-container {
-  width: 100%;
+.mid :deep(.input > .mdi) {
+  margin-left: 0;
 }
 
-.registration-data .mid > :deep(.btn) {
-  margin-top: 24px;
+.inst-container {
+  width: 100%;
+  min-width: 0;
 }
 
-.registration-data > .bottom {
-  width: 100%;
-  margin-top: 32px;
+.form-interno {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.final .profile-pic {
+  width: 96px;
+  height: 96px;
 }

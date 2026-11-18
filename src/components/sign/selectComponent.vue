@@ -1,49 +1,36 @@
 <script setup>
-import appArrow from '../appArrow.vue'
+import AuthLayout from '../layout/AuthLayout.vue'
 import appButton from '../form/appButton.vue'
-import { useTemplateStore } from '@/store/template';
+import { useTemplateStore } from '@/store/template'
 import router from '@/router'
 
 const templateStore = useTemplateStore()
 </script>
 
 <template>
-  <div class="page"><!--Div geral que possui a estilização no CSS, ASS: Lucas-->
-    <div class="top"><!--Div que define oq ficara na parte de cima, permitindo usar space-bettwen, ASS: Lucas-->
-      
-      <div class="arrow"><!--Seta que retorna, ASS: Lucas-->
-        <app-arrow @back="router.push('/')" />
-      </div>
-
-      <img src="/src/assets/gif/pensando.gif" alt="Robo-pensando" />
-
-      <h2>Você quer se cadastrar como:</h2>
-
-      <div class="btns"> <!--Div que fica os dois btn, ASS: Lucas-->
-        <app-button class="btn" @click="templateStore.sign = 1">
-          <div class="btn-content"><!--Div para estilização do conteudo do botao, ASS: Lucas-->
-            <span class="mdi mdi-account-school"></span>
-            Aluno
-          </div>
-        </app-button>
-
-        <app-button class="btn" @click="templateStore.sign = 2">
-          <div class="btn-content">
-            <span class="mdi mdi-human-male-board-poll"></span>
-            Professor
-          </div>
-        </app-button>
-      </div>
-
+  <AuthLayout
+    title="Você quer se cadastrar como:"
+    subtitle="Escolha seu perfil para começar sua jornada."
+    @back="router.push('/')"
+  >
+    <div class="btns">
+      <appButton @click="templateStore.sign = 1">
+        <span class="btn-content">
+          <span class="mdi mdi-account-school" aria-hidden="true"></span>
+          Aluno
+        </span>
+      </appButton>
+      <appButton @click="templateStore.sign = 2">
+        <span class="btn-content">
+          <span class="mdi mdi-human-male-board-poll" aria-hidden="true"></span>
+          Professor
+        </span>
+      </appButton>
     </div>
-
-    <div class="bottom"><!--Div que fica abaixo do restante, ASS: Lucas-->
-      <app-button @click="router.push('/')" variant="secondary"> <!--AppButton com variação secundaria de link, e vai para a tela de welcome, ASS: Lucas-->
-        Ja possuo uma conta
-      </app-button>
-    </div>
-
-  </div>
+    <template #footer>
+      <appButton @click="router.push('/')" variant="secondary">Já possuo uma conta</appButton>
+    </template>
+  </AuthLayout>
 </template>
 
 <style scoped src="./selectComponent.css"></style>

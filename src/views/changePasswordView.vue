@@ -5,7 +5,7 @@ import putEmailComponent from '@/components/change-passowrd/putEmailComponent.vu
 import checkCodeComponent from '@/components/change-passowrd/checkCodeComponent.vue'
 import resetPasswordComponent from '@/components/change-passowrd/resetPasswordComponent.vue'
 import stepComponent from '@/components/stepComponent.vue'
-import robotImage from '@/assets/gif/acenar.gif'
+import AuthLayout from '@/components/layout/AuthLayout.vue'
 import { useTemplateStore } from '@/store/template'
 import { usePasswordResetStore } from '@/store/passwordResetStore'
 
@@ -16,6 +16,11 @@ const emailBusy = ref(false)
 const codeBusy = ref(false)
 const passwordBusy = ref(false)
 const busy = computed(() => emailBusy.value || codeBusy.value || passwordBusy.value)
+const loadingMessage = computed(() => {
+  if (emailBusy.value) return 'Enviando seu código...'
+  if (passwordBusy.value) return 'Redefinindo sua senha...'
+  return 'Processando seu código...'
+})
 reset.completed = false
 store.changePassword = reset.token ? 2 : reset.email ? 1 : 0
 const headings = [
@@ -40,31 +45,20 @@ function goBack() {
 </script>
 
 <template>
-  <div class="password-reset-page">
-    <button class="reset-back" type="button" aria-label="Voltar" :disabled="busy" @click="goBack">
-      <span class="mdi mdi-arrow-left" aria-hidden="true"></span>
-    </button>
-    <div class="reset-content">
-      <section class="reset-hero" aria-label="Bem-vindo à Robótica">
-        <h1>Bem vindo(a)<br />a <span>Robótica</span></h1>
-        <p>Sua plataforma para aprender, criar e transformar ideias em inovação.</p>
-        <img :src="robotImage" alt="Robô acenando" />
-      </section>
-      <section class="reset-card" aria-labelledby="reset-title" :aria-busy="busy">
-        <div class="reset-card-icon" aria-hidden="true">
-          <span class="mdi mdi-lock-outline"></span>
-        </div>
-        <h2 id="reset-title" tabindex="-1">{{ heading[0] }}</h2>
-        <p class="reset-subtitle">{{ heading[1] }}</p>
-        <putEmailComponent v-if="store.changePassword === 0" @busy="emailBusy = $event" />
-        <checkCodeComponent v-else-if="store.changePassword === 1" @busy="codeBusy = $event" />
-        <resetPasswordComponent v-else @busy="passwordBusy = $event" />
-      </section>
-    </div>
-    <nav class="reset-progress" aria-label="Etapas da recuperação de senha">
+  <AuthLayout
+    :title="heading[0]"
+    :subtitle="heading[1]"
+    icon="mdi-lock-outline"
+    :busy="busy"
+    :loading-message="loadingMessage"
+    progress-label="Etapas da recuperação de senha"
+    @back="goBack"
+  >
+    <putEmailComponent v-if="store.changePassword === 0" @busy="emailBusy = $event" />
+    <checkCodeComponent v-else-if="store.changePassword === 1" @busy="codeBusy = $event" />
+    <resetPasswordComponent v-else @busy="passwordBusy = $event" />
+    <template #progress>
       <stepComponent :step="store.changePassword + 1" />
-    </nav>
-  </div>
+    </template>
+  </AuthLayout>
 </template>
-
-<style scoped src="./changePasswordView.css"></style>

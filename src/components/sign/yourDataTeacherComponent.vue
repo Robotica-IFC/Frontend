@@ -1,6 +1,6 @@
 <script setup>
 import { useYourDataTeacher } from '@/composables/useYourDataTeacher'
-import appArrow from '../appArrow.vue'
+import AuthLayout from '../layout/AuthLayout.vue'
 import appInput from '../form/appInput.vue'
 import appButton from '../form/appButton.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
@@ -19,6 +19,8 @@ const {
   passwordValue2,
   previewImage,
   showImageSheet,
+  busy,
+  loadingMessage,
   institutosFiltrados,
   instituicaoExata,
   mostrarBotaoNovo,
@@ -31,15 +33,15 @@ const {
 } = useYourDataTeacher()
 </script>
 <template>
-  <div class="page registration-data">
-    <div class="top">
-      <div class="arrow">
-        <app-arrow @back="templateStore.sign = 0" />
-      </div>
-      <img src="/src/assets/gif/digitando.gif" alt="Robo-acenando" />
-      <h2>Informe seus dados de Professor:</h2>
-    </div>
-    <form @submit.prevent="validacao()" class="mid">
+  <AuthLayout
+    title="Informe seus dados de Professor"
+    subtitle="Crie sua conta para ensinar e transformar ideias."
+    icon="mdi-human-male-board-poll"
+    :busy="busy"
+    :loading-message="loadingMessage"
+    @back="templateStore.sign = 0"
+  >
+    <form @submit.prevent="validacao()" class="mid teacher-data">
       <div class="inputs">
         <appInput
           placeholder="Nome completo"
@@ -134,9 +136,9 @@ const {
                 icon="mdi mdi-city"
                 v-model="instituteStore.state.institute.cidade"
               />
-              <appButton type="button" @click="handleCreateInstitute"
-                >Salvar e selecionar</appButton
-              >
+              <appButton type="button" :disabled="busy" @click="handleCreateInstitute">{{
+                busy ? 'Salvando...' : 'Salvar e selecionar'
+              }}</appButton>
             </div>
           </div>
           <p v-if="instituicaoExata && !newInstitute" class="selected-msg">
@@ -168,23 +170,23 @@ const {
           ></span>
         </appInput>
       </div>
-      <appButton type="submit">Continuar</appButton>
+      <appButton type="submit" :disabled="busy">Continuar</appButton>
     </form>
-    <div class="bottom">
+    <template #progress>
       <stepComponent
         :step="1"
         first="Inserir dados"
         second="Perfil"
         third="Verificação de e-mail"
       />
-    </div>
-    <imagesourcesheet
-      v-if="showImageSheet"
-      facing-mode="environment"
-      @select="handleFileSelected"
-      @close="showImageSheet = false"
-    />
-  </div>
+    </template>
+  </AuthLayout>
+  <imagesourcesheet
+    v-if="showImageSheet"
+    facing-mode="environment"
+    @select="handleFileSelected"
+    @close="showImageSheet = false"
+  />
 </template>
 <style scoped src="./yourDataTeacherComponent.css"></style>
 <style scoped src="./registrationDataLayout.css"></style>
