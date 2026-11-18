@@ -8,17 +8,22 @@ export const useProjectStore = defineStore('project', () => {
   const limits = useFormLimits()
   const projects = ref([])
   const loading = ref(false)
+  const errorMessage = ref('')
+  let projectsRequestId = 0
 
   const currentPage = ref(1)
   const totalPages = ref(1)
   const totalProjects = ref(0)
   const total = ref(0)
 
-  async function getProjects(page = 1) {
+  async function getProjects(page = 1, pageSize) {
+    const requestId = ++projectsRequestId
     try {
       loading.value = true
+      errorMessage.value = ''
 
-      const response = await projectApi.getAll(page)
+      const response = await projectApi.getAll(page, pageSize)
+      if (requestId !== projectsRequestId) return false
 
       projects.value = response.data.results
 
@@ -26,10 +31,14 @@ export const useProjectStore = defineStore('project', () => {
       totalPages.value = response.data.total_pages
       totalProjects.value = response.data.results.length
       total.value = response.data.results.length
+      return true
     } catch (error) {
+      if (requestId !== projectsRequestId) return false
+      errorMessage.value = 'Não foi possível carregar os projetos. Tente novamente.'
       console.error('Erro ao buscar projetos:', error)
+      return false
     } finally {
-      loading.value = false
+      if (requestId === projectsRequestId) loading.value = false
     }
   }
 
@@ -109,6 +118,7 @@ export const useProjectStore = defineStore('project', () => {
     updateProject,
     projects,
     loading,
+    errorMessage,
     currentPage,
     totalPages,
     totalProjects,

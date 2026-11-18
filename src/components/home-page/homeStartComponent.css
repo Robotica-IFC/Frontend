@@ -49,6 +49,45 @@ img {
   display: none;
 }
 
+.btn :deep(button.primary),
+.btn :deep(button.border) {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn :deep(button.primary:hover:not(:active)),
+  .btn :deep(button.border:hover:not(:active)) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 61, 102, 0.25);
+  }
+
+  .btn :deep(button.primary:hover) {
+    background-color: var(--hover-principal-claro);
+  }
+
+  .btn :deep(button.border:hover) {
+    background-color: var(--principal-claro);
+    color: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn :deep(button.primary),
+  .btn :deep(button.border) {
+    transition: none;
+  }
+
+  .btn :deep(button.primary:hover:not(:active)),
+  .btn :deep(button.border:hover:not(:active)) {
+    transform: none;
+  }
+}
+
 @media (min-width: 950px) {
   .page {
     max-width: none;

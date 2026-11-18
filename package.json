@@ -11,6 +11,7 @@
     "test:forms": "node tests/form-validation.test.js",
     "test:notifications": "node --test tests/notifications.test.js tests/activity-notifications.test.js tests/auth-session.test.js",
     "test:highlights": "node tests/home-highlights.test.js",
+    "test:projects": "node tests/project-pagination.test.js",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",

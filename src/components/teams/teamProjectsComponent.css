@@ -145,3 +145,7 @@ p {
     margin-bottom: 12px;
   }
 }
+
+.projects > article {
+  cursor: pointer;
+}

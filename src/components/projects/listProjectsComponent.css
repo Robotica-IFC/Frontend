@@ -2,7 +2,14 @@
   margin: 40px auto;
 }
 
+.section-message {
+  padding: 20px 0;
+  color: var(--principal-claro);
+  white-space: normal;
+}
+
 .card {
+  cursor: pointer;
   background: white;
   margin-bottom: 15px;
   border-radius: 12px;
@@ -152,29 +159,6 @@ p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.ver-mais {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.ver-mais button {
-  padding: 10px 28px;
-  border: none;
-  border-radius: 8px;
-  background: var(--principal-claro);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s;
-}
-
-.ver-mais button:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
 }
 
 @media (min-width: 950px) {

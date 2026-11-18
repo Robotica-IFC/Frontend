@@ -1,10 +1,20 @@
 <script setup>
 import { useTeamStore } from '@/store/teamStore'
-import { onMounted } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import Pagination from '@/components/paginationComponent.vue'
+import { scrollAfterPagination } from '@/utils/paginationScroll'
 import router from '@/router'
 
 const teamStore = useTeamStore()
+const teamsList = ref(null)
+
+async function changePage(page) {
+  if (teamStore.loading || page === teamStore.currentPage) return
+
+  await teamStore.getTeams(page)
+  await nextTick()
+  if (teamsList.value && teamStore.currentPage === page) scrollAfterPagination()
+}
 
 function openTeam(id) {
   router.push({ name: 'teamDetails', params: { id } })
@@ -16,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="content">
+  <div ref="teamsList" class="content">
     <ul>
       <li v-for="t in teamStore.teams" :key="t.id">
         <!-- LAYOUT ORIGINAL (< 950px) -->
@@ -117,7 +127,9 @@ onMounted(() => {
             </p>
           </div>
 
-          <button class="ver-detalhes" @click="openTeam(t.id)">Ver Detalhes</button>
+          <button type="button" class="ver-detalhes details-button" @click="openTeam(t.id)">
+            Ver Detalhes
+          </button>
         </div>
       </li>
     </ul>
@@ -126,11 +138,8 @@ onMounted(() => {
       class="pagination-wrapper"
       :currentPage="teamStore.currentPage"
       :totalPages="teamStore.totalPages"
-      @change="
-        (page) => {
-          teamStore.getTeams(page)
-        }
-      "
+      :inert="teamStore.loading"
+      @change="changePage"
     />
   </div>
 </template>
