@@ -66,10 +66,74 @@ footer {
   --danger-claro: #b91c1c;
 }
 [role='alert'] { white-space: pre-line; overflow-wrap: anywhere; }
+
+:where(
+  button,
+  a[href],
+  [role='button'],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  select,
+  summary
+):not(:disabled):not([aria-disabled='true']) {
+  cursor: pointer;
+}
+
 button:active {
   transform: scale(0.95);
   height: auto;
   transition: 0.1s;
+}
+
+button.details-button {
+  border: 1px solid var(--principal-claro);
+  background-color: #fff;
+  color: var(--principal-claro);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.details-button:hover:not(:disabled) {
+    background-color: var(--principal-claro);
+    color: #fff;
+  }
+
+  button.details-button:hover:not(:active):not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 61, 102, 0.25);
+  }
+}
+
+button.details-button:focus-visible {
+  background-color: var(--principal-claro);
+  color: #fff;
+  outline: 2px solid var(--principal-claro);
+  outline-offset: 3px;
+}
+
+button.details-button:active:not(:disabled) {
+  background-color: var(--hover-principal-claro);
+  color: #fff;
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.details-button {
+    transition: none;
+  }
+
+  button.details-button:hover:not(:active):not(:disabled),
+  button.details-button:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 :root[data-theme="dark"] {

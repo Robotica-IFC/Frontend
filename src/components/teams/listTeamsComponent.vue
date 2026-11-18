@@ -117,7 +117,9 @@ onMounted(() => {
             </p>
           </div>
 
-          <button class="ver-detalhes" @click="openTeam(t.id)">Ver Detalhes</button>
+          <button type="button" class="ver-detalhes details-button" @click="openTeam(t.id)">
+            Ver Detalhes
+          </button>
         </div>
       </li>
     </ul>

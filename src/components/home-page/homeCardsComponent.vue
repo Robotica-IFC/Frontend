@@ -9,7 +9,7 @@ const emit = defineEmits(['suggest'])
 <template>
   <div class="page">
     <div class="card tutorial">
-      <img src="/img/home/Home-Computer.png" alt="tutorial" />
+      <img src="/img/home/home-card-aprenda-na-pratica.png" alt="Aula em vídeo exibida em um computador" />
 
       <div class="info">
         <h2>Aprenda na Prática</h2>
@@ -20,7 +20,7 @@ const emit = defineEmits(['suggest'])
       </div>
     </div>
     <div v-if="authStore.isAuthenticated" class="card propor">
-      <img src="/img/home/Home-lamp.png" alt="tutorial" />
+      <img src="/img/home/home-card-proponha-novas-ideias.png" alt="Lâmpada representando novas ideias" />
       <div class="info">
         <h2>Proponha novas ideias</h2>
         <p>Compartilhe sugestões criativas e contribua com futuras iniciativas em robótica.</p>

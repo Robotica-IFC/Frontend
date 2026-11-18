@@ -1,35 +1,65 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
 import router from '@/router'
 import projectSuggestionBadge from './projectSuggestionBadge.vue'
+import Pagination from '@/components/paginationComponent.vue'
 
 const store = useProjectStore()
+const projectsSection = ref(null)
+const desktopQuery = window.matchMedia('(min-width: 950px)')
+const pageSize = ref(desktopQuery.matches ? 4 : 2)
+const requestedPage = ref(1)
 
-const quantidade = ref(4)
+async function loadPage(page, scroll = false) {
+  requestedPage.value = page
+  const loaded = await store.getProjects(page, pageSize.value)
+  if (!loaded || !scroll) return
 
-const projetosVisiveis = computed(() => {
-  return store.projects.slice(0, quantidade.value)
-})
+  await nextTick()
+  projectsSection.value?.scrollIntoView({
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    block: 'start',
+  })
+}
+
+function changePage(page) {
+  if (store.loading || page === store.currentPage || page < 1 || page > store.totalPages) return
+  loadPage(page, true)
+}
+
+function updatePageSize(event) {
+  pageSize.value = event.matches ? 4 : 2
+  loadPage(1)
+}
+
 function openProject(id) {
   router.push({ name: 'projectDetails', params: { id } })
 }
 
-function verMais() {
-  quantidade.value += 4
-}
-
 onMounted(() => {
-  store.getProjects()
+  desktopQuery.addEventListener('change', updatePageSize)
+  loadPage(1)
+})
+
+onBeforeUnmount(() => {
+  desktopQuery.removeEventListener('change', updatePageSize)
 })
 </script>
 
 <template>
-  <section class="container">
-    <div class="grid">
+  <section ref="projectsSection" class="container" :aria-busy="store.loading">
+    <p v-if="store.loading" class="section-message" role="status">Carregando projetos...</p>
+    <p v-else-if="store.errorMessage" class="section-message" role="alert">
+      {{ store.errorMessage }}
+      <button type="button" @click="loadPage(requestedPage)">Tentar novamente</button>
+    </p>
+    <p v-else-if="!store.projects.length" class="section-message">Nenhum projeto encontrado.</p>
+
+    <div v-else class="grid">
       <article
         class="card"
-        v-for="project in projetosVisiveis"
+        v-for="project in store.projects"
         :key="project.id"
         @click="openProject(project.id)"
       >
@@ -79,16 +109,26 @@ onMounted(() => {
             </div>
 
             <div class="detalhe">
-              <button>Ver detalhes</button>
+              <button
+                type="button"
+                class="details-button"
+                @click.stop="openProject(project.id)"
+              >
+                Ver detalhes
+              </button>
             </div>
           </div>
         </div>
       </article>
     </div>
 
-    <div class="ver-mais" v-if="quantidade < store.projects.length">
-      <button @click="verMais">Ver mais projetos</button>
-    </div>
+    <Pagination
+      :current-page="store.currentPage"
+      :total-pages="store.totalPages"
+      :inert="store.loading"
+      aria-label="Paginação dos projetos"
+      @change="changePage"
+    />
   </section>
 </template>
 

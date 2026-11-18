@@ -21,6 +21,10 @@
   font-size: 25px;
 }
 
+.mdi-square-edit-outline {
+  cursor: pointer;
+}
+
 div.first-data {
   padding: 10px;
 }

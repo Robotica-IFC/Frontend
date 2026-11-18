@@ -1,40 +1,57 @@
-/* ============ MOBILE (base) ============ */
-.top {
+/* ============ MOBILE ============ */
+.my-teams {
   width: 100%;
+  min-width: 0;
+  font-family: Arial, sans-serif;
+}
+
+.top {
   display: flex;
-  justify-content: space-between;
-  padding: 15px;
+  padding-bottom: 16px;
 }
 
 div.static {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 0 15px 15px 15px;
-  border-bottom: 1.5px solid #1c3248;
+  gap: 12px;
+  padding: 0 12px 12px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background: var(--principal-claro);
+  }
 
   & img {
+    display: block;
     width: 45%;
-    max-width: 180px;
+    max-width: 160px;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  & div.left {
+    flex: 1;
+    min-width: 0;
   }
 
   & h2 {
     font-size: 20px;
     font-weight: 700;
-    color: #1c3248;
+    color: #2d4362;
     line-height: 1.2;
   }
 
   & p {
+    margin-top: 16px;
     font-size: 13px;
-    color: #555;
-    margin-top: 8px;
-    line-height: 1.3;
-  }
-
-  & div.left {
-    display: flex;
-    flex-direction: column;
+    line-height: 1.2;
+    color: #333;
   }
 
   & .stat {
@@ -43,18 +60,14 @@ div.static {
 }
 
 .my-team-title {
-  color: #1c3248;
+  padding: 20px 12px 10px;
   font-size: 20px;
   font-weight: 700;
-  padding: 20px 15px 10px 15px;
-}
-
-.teams {
-  padding: 0 15px;
+  line-height: 1.2;
+  color: #2d4362;
 }
 
 .empty-teams {
-  margin: 0 15px;
   padding: 20px 16px;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
@@ -70,45 +83,51 @@ div.static {
 .t {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
   list-style: none;
   padding: 0;
   margin: 0;
 
-  /* "> li" evita que o estilo do card vaze para as tags de categoria */
+  /* O seletor direto mantém o estilo do card fora das categorias. */
   & > li {
-    display: flex;
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1.05fr) 8px;
     align-items: center;
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 16px 12px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-    position: relative;
+    gap: 8px;
+    min-width: 0;
+    min-height: 138px;
+    padding: 16px 14px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
     cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
 
-    /* Imagem do perfil do time */
     & > img {
       width: 70px;
       height: 70px;
-      aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 50%;
-      flex-shrink: 0;
     }
 
-    /* Coluna Esquerda */
     & div.left {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      margin-left: 12px;
-      flex: 1.1;
+      min-width: 0;
 
       & .team-name {
+        margin-bottom: 2px;
+        color: var(--principal-claro);
         font-size: 16px;
         font-weight: 700;
-        color: #0d3859;
-        margin-bottom: 2px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       & .leader-name,
@@ -116,65 +135,80 @@ div.static {
       & .total-members {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
+        min-width: 0;
+        color: #1f1f1f;
         font-size: 11px;
-        color: #333333;
         font-weight: 400;
+        line-height: 1.3;
 
         & .mdi {
-          font-size: 14px;
-          color: #0d3859;
+          flex-shrink: 0;
+          font-size: 15px;
         }
+
+        & span:last-child {
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      & .place-team .mdi {
+        color: var(--principal-claro);
       }
     }
 
-    /* Coluna Direita com divisor à esquerda */
     & div.right {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      padding-left: 12px;
-      border-left: 1px solid #dcdcdc;
-      flex: 1;
+      align-self: stretch;
+      justify-content: center;
+      gap: 12px;
+      min-width: 0;
+      padding-left: 8px;
+      border-left: 1px solid #8ba4bd;
 
       & .total-projects,
       & .no-projects {
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 12px;
-        font-weight: 500;
-        color: #222222;
+        gap: 4px;
+        color: #1f1f1f;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.3;
 
         & .mdi {
-          font-size: 16px;
-          color: #0d3859;
+          flex-shrink: 0;
+          font-size: 18px;
         }
       }
 
-      /* Lista de Tags de Categoria */
       & .category {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        list-style: none;
+        align-items: flex-start;
+        gap: 8px;
+        min-width: 0;
         padding: 0;
         margin: 0;
+        list-style: none;
 
         & .categories {
-          background-color: #0d3859;
-          color: #ffffff;
-          font-size: 10px;
-          font-weight: 500;
-          padding: 3px 8px;
-          border-radius: 4px;
           width: fit-content;
+          max-width: 100%;
+          padding: 1px 6px;
+          border-radius: 3px;
+          background: var(--principal-claro);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 400;
+          line-height: 1.3;
           white-space: nowrap;
-        }
-
-        & .more-categories {
-          background-color: #e2e8f0;
-          color: #333333;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }
@@ -183,161 +217,172 @@ div.static {
       display: none;
     }
 
-    /* Seta da direita */
     & .arrow-icon {
-      font-size: 22px;
-      color: #0d3859;
-      margin-left: 6px;
+      font-size: 24px;
+      color: var(--principal-claro);
+      justify-self: center;
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .t > li:hover {
+    transform: translateY(-4px);
+    background-color: #f8fbff;
+    box-shadow: 0 8px 20px rgba(45, 67, 98, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t > li {
+    transition: none;
+  }
+
+  .t > li:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 370px) {
+  div.static {
+    gap: 8px;
+
+    & h2 {
+      font-size: 18px;
+    }
+
+    & p {
+      font-size: 12px;
+    }
+  }
+
+  .t > li {
+    grid-template-columns: 52px minmax(0, 1.05fr) minmax(0, 1fr) 14px;
+    gap: 6px;
+    padding: 14px 8px;
+
+    & > img {
+      width: 52px;
+      height: 52px;
+    }
+
+    & div.left .team-name {
+      font-size: 14px;
+    }
+
+    & div.right {
+      padding-left: 6px;
+
+      & .categories {
+        font-size: 10px;
+        padding-inline: 4px;
+      }
     }
   }
 }
 
 /* ============ DESKTOP ============ */
-@media (min-width: 900px) {
+@media (min-width: 950px) {
   .my-teams {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 48px 64px;
+    font-family: inherit;
   }
 
-  .top {
-    padding: 40px 0 0;
-  }
-  .top :deep(.mdi) {
-    font-size: 40px;
-  }
-
-  /* Hero */
   div.static {
-    position: relative;
     justify-content: space-between;
-    gap: 48px;
-    padding: 24px 0 80px;
-    border-bottom: none;
+    gap: 40px;
+    padding: 25px 0 40px;
 
     & div.left {
-      max-width: 640px;
+      max-width: 570px;
     }
 
     & h2 {
-      font-size: clamp(36px, 3.6vw, 52px);
+      font-size: 1.8rem;
     }
 
     & p {
-      margin-top: 28px;
-      font-size: clamp(18px, 1.7vw, 26px);
+      margin-top: 24px;
+      font-size: 1.25rem;
       font-weight: 300;
-      line-height: 1.3;
-      color: var(--texto-claro);
+      line-height: 1.25;
     }
 
     & img {
-      width: clamp(320px, 34vw, 520px);
-      max-width: none;
+      width: 35%;
+      max-width: 295px;
     }
 
     & .stat {
       display: flex;
-      flex-direction: column;
       align-items: center;
+      gap: 8px;
       width: fit-content;
-      margin-top: 40px;
-      padding: 14px 32px;
-      background: #ffffff;
-      border-radius: 6px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      margin-top: 24px;
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
       color: var(--principal-claro);
-      font-size: 20px;
+      font-size: 13px;
 
       & strong {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 26px;
+        gap: 6px;
+        font-size: 20px;
       }
-    }
-
-    /* Divisor centralizado */
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70%;
-      height: 1.5px;
-      background: #1c3248;
     }
   }
 
   .my-team-title {
-    padding: 56px 0 28px;
-    font-size: 32px;
+    padding: 30px 0 20px;
+    font-size: 1.5rem;
     color: var(--h2-titulo);
-  }
-
-  .teams {
-    padding: 0;
-  }
-
-  .empty-teams {
-    margin: 0;
   }
 
   .prefix {
     display: inline;
   }
 
-  /* Grade de cards */
   .t {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 32px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
 
     & > li {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      column-gap: 16px;
-      row-gap: 14px;
-      align-items: center;
-      padding: 28px 24px 24px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      transition:
-        transform 0.15s,
-        box-shadow 0.15s;
-
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
-      }
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 10px;
+      row-gap: 12px;
+      padding: 24px 16px;
+      border-radius: 8px;
 
       & > img {
         grid-column: 1 / -1;
         grid-row: 1;
         justify-self: center;
-        width: 120px;
-        height: 120px;
+        width: 90px;
+        height: 90px;
       }
 
-      /* Os dois blocos "somem" e seus filhos entram direto no grid do card */
       & div.left {
         display: contents;
 
         & .team-name {
           grid-column: 1 / -1;
           grid-row: 2;
-          text-align: center;
-          font-size: 24px;
           margin: 0;
+          text-align: center;
+          font-size: 18px;
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
 
         & .leader-name,
         & .place-team,
         & .total-members {
-          font-size: 14px;
+          font-size: 12px;
 
           & .mdi {
-            font-size: 18px;
+            font-size: 16px;
           }
         }
 
@@ -345,10 +390,12 @@ div.static {
           grid-column: 1;
           grid-row: 3;
         }
+
         & .place-team {
           grid-column: 2;
           grid-row: 3;
         }
+
         & .total-members {
           grid-column: 1;
           grid-row: 4;
@@ -362,10 +409,10 @@ div.static {
         & .no-projects {
           grid-column: 2;
           grid-row: 4;
-          font-size: 14px;
+          font-size: 12px;
 
           & .mdi {
-            font-size: 18px;
+            font-size: 16px;
           }
         }
 
@@ -373,21 +420,15 @@ div.static {
           grid-column: 1 / -1;
           grid-row: 5;
           flex-direction: row;
-          flex-wrap: nowrap;
+          flex-wrap: wrap;
+          justify-content: center;
           gap: 8px;
-          margin-top: 6px;
-          padding-top: 18px;
+          padding-top: 12px;
           border-top: 1px solid #dcdcdc;
 
           & .categories {
-            flex: 1;
-            min-width: 0;
-            width: auto;
-            padding: 7px 8px;
-            font-size: 12px;
-            text-align: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            padding: 5px 10px;
+            font-size: 11px;
           }
         }
       }
@@ -396,19 +437,22 @@ div.static {
         display: block;
         grid-column: 1 / -1;
         grid-row: 6;
-        margin-top: 4px;
+        align-self: end;
+
+        & button {
+          width: 100%;
+          padding: 10px;
+          border-width: 1px;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+        }
       }
 
       & .arrow-icon {
         display: none;
       }
     }
-  }
-}
-
-/* Telas desktop menores */
-@media (min-width: 900px) and (max-width: 1100px) {
-  .my-teams {
-    padding: 0 28px 48px;
   }
 }

@@ -7,8 +7,10 @@ const projectsApi = {
   delete(id) {
     return api.delete(`/projetos/${id}/`)
   },
-   getAll(page) {
-    return api.get(`/projetos/?page=${page}`)
+  getAll(page = 1, pageSize) {
+    return api.get('/projetos/', {
+      params: { page, ...(pageSize ? { page_size: pageSize } : {}) },
+    })
   },
   getByTeam(id) {
     return api.get(`/projetos/?equipe=${id}`)

@@ -2,7 +2,10 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useNotificationsStore } from '@/store/notificationsStore'
 import ActivityNotifications from '@/components/notifications/ActivityNotifications.vue'
+import { useRouter } from 'vue-router'
+import appArrow from '@/components/appArrow.vue'
 
+const router = useRouter()
 const store = useNotificationsStore()
 let timer
 function refresh() {
@@ -24,6 +27,8 @@ onUnmounted(() => {
 
 <template>
   <div class="notifications-page">
+    <appArrow @back="router.back()" />
+
     <header>
       <i class="mdi mdi-bell-outline" aria-hidden="true"></i>
       <div><h1>Notificações</h1><p>Acompanhe os projetos e publicações das suas equipes.</p></div>

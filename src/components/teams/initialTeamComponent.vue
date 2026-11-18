@@ -4,7 +4,10 @@ import { useAuthStore } from '@/store/authStore'
 import { onMounted, computed, ref } from 'vue'
 import appButton from '../form/appButton.vue'
 import createTeamModal from './createTeamModal.vue'
+import appArrow from '@/components/appArrow.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const teamStore = useTeamStore()
 const authStore = useAuthStore()
 
@@ -31,6 +34,8 @@ onMounted(() => {
 
 <template>
   <div class="top" style="margin-top: 100px">
+    <appArrow class="team-back" @back="router.back()" />
+
     <div class="inicio">
       <div class="text">
         <h1>Equipes</h1>
