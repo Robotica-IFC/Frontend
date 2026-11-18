@@ -25,7 +25,7 @@ function validacao() {
 </script>
 
 <template>
-  <div class="page">
+  <div class="page registration-data">
     <div class="top">
       <div class="arrow">
         <app-arrow @back="templateStore.sign = 0" />
@@ -91,13 +91,14 @@ function validacao() {
 
     <div class="bottom">
       <stepComponent
-        step="1"
-        first="Informações"
-        second="Dados finais"
-        third="Confirme seu e-mail"
+        :step="1"
+        first="Inserir dados"
+        second="Perfil"
+        third="Verificação de e-mail"
       />
     </div>
   </div>
 </template>
 
 <style scoped src="./yourDataStudentComponent.css"></style>
+<style scoped src="./registrationDataLayout.css"></style>

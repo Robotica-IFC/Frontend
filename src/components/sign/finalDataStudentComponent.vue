@@ -67,9 +67,9 @@ function submit() {
     <div class="bottom">
       <stepComponent
         :step="2"
-        first="Informações"
-        second="Dados finais"
-        third="Confirme seu e-mail"
+        first="Inserir dados"
+        second="Perfil"
+        third="Verificação de e-mail"
       />
     </div>
 

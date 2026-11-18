@@ -66,7 +66,6 @@ export const useTeacherStore = defineStore('teacher', () => {
         password: state.teacher.password,
 
         // Campos do modelo Professor
-        cpf: state.teacher.cpf,
         telefone: state.teacher.telefone,
         data_nascimento: state.teacher.data_nascimento,
         instituicao: intuicaoId,
@@ -97,11 +96,6 @@ export const useTeacherStore = defineStore('teacher', () => {
 
   async function submit(file) {
     const apenasNumeros = /^\d+$/
-
-    if (state.teacher.cpf && !apenasNumeros.test(state.teacher.cpf)) {
-      alert('O CPF deve conter apenas números!')
-      return
-    }
 
     if (state.teacher.telefone && !apenasNumeros.test(state.teacher.telefone)) {
       alert('O telefone deve conter apenas números!')

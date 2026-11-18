@@ -1,0 +1,34 @@
+.page.registration-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.registration-data > .top > .arrow,
+.registration-data > .mid {
+  width: 100%;
+  max-width: 300px;
+  margin-inline: auto;
+}
+
+.registration-data .mid :deep(.input) {
+  width: 100%;
+}
+
+.registration-data .mid :deep(input) {
+  min-width: 0;
+}
+
+.registration-data .inst-container {
+  width: 100%;
+}
+
+.registration-data .mid > :deep(.btn) {
+  margin-top: 24px;
+}
+
+.registration-data > .bottom {
+  width: 100%;
+  margin-top: 32px;
+}

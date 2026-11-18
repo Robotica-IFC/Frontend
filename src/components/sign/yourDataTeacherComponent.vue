@@ -4,6 +4,7 @@ import appArrow from '../appArrow.vue'
 import appInput from '../form/appInput.vue'
 import appButton from '../form/appButton.vue'
 import imagesourcesheet from '../imagesourcesheet.vue'
+import stepComponent from '../stepComponent.vue'
 
 const {
   templateStore,
@@ -30,7 +31,7 @@ const {
 } = useYourDataTeacher()
 </script>
 <template>
-  <div class="page">
+  <div class="page registration-data">
     <div class="top">
       <div class="arrow">
         <app-arrow @back="templateStore.sign = 0" />
@@ -51,12 +52,6 @@ const {
           icon="mdi mdi-calendar-multiselect"
           type="date"
           v-model="teacherStore.teacher.data_nascimento"
-          required
-        />
-        <appInput
-          placeholder="CPF"
-          icon="mdi mdi-card-account-details-outline"
-          v-model="teacherStore.teacher.cpf"
           required
         />
         <appInput
@@ -175,7 +170,14 @@ const {
       </div>
       <appButton type="submit">Continuar</appButton>
     </form>
-    <div class="bottom"></div>
+    <div class="bottom">
+      <stepComponent
+        :step="1"
+        first="Inserir dados"
+        second="Perfil"
+        third="Verificação de e-mail"
+      />
+    </div>
     <imagesourcesheet
       v-if="showImageSheet"
       facing-mode="environment"
@@ -185,3 +187,4 @@ const {
   </div>
 </template>
 <style scoped src="./yourDataTeacherComponent.css"></style>
+<style scoped src="./registrationDataLayout.css"></style>

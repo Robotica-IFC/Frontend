@@ -17,6 +17,8 @@
 
 .arrow {
   width: 100%;
+  max-width: 300px;
+  margin-inline: auto;
   display: flex;
 }
 

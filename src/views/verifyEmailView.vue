@@ -1,6 +1,7 @@
 <script setup>
 import { onUnmounted, ref } from 'vue'
 import verifyCodeComponent from '@/components/verifyCodeComponent.vue'
+import stepComponent from '@/components/stepComponent.vue'
 import robotImage from '@/assets/gif/acenar.gif'
 import { useAuthStore } from '@/store/authStore'
 const auth = useAuthStore()
@@ -128,7 +129,12 @@ async function run(action) {
         <p v-if="error" id="verification-error" role="alert" class="feedback error">{{ error }}</p>
         <p v-if="message" role="status" class="feedback">{{ message }}</p>
         <div class="actions">
-          <button type="button" :disabled="loading || remainingSeconds > 0" @click="run('resend')">
+          <button
+            class="resend-button"
+            type="button"
+            :disabled="loading || remainingSeconds > 0"
+            @click="run('resend')"
+          >
             {{ remainingSeconds > 0 ? `Reenviar em ${remainingSeconds}s` : 'Reenviar Código' }}
           </button>
           <button type="submit" :disabled="loading">
@@ -137,15 +143,14 @@ async function run(action) {
         </div>
       </form>
 
-      <ol class="progress" aria-label="Etapas do cadastro">
-        <li class="completed">
-          <span class="dot" aria-hidden="true">✓</span><span>Informações</span>
-        </li>
-        <li class="current" aria-current="step">
-          <span class="dot" aria-hidden="true"></span><span>Verificar código</span>
-        </li>
-        <li><span class="dot" aria-hidden="true"></span><span>Dados finais</span></li>
-      </ol>
+      <nav class="verification-progress" aria-label="Etapas do cadastro">
+        <stepComponent
+          :step="3"
+          first="Inserir dados"
+          second="Perfil"
+          third="Verificação de e-mail"
+        />
+      </nav>
     </section>
     <div v-if="loading" class="loading-overlay" role="status" aria-live="polite">
       <div class="loading-card">
@@ -209,23 +214,23 @@ async function run(action) {
   min-height: 100dvh;
   display: flex;
   justify-content: center;
-  background: #fff;
-  color: #171717;
+  color: var(--texto-claro);
 }
 .verification-card {
+  --verification-content-width: 400px;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 420px;
-  min-height: max(625px, 100dvh);
-  padding: 38px 20px 24px;
+  max-width: 600px;
+  min-height: 100dvh;
+  padding: 60px 20px 48px;
 }
 .back-link {
   position: absolute;
   top: 20px;
-  left: 20px;
+  left: max(20px, calc((100% - var(--verification-content-width)) / 2));
   display: grid;
   place-items: center;
   width: 32px;
@@ -238,48 +243,50 @@ async function run(action) {
   height: 24px;
 }
 .robot {
-  width: 250px;
-  height: 250px;
+  width: min(250px, 100%);
+  aspect-ratio: 1;
   object-fit: contain;
-  margin-bottom: 14px;
+  margin-bottom: 25px;
 }
 h1 {
-  font-size: 22px;
+  font-size: 23px;
   line-height: 1.4;
   font-weight: 600;
   text-align: center;
-  margin: 0 0 24px;
+  margin: 0 0 35px;
 }
 .verification-form {
   width: 100%;
+  max-width: var(--verification-content-width);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 :deep(.code-fields) {
-  gap: clamp(8px, 3.3vw, 14px);
+  width: 100%;
+  gap: clamp(8px, 2vw, 14px);
 }
 :deep(.code-fields input) {
-  width: 34px;
-  height: 35px;
-  font-size: 20px;
+  width: clamp(32px, 8vw, 52px);
+  height: clamp(44px, 10vw, 56px);
+  font-size: 24px;
 }
 .actions {
   display: grid;
-  gap: 16px;
-  width: 188px;
-  margin-top: 32px;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 24px;
 }
 .actions button {
-  min-height: 34px;
-  padding: 5px 10px;
+  min-height: 44px;
+  padding: 10px;
   border: 0;
-  border-radius: 3px;
-  background: #003d66;
+  border-radius: 8px;
+  background: var(--principal-claro);
   color: #fff;
   font: inherit;
-  font-size: 17px;
-  font-weight: 500;
+  font-size: 16px;
   cursor: pointer;
 }
 .actions button:hover:not(:disabled) {
@@ -289,6 +296,19 @@ h1 {
   opacity: 0.6;
   cursor: not-allowed;
 }
+.actions .resend-button {
+  justify-self: center;
+  width: 188px;
+  min-height: 34px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 17px;
+  font-weight: 500;
+}
+.actions .resend-button:disabled {
+  background: #668ba3;
+  opacity: 1;
+}
 .actions button:focus-visible,
 .back-link:focus-visible {
   outline: 2px solid #6084b0;
@@ -296,9 +316,9 @@ h1 {
 }
 .feedback {
   width: 100%;
-  max-width: 310px;
+  max-width: 360px;
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   margin-top: 16px;
   color: #003d66;
@@ -308,7 +328,7 @@ h1 {
 }
 .email-field {
   width: 100%;
-  max-width: 274px;
+  max-width: 300px;
   display: grid;
   gap: 8px;
   margin-bottom: 20px;
@@ -321,76 +341,17 @@ h1 {
   border-radius: 8px;
   font: inherit;
 }
-.progress {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
+.verification-progress {
   width: 100%;
-  list-style: none;
-  padding: 0;
-  margin: auto 0 0;
-  padding-top: 42px;
+  margin-top: 40px;
 }
-.progress::before {
-  content: '';
-  position: absolute;
-  top: 52px;
-  left: 33px;
-  right: 33px;
-  height: 2px;
-  background: #dedede;
-}
-.progress li {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 19px;
-  font-size: 11px;
-  color: #6e6969;
-  text-align: center;
-}
-.dot {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #d9d9d9;
-  font-size: 18px;
-  line-height: 1;
-}
-.completed .dot {
-  background: #003d66;
-  color: #fff;
-}
-.current {
-  color: #003d66 !important;
-}
-.current .dot {
-  background: #003d66;
-  border: 3px solid #d0d9dd;
-}
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-@media (min-width: 700px) {
-  .verification {
-    background: #f4f7f9;
-    padding: 24px;
-    align-items: center;
-  }
+@media (min-width: 900px) {
   .verification-card {
-    min-height: 625px;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 8px 32px #003d6610;
+    max-width: none;
+    padding: 80px 0 48px;
+  }
+  .back-link {
+    top: 32px;
   }
 }
 </style>
