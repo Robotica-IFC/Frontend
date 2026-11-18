@@ -47,7 +47,7 @@ function goToTeam(id) {
           <span>{{ teamsUser.length === 1 ? 'equipe' : 'equipes' }}</span>
         </div>
       </div>
-      <img src="/img/team/Coworking-rafiki 1.png" alt="Coworking" />
+      <img src="/img/team/Coworking-rafiki.png" alt="Coworking" />
     </div>
 
     <h2 class="my-team-title">Minhas equipes</h2>
