@@ -66,8 +66,412 @@ footer {
   --danger-claro: #b91c1c;
 }
 [role='alert'] { white-space: pre-line; overflow-wrap: anywhere; }
+
+:where(
+  button,
+  a[href],
+  [role='button'],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  select,
+  summary
+):not(:disabled):not([aria-disabled='true']) {
+  cursor: pointer;
+}
+
 button:active {
   transform: scale(0.95);
   height: auto;
   transition: 0.1s;
+}
+
+button.details-button {
+  border: 1px solid var(--principal-claro);
+  background-color: #fff;
+  color: var(--principal-claro);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.details-button:hover:not(:disabled) {
+    background-color: var(--principal-claro);
+    color: #fff;
+  }
+
+  button.details-button:hover:not(:active):not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 61, 102, 0.25);
+  }
+}
+
+button.details-button:focus-visible {
+  background-color: var(--principal-claro);
+  color: #fff;
+  outline: 2px solid var(--principal-claro);
+  outline-offset: 3px;
+}
+
+button.details-button:active:not(:disabled) {
+  background-color: var(--hover-principal-claro);
+  color: #fff;
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.details-button {
+    transition: none;
+  }
+
+  button.details-button:hover:not(:active):not(:disabled),
+  button.details-button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --cor-principal: #79A9E8;
+  --cor-fundo: #141A22;
+  --cor-botao: #1D4E78;
+  --cor-destaque: #6084B0;
+  --cor-fonte: #E8EAF0;
+  --fundo-claro: var(--cor-fundo);
+  --principal-claro: var(--cor-principal);
+  --hover-principal-claro: var(--cor-botao-hover);
+  --botao-claro: var(--cor-botao);
+  --destaque-claro: #9CBBDE;
+  --texto-claro: var(--cor-fonte);
+  --h2-titulo: var(--cor-principal);
+  --cor-borda: #526B89;
+  --cor-fonte-secundaria: #B8C8DA;
+  --cor-botao-hover: #286092;
+}
+
+:root[data-theme="dark"] body {
+  background-color: var(--cor-fundo);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] #app > :is(header, .sidebar),
+:root[data-theme="dark"] :is(
+  .activity-card,
+  .activity-card.read, .notification-toast, .suggestion-field label,
+  .attachment-button, .clear-button, .btn button.border, .refresh-button
+) {
+  background-color: var(--cor-fundo);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] :is(
+  .sidebar .nav-link.router-link-exact-active,
+  .sidebar .toggle-checkbox:checked + .toggle-label,
+  .btn button.primary, .btn button.card, .suggestion-icon, .send-button, .detalhe button
+) {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] .sidebar :is(.nav-link, .close-x, .dark-mode-toggle),
+:root[data-theme="dark"] .sidebar .nav-link span:not(.notification-count) {
+  color: var(--cor-principal);
+}
+
+:root[data-theme="dark"] .sidebar .nav-link:hover {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] :is(.image-placeholder, .team-placeholder, .activity-icon) {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] body :is(
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="color"]),
+  textarea,
+  select
+) {
+  background-color: var(--cor-fundo);
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] body :is(input, textarea)::placeholder {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] body :is(input, textarea, select):focus-visible {
+  outline: 2px solid var(--cor-principal);
+  outline-offset: 2px;
+}
+
+:root[data-theme="dark"] #app > footer {
+  background-color: var(--cor-botao);
+}
+
+:root[data-theme="dark"] #app > header {
+  border-bottom-color: var(--cor-borda);
+}
+
+:root[data-theme="dark"] main :is(
+  .community-card, .project-card, article.card, div.card:has(.status),
+  .card-mobile, .card-desktop, .t > li, .stat, .item-row,
+  .member-group, .member-link, .suggestion-card, .activity-card,
+  .project-detail-page .posts > li.post-card
+) {
+  background-color: var(--cor-fundo);
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+  box-shadow: 0 0 0 1px var(--cor-borda), 0 4px 12px #0003;
+}
+
+:root[data-theme="dark"] main :is(
+  .card-mobile h1, .card-mobile .mdi-chevron-right, .card-desktop .titulo-desktop,
+  .t > li .team-name, .t > li .mdi, .member-group .group-header
+) {
+  color: var(--cor-principal);
+}
+
+:root[data-theme="dark"] .about-us .devv .username {
+  color: var(--cor-fonte-secundaria);
+}
+
+@media (min-width: 950px) {
+  :root[data-theme="dark"] .about-us .devv {
+    background-color: #1C2735;
+    color: var(--cor-fonte);
+    box-shadow: 0 0 0 1px var(--cor-borda), 0 4px 12px #0003;
+  }
+}
+
+@media (min-width: 950px) and (hover: hover) and (pointer: fine) {
+  :root[data-theme="dark"] .about-us .devv:hover {
+    background-color: #21364D;
+    box-shadow: 0 0 0 1px var(--cor-destaque), 0 6px 18px #0006;
+  }
+}
+
+:root[data-theme="dark"] main :is(
+  .card-mobile p, .card-mobile .projects, .card-desktop .info-grid p,
+  .t > li :is(.leader-name, .place-team, .total-members, .total-projects, .no-projects)
+) {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] main .member-group .group-count {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] :is(.notifications-page h1, .project-content h3, article.card h2) {
+  color: var(--cor-principal);
+}
+
+:root[data-theme="dark"] :is(.notifications-page header p, .desc-curta, .char-count) {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] :is(.btn button.primary, .btn button.card, .send-button, .detalhe button):hover {
+  background-color: var(--cor-botao-hover);
+}
+
+:root[data-theme="dark"] main .inicio .equipes {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+  box-shadow: 0 0 0 1px var(--cor-destaque), 0 4px 12px #0003;
+}
+
+:root[data-theme="dark"] main .inicio .equipes .numero {
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] main :is(
+  .tudo .left h1, .static h2, .my-team-title, .links li a,
+  .project-detail-page .post-header-left .team-name
+) {
+  color: var(--cor-principal);
+}
+
+:root[data-theme="dark"] main :is(
+  .tudo .left p, .static p, .empty-teams, .community-card time,
+  .suggestions-header p, .rejection-date, .author-identity > span,
+  .project-detail-page .post-header-left h3, .project-detail-page .post-header-actions .date
+) {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] main .empty-teams {
+  border-color: var(--cor-borda);
+}
+
+:root[data-theme="dark"] main .suggestion-badge {
+  background-color: #322A1C;
+  border-color: #A48146;
+  color: #F5D99B;
+}
+
+:root[data-theme="dark"] main :is(.suggestion-section, .suggestions-message) {
+  background-color: var(--cor-fundo);
+  border-radius: 12px;
+  color: var(--cor-fonte-secundaria);
+  box-shadow: 0 0 0 1px var(--cor-borda);
+}
+
+:root[data-theme="dark"] main .suggestion-section {
+  padding-bottom: 20px;
+}
+
+:root[data-theme="dark"] main .suggestion-section::before {
+  border-color: var(--cor-destaque);
+}
+
+:root[data-theme="dark"] main .suggestion-section :is(.suggestion-header p, .help-text) {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] main .team-suggestions :is(
+  .tab-count, .create-suggestion-project, .restore-suggestion
+) {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] main :is(.equipe-card, .storage-wrapper .category-section) {
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--cor-borda), 0 4px 12px #0003;
+}
+
+:root[data-theme="dark"] main .storage-wrapper .category-section {
+  padding: 4px 12px;
+}
+
+:root[data-theme="dark"] main .page:has(.storage-wrapper) {
+  background-color: var(--cor-fundo);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] .storage-wrapper :is(.search-box, .filter-toggle, .dropdown-menu, .dropdown-item),
+:root[data-theme="dark"] .notifications-page .activity .empty,
+:root[data-theme="dark"] body :is(
+  [role="dialog"][aria-modal="true"], dialog.confirmation, .modal-backdrop .modal-container,
+  .sheet-container, .image-preview-container, .item-img.placeholder
+) {
+  background-color: var(--cor-fundo);
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] body :is(
+  [role="dialog"][aria-modal="true"], dialog.confirmation, .modal-backdrop .modal-container,
+  .sheet-container, .storage-wrapper .dropdown-menu
+) {
+  box-shadow: 0 0 0 1px var(--cor-borda), 0 12px 30px #0007;
+}
+
+:root[data-theme="dark"] body :is(
+  .creates .createProject, .edit-team-btn, .project-edit-control,
+  .storage-wrapper :is(.circle, .btn-add, .dropdown-item.active, .dropdown-item:hover),
+  .suggestions-header-actions button, .notifications-page :is(.refresh-button, .load-more, .count),
+  .notification-toast .open-notifications, .activity-card .activity-icon,
+  .modal-container :is(.close-btn, .btn-cancel), .sheet-container :is(.sheet-cancel, .sheet-option),
+  .confirmation button:not(.danger), [aria-modal="true"] button[aria-label^="Fechar"]
+) {
+  background-color: var(--cor-botao);
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] body :is(
+  .creates .createProject, .storage-wrapper .btn-add, .suggestions-header-actions button,
+  .notifications-page :is(.refresh-button, .load-more), .modal-container :is(.close-btn, .btn-cancel)
+):enabled:hover {
+  background-color: var(--cor-botao-hover);
+}
+
+:root[data-theme="dark"] .storage-wrapper .search-box:focus-within {
+  border-color: var(--cor-principal);
+}
+
+:root[data-theme="dark"] .storage-wrapper .search-box input:focus-visible {
+  outline: none;
+}
+
+:root[data-theme="dark"] body :is(
+  .notifications-page .activity-meta, .notifications-page .activity-heading p,
+  .storage-wrapper .top-storage p, .storage-wrapper .empty-state,
+  .modal-container .upload-placeholder, .modal-container .form-group label
+) {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] body :is(
+  .notifications-page header > .mdi, .notifications-page .activity-heading h2,
+  .notifications-page .empty > .mdi, .notifications-page .read-state.unread,
+  .entry-requests .request-heading h3, .entry-requests .pagination span,
+  .members-title-bar h3
+) {
+  color: var(--cor-principal);
+}
+
+:root[data-theme="dark"] body :is(.modal-container .modal-header, .modal-container .modal-actions, .entry-requests, .entry-requests li) {
+  border-color: var(--cor-borda);
+}
+
+:root[data-theme="dark"] .suggestion-section :is(.team-select-control, .team-select-dropdown) {
+  background-color: var(--cor-fundo);
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-control.invalid {
+  border-color: #F28B92;
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-control input:focus-visible {
+  outline: none;
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-dropdown {
+  box-shadow: 0 8px 20px #0006;
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-dropdown [role="option"]:is(
+  :hover, .active-option, [aria-selected="true"]
+) {
+  background-color: var(--cor-botao);
+  color: var(--cor-fonte);
+  border-radius: 4px;
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-message {
+  color: var(--cor-fonte-secundaria);
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-error {
+  color: #F28B92;
+}
+
+:root[data-theme="dark"] .suggestion-section .team-select-error button {
+  background-color: var(--cor-botao);
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+}
+
+:root[data-theme="dark"] main .page > div.card:is(.tutorial, .propor) {
+  background-color: #1C2735;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--cor-borda), 0 6px 16px #0005;
+}
+
+:root[data-theme="dark"] main .page > div.card.tutorial {
+  background: linear-gradient(145deg, #21364D, #182330);
+  box-shadow: 0 0 0 1px var(--cor-destaque), 0 6px 18px #0006;
 }

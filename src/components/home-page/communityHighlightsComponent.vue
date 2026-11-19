@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useHomeHighlightsStore } from '@/store/homeHighlightsStore'
 import { usePostStore } from '@/store/postsStore'
 import PostCommentsSheet from '@/components/posts/PostCommentsSheet.vue'
+import ExpandablePostCaption from '@/components/posts/ExpandablePostCaption.vue'
 import { rememberHomeSection } from '@/utils/homeNavigation'
 
 const highlights = useHomeHighlightsStore()
@@ -96,7 +97,7 @@ function closeComments() {
         <div v-else class="post-image image-placeholder" aria-label="Publicação sem imagem">
           <span class="mdi mdi-image-outline" aria-hidden="true"></span>
         </div>
-        <p class="post-caption">{{ post.legenda }}</p>
+        <ExpandablePostCaption class="post-caption" :text="post.legenda" desktop-clamp />
         <div class="post-actions">
           <button type="button" @click="selectedComments = post">
             <span class="mdi mdi-comment-outline" aria-hidden="true"></span>

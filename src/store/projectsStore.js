@@ -8,17 +8,22 @@ export const useProjectStore = defineStore('project', () => {
   const limits = useFormLimits()
   const projects = ref([])
   const loading = ref(false)
+  const errorMessage = ref('')
+  let projectsRequestId = 0
 
   const currentPage = ref(1)
   const totalPages = ref(1)
   const totalProjects = ref(0)
   const total = ref(0)
 
-  async function getProjects(page = 1) {
+  async function getProjects(page = 1, pageSize, filters = {}) {
+    const requestId = ++projectsRequestId
     try {
       loading.value = true
+      errorMessage.value = ''
 
-      const response = await projectApi.getAll(page)
+      const response = await projectApi.getAll(page, pageSize, filters)
+      if (requestId !== projectsRequestId) return false
 
       projects.value = response.data.results
 
@@ -26,23 +31,49 @@ export const useProjectStore = defineStore('project', () => {
       totalPages.value = response.data.total_pages
       totalProjects.value = response.data.results.length
       total.value = response.data.results.length
+      return true
     } catch (error) {
+      if (requestId !== projectsRequestId) return false
+      errorMessage.value = 'Não foi possível carregar os projetos. Tente novamente.'
       console.error('Erro ao buscar projetos:', error)
+      return false
     } finally {
-      loading.value = false
+      if (requestId === projectsRequestId) loading.value = false
     }
   }
 
   const teamProjects = ref([])
+  const teamCurrentPage = ref(1)
+  const teamTotalPages = ref(1)
+  const teamLoading = ref(false)
+  const teamErrorMessage = ref('')
+  let teamRequestId = 0
+  let loadedTeamId
 
-  async function getProjectsByTeam(id) {
-    loading.value = true
+  async function getProjectsByTeam(id, page = 1, filters = {}) {
+    const requestId = ++teamRequestId
+    if (loadedTeamId !== String(id)) {
+      loadedTeamId = String(id)
+      teamProjects.value = []
+      teamCurrentPage.value = 1
+      teamTotalPages.value = 1
+    }
+    teamLoading.value = true
+    teamErrorMessage.value = ''
 
     try {
-      const response = await projectApi.getByTeam(id)
+      const response = await projectApi.getByTeam(id, page, 2, filters)
+      if (requestId !== teamRequestId) return false
       teamProjects.value = response.data.results
+      teamCurrentPage.value = response.data.page
+      teamTotalPages.value = response.data.total_pages
+      return true
+    } catch {
+      if (requestId !== teamRequestId) return false
+      teamErrorMessage.value = 'Não foi possível carregar os projetos da equipe. Tente novamente.'
+      return false
     } finally {
-      loading.value = false
+      if (requestId === teamRequestId) teamLoading.value = false
     }
   }
 
@@ -100,8 +131,8 @@ export const useProjectStore = defineStore('project', () => {
 
   async function deleteProject(id) {
     await projectApi.delete(id)
-    projects.value = projects.value.filter(project => String(project.id) !== String(id))
-    teamProjects.value = teamProjects.value.filter(project => String(project.id) !== String(id))
+    projects.value = projects.value.filter((project) => String(project.id) !== String(id))
+    teamProjects.value = teamProjects.value.filter((project) => String(project.id) !== String(id))
   }
 
   return {
@@ -109,12 +140,17 @@ export const useProjectStore = defineStore('project', () => {
     updateProject,
     projects,
     loading,
+    errorMessage,
     currentPage,
     totalPages,
     totalProjects,
     total,
     getProjects,
     teamProjects,
+    teamCurrentPage,
+    teamTotalPages,
+    teamLoading,
+    teamErrorMessage,
     getProjectsByTeam,
     getProjectById,
     createProject,

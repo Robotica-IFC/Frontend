@@ -1,0 +1,15 @@
+.page.my-teams-page {
+  width: 100%;
+  max-width: 600px;
+  min-height: auto;
+  margin: 0 auto;
+  padding: 100px 18px 34px;
+}
+
+@media (min-width: 950px) {
+  .page.my-teams-page {
+    width: 80%;
+    max-width: 1200px;
+    padding: 100px 0 50px;
+  }
+}

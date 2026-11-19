@@ -36,6 +36,26 @@ h2 {
   box-shadow: 0 4px 8px #0003;
   display: flex;
   flex-direction: column;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .community-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 61, 102, 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .community-card {
+    transition: none;
+  }
+
+  .community-card:hover {
+    transform: none;
+  }
 }
 
 .post-open-link {
@@ -123,10 +143,6 @@ time {
   line-height: 1.4;
   white-space: pre-line;
   overflow-wrap: anywhere;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .post-actions {

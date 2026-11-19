@@ -1,9 +1,13 @@
 <script setup>
 import { onUnmounted, ref } from 'vue'
 import verifyCodeComponent from '@/components/verifyCodeComponent.vue'
-import robotImage from '@/assets/gif/acenar.gif'
+import stepComponent from '@/components/stepComponent.vue'
+import AuthLayout from '@/components/layout/AuthLayout.vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
+import { useTemplateStore } from '@/store/template'
 const auth = useAuthStore()
+const router = useRouter()
 const email = ref(auth.pendingEmail)
 const codigo = ref('')
 const loading = ref(false)
@@ -35,6 +39,13 @@ const countdownInterval = setInterval(updateCountdown, 250)
 onUnmounted(() => clearInterval(countdownInterval))
 const error = ref('')
 const message = ref('')
+const expired = ref(false)
+
+function restartRegistration() {
+  auth.clearPendingVerification()
+  useTemplateStore().sign = 0
+  router.push('/sign')
+}
 
 async function run(action) {
   if (loading.value || (action === 'resend' && remainingSeconds.value > 0)) return
@@ -55,13 +66,15 @@ async function run(action) {
       }
       await auth.verifyEmail(codigo.value)
     } else {
-      await auth.resendVerificationCode()
+      const response = await auth.resendVerificationCode()
       startCooldown()
       codigo.value = ''
-      message.value = 'Se houver uma conta pendente, um código será enviado. Confira também o spam.'
+      message.value =
+        response.data.detail || 'Enviamos um novo código para seu e-mail. Confira também o spam.'
     }
   } catch (err) {
     const data = err.response?.data
+    expired.value = data?.code === 'registration_expired'
     if (
       action === 'resend' &&
       err.response?.status === 429 &&
@@ -80,317 +93,80 @@ async function run(action) {
 </script>
 
 <template>
-  <div class="verification">
-    <section
-      class="verification-card"
-      aria-labelledby="verification-title"
-      :aria-busy="loading"
-      :inert="loading"
-    >
-      <RouterLink class="back-link" to="/" aria-label="Voltar para entrar">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M19 12H5m7-7-7 7 7 7"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </RouterLink>
-
-      <img class="robot" :src="robotImage" alt="Robô acenando" />
-      <h1 id="verification-title">Verifique o código:</h1>
-
-      <form class="verification-form" @submit.prevent="run('verify')">
-        <div v-if="!auth.pendingEmail" class="email-field">
-          <label for="verification-email">E-mail da conta</label>
-          <input
-            id="verification-email"
-            v-model="email"
-            type="email"
-            autocomplete="email"
-            required
-            :disabled="loading"
-          />
-        </div>
-        <verifyCodeComponent
-          v-model="codigo"
+  <AuthLayout
+    title="Verifique o código"
+    :subtitle="
+      auth.pendingRegistrationToken
+        ? 'Confirme seu e-mail para concluir o cadastro.'
+        : 'Digite o código que enviamos para seu e-mail.'
+    "
+    icon="mdi-email-check-outline"
+    :busy="loading"
+    :loading-message="
+      loadingAction === 'resend' ? 'Enviando seu código...' : 'Verificando seu código...'
+    "
+    @back="router.push('/')"
+  >
+    <form class="verification-form" :inert="loading" @submit.prevent="!expired && run('verify')">
+      <div v-if="!auth.pendingEmail" class="email-field">
+        <label for="verification-email">E-mail da conta</label>
+        <input
+          id="verification-email"
+          v-model="email"
+          type="email"
+          autocomplete="email"
+          required
           :disabled="loading"
-          :invalid="Boolean(error)"
-          :describedby="error ? 'verification-error' : undefined"
-          @update:model-value="error = ''"
         />
-        <p class="feedback">
-          Se o e-mail com o código não chegar à caixa de entrada principal, verifique a pasta de
-          spam.
-        </p>
-        <p v-if="error" id="verification-error" role="alert" class="feedback error">{{ error }}</p>
-        <p v-if="message" role="status" class="feedback">{{ message }}</p>
-        <div class="actions">
-          <button type="button" :disabled="loading || remainingSeconds > 0" @click="run('resend')">
-            {{ remainingSeconds > 0 ? `Reenviar em ${remainingSeconds}s` : 'Reenviar Código' }}
-          </button>
-          <button type="submit" :disabled="loading">
-            {{ loading ? 'Aguarde...' : 'Continuar' }}
-          </button>
-        </div>
-      </form>
-
-      <ol class="progress" aria-label="Etapas do cadastro">
-        <li class="completed">
-          <span class="dot" aria-hidden="true">✓</span><span>Informações</span>
-        </li>
-        <li class="current" aria-current="step">
-          <span class="dot" aria-hidden="true"></span><span>Verificar código</span>
-        </li>
-        <li><span class="dot" aria-hidden="true"></span><span>Dados finais</span></li>
-      </ol>
-    </section>
-    <div v-if="loading" class="loading-overlay" role="status" aria-live="polite">
-      <div class="loading-card">
-        <span class="loading-spinner" aria-hidden="true"></span>
-        <p>
-          {{ loadingAction === 'resend' ? 'Enviando seu código...' : 'Verificando seu código...' }}
-        </p>
-        <span>Aguarde um instante.</span>
       </div>
-    </div>
-  </div>
+      <verifyCodeComponent
+        v-model="codigo"
+        :disabled="loading"
+        :invalid="Boolean(error)"
+        :describedby="error ? 'verification-error' : undefined"
+        @update:model-value="error = ''"
+      />
+      <p class="feedback">
+        Se o e-mail com o código não chegar à caixa de entrada principal, verifique a pasta de spam.
+      </p>
+      <p v-if="auth.pendingRegistrationToken" class="feedback">
+        Sua conta só será criada após a confirmação do código.
+      </p>
+      <p v-if="error" id="verification-error" role="alert" class="feedback error">{{ error }}</p>
+      <p v-if="message" role="status" class="feedback">{{ message }}</p>
+      <div class="actions">
+        <button
+          class="resend-button"
+          type="button"
+          :disabled="loading || expired || remainingSeconds > 0"
+          @click="run('resend')"
+        >
+          {{ remainingSeconds > 0 ? `Reenviar em ${remainingSeconds}s` : 'Reenviar Código' }}
+        </button>
+        <button v-if="expired" type="button" @click="restartRegistration">
+          Iniciar novo cadastro
+        </button>
+        <button v-else type="submit" :disabled="loading">
+          {{
+            loading
+              ? 'Aguarde...'
+              : auth.pendingRegistrationToken
+                ? 'Confirmar e criar conta'
+                : 'Continuar'
+          }}
+        </button>
+      </div>
+    </form>
+
+    <template #progress>
+      <stepComponent
+        :step="3"
+        first="Inserir dados"
+        second="Perfil"
+        third="Verificação de e-mail"
+      />
+    </template>
+  </AuthLayout>
 </template>
 
-<style scoped>
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: #003d6670;
-}
-.loading-card {
-  width: 100%;
-  max-width: 320px;
-  padding: 32px 24px;
-  border-radius: 20px;
-  background: #fff;
-  color: #003d66;
-  text-align: center;
-  box-shadow: 0 12px 40px #0002;
-}
-.loading-card p {
-  margin: 20px 0 8px;
-  font-weight: 600;
-}
-.loading-card > span:last-child {
-  font-size: 14px;
-}
-.loading-spinner {
-  display: inline-block;
-  width: 44px;
-  height: 44px;
-  border: 4px solid #dbe7ef;
-  border-top-color: #003d66;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .loading-spinner {
-    animation: none;
-  }
-}
-.verification {
-  min-height: 100dvh;
-  display: flex;
-  justify-content: center;
-  background: #fff;
-  color: #171717;
-}
-.verification-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 420px;
-  min-height: max(625px, 100dvh);
-  padding: 38px 20px 24px;
-}
-.back-link {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  color: #003d66;
-  border-radius: 50%;
-}
-.back-link svg {
-  width: 24px;
-  height: 24px;
-}
-.robot {
-  width: 250px;
-  height: 250px;
-  object-fit: contain;
-  margin-bottom: 14px;
-}
-h1 {
-  font-size: 22px;
-  line-height: 1.4;
-  font-weight: 600;
-  text-align: center;
-  margin: 0 0 24px;
-}
-.verification-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-:deep(.code-fields) {
-  gap: clamp(8px, 3.3vw, 14px);
-}
-:deep(.code-fields input) {
-  width: 34px;
-  height: 35px;
-  font-size: 20px;
-}
-.actions {
-  display: grid;
-  gap: 16px;
-  width: 188px;
-  margin-top: 32px;
-}
-.actions button {
-  min-height: 34px;
-  padding: 5px 10px;
-  border: 0;
-  border-radius: 3px;
-  background: #003d66;
-  color: #fff;
-  font: inherit;
-  font-size: 17px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.actions button:hover:not(:disabled) {
-  background: #00538a;
-}
-.actions button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.actions button:focus-visible,
-.back-link:focus-visible {
-  outline: 2px solid #6084b0;
-  outline-offset: 4px;
-}
-.feedback {
-  width: 100%;
-  max-width: 310px;
-  text-align: center;
-  font-size: 13px;
-  line-height: 1.5;
-  margin-top: 16px;
-  color: #003d66;
-}
-.error {
-  color: #a71919;
-}
-.email-field {
-  width: 100%;
-  max-width: 274px;
-  display: grid;
-  gap: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-.email-field input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #003d66;
-  border-radius: 8px;
-  font: inherit;
-}
-.progress {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  list-style: none;
-  padding: 0;
-  margin: auto 0 0;
-  padding-top: 42px;
-}
-.progress::before {
-  content: '';
-  position: absolute;
-  top: 52px;
-  left: 33px;
-  right: 33px;
-  height: 2px;
-  background: #dedede;
-}
-.progress li {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 19px;
-  font-size: 11px;
-  color: #6e6969;
-  text-align: center;
-}
-.dot {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #d9d9d9;
-  font-size: 18px;
-  line-height: 1;
-}
-.completed .dot {
-  background: #003d66;
-  color: #fff;
-}
-.current {
-  color: #003d66 !important;
-}
-.current .dot {
-  background: #003d66;
-  border: 3px solid #d0d9dd;
-}
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-@media (min-width: 700px) {
-  .verification {
-    background: #f4f7f9;
-    padding: 24px;
-    align-items: center;
-  }
-  .verification-card {
-    min-height: 625px;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 8px 32px #003d6610;
-  }
-}
-</style>
+<style scoped src="./verifyEmailView.css"></style>

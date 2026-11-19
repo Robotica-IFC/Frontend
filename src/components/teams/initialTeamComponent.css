@@ -1,5 +1,13 @@
 .top{
+  position: relative;
+  padding-top: 48px;
   margin-top: 1000px;
+}
+
+.team-back {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .desktop {
   display: none;

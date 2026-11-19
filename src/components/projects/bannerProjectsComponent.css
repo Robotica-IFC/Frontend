@@ -1,4 +1,5 @@
 .tudo {
+  position: relative;
   width: min(1200px, 90%);
   margin: 35px auto;
   padding: 25px 10px;
@@ -6,9 +7,35 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 50px;
+  gap: 32px;
 
   border-bottom: 2px solid var(--principal-claro);
+}
+
+.back-button {
+  position: absolute;
+  top: -20px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--principal-claro);
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #f1f5f9;
+}
+
+.back-button:focus-visible {
+  outline: 2px solid var(--principal-claro);
+  outline-offset: 2px;
 }
 
 .left {
@@ -40,21 +67,41 @@
   width: 100%;
   max-width: 420px;
   height: auto;
-  transition: transform .3s ease;
 }
 
-.right img:hover {
-  transform: translateY(-6px);
+@media (max-width: 949px) {
+  .tudo {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin: 24px auto;
+    padding: 32px 0 24px;
+  }
+  .left { min-width: 0; }
+  .left h1 {
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+  }
+  .left p { font-size: 13px; line-height: 1.4; }
+  .right { flex: 0 0 45%; max-width: 160px; }
+  .right img { display: block; }
 }
 
 @media (min-width: 950px) {
+  .back-button {
+    left: 0;
+  }
+
   .tudo {
     position: relative;
     width: 85%;
     max-width: 1700px;
     margin: 50px auto;
     padding: 25px 0 50px;
-    gap: 50px;
+    gap: 32px;
     border-bottom: none;
   }
 
@@ -90,7 +137,7 @@
 
   .right {
     flex: 0 0 340px;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .right img {

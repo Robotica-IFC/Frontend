@@ -17,11 +17,18 @@ const authApi = {
   resetPassword(email, token, password, confirm_password) {
     return api.post('redefinir-senha/', { email, token, password, confirm_password })
   },
-  verifyEmail(email, codigo) {
-    return api.post('verificar-email/', { email, codigo })
+  verifyEmail(email, codigo, registrationToken) {
+    return api.post('verificar-email/', {
+      email,
+      codigo,
+      ...(registrationToken ? { registration_token: registrationToken } : {}),
+    })
   },
-  resendVerificationCode(email) {
-    return api.post('reenviar-codigo/', { email })
+  resendVerificationCode(email, registrationToken) {
+    return api.post('reenviar-codigo/', {
+      email,
+      ...(registrationToken ? { registration_token: registrationToken } : {}),
+    })
   },
   login(credentials) {
     return api.post('token/', credentials)

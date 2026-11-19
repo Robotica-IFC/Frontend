@@ -1,4 +1,5 @@
 <script setup>
+import { useFormattedInput } from '@/composables/useFormattedInput'
 import UploadHint from '@/components/form/UploadHint.vue'
 import { useEditProfile } from '@/composables/useEditProfile'
 import appArrow from '@/components/appArrow.vue'
@@ -35,6 +36,18 @@ const {
   handleFileSelected,
   handleSave,
 } = useEditProfile()
+
+const {
+  displayValue: phoneDisplay,
+  maskAttrs: phoneAttrs,
+  handleInput: handlePhoneInput,
+} = useFormattedInput(
+  () => formData.value.telefone,
+  () => 'telefone',
+  (value) => {
+    formData.value.telefone = value
+  },
+)
 </script>
 
 <template>
@@ -67,20 +80,40 @@ const {
         <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
         <div class="input-group">
           <label>Nome Completo</label>
-          <input v-model="formData.name" v-bind="limits.attrs('usuario', 'name')" type="text" placeholder="Seu nome" />
+          <input
+            v-model="formData.name"
+            v-bind="limits.attrs('usuario', 'name')"
+            type="text"
+            placeholder="Seu nome"
+          />
           <FieldHint resource="usuario" field="name" :value="formData.name" />
         </div>
 
         <div class="input-group">
           <label>Username</label>
-          <input v-model="formData.username" v-bind="limits.attrs('usuario', 'username')" type="text" placeholder="@usuario" />
+          <input
+            v-model="formData.username"
+            v-bind="limits.attrs('usuario', 'username')"
+            type="text"
+            placeholder="@usuario"
+          />
           <FieldHint resource="usuario" field="username" :value="formData.username" />
         </div>
 
         <div class="input-group">
           <label>Telefone</label>
-          <input v-model="formData.telefone" v-bind="limits.attrs(user?.tipo || 'aluno', 'telefone')" type="tel" placeholder="Apenas números" />
-          <FieldHint :resource="user?.tipo || 'aluno'" field="telefone" :value="formData.telefone" />
+          <input
+            :value="phoneDisplay"
+            @input="handlePhoneInput"
+            v-bind="phoneAttrs"
+            type="tel"
+            placeholder="(47) 99999-9999"
+          />
+          <FieldHint
+            :resource="user?.tipo || 'aluno'"
+            field="telefone"
+            :value="formData.telefone"
+          />
         </div>
 
         <div v-if="user?.tipo === 'professor'" class="input-group inst-container">
@@ -127,14 +160,18 @@ const {
               </div>
 
               <div class="sub-input-group">
-                <appInput resource="instituicao" field="nome"
+                <appInput
+                  resource="instituicao"
+                  field="nome"
                   placeholder="Nome do instituto"
                   icon="mdi mdi-town-hall"
                   v-model="instituteStore.state.institute.nome"
                 />
               </div>
               <div class="sub-input-group">
-                <appInput resource="instituicao" field="sigla"
+                <appInput
+                  resource="instituicao"
+                  field="sigla"
                   placeholder="Sigla (Ex: USP)"
                   icon="mdi mdi-label-outline"
                   v-model="instituteStore.state.institute.sigla"
@@ -156,7 +193,9 @@ const {
               </div>
 
               <div class="sub-input-group">
-                <appInput resource="instituicao" field="cidade"
+                <appInput
+                  resource="instituicao"
+                  field="cidade"
                   placeholder="Cidade"
                   icon="mdi mdi-city"
                   v-model="instituteStore.state.institute.cidade"
@@ -181,14 +220,22 @@ const {
             rows="4"
             placeholder="Conte um pouco sobre você..."
           ></textarea>
-          <FieldHint :resource="user?.tipo || 'aluno'" field="descricao" :value="formData.descricao" />
+          <FieldHint
+            :resource="user?.tipo || 'aluno'"
+            field="descricao"
+            :value="formData.descricao"
+          />
         </div>
       </form>
 
-      <button class="save-btn" type="submit" form="profile-edit-form" :disabled="loading">
-        {{ loading ? 'Salvando...' : 'Salvar' }}
-      </button>
-      <appButton width="65%" @click="closeEdit" variant="danger">Cancelar</appButton>
+      <div class="profile-actions">
+        <button class="save-btn" type="submit" form="profile-edit-form" :disabled="loading">
+          {{ loading ? 'Salvando...' : 'Salvar' }}
+        </button>
+        <button type="button" class="cancel-btn" :disabled="loading" @click="closeEdit">
+          Cancelar
+        </button>
+      </div>
 
       <imagesourcesheet
         v-if="showProfileSheet"

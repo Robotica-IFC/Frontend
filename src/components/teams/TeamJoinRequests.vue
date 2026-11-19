@@ -1,12 +1,14 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import api from '@/api/config'
+import { scrollAfterPagination } from '@/utils/paginationScroll'
 
 const props = defineProps({
   teamId: { type: String, required: true },
 })
 const emit = defineEmits(['accepted'])
 const requests = ref([])
+const requestsSection = ref(null)
 const page = ref(1)
 const pageSize = 6
 const totalPages = computed(() => Math.max(1, Math.ceil(requests.value.length / pageSize)))
@@ -19,6 +21,12 @@ const loading = ref(false)
 const responding = ref(null)
 const error = ref('')
 const feedback = ref('')
+
+async function changePage(nextPage) {
+  page.value = nextPage
+  await nextTick()
+  scrollAfterPagination(requestsSection.value)
+}
 
 async function refresh() {
   if (!props.teamId) return
@@ -56,7 +64,7 @@ watch(() => props.teamId, () => {
 </script>
 
 <template>
-  <section class="entry-requests" aria-label="Solicitações de entrada">
+  <section ref="requestsSection" class="entry-requests" aria-label="Solicitações de entrada">
     <div class="request-heading">
       <h3>Solicitações para entrar na equipe</h3>
       <button type="button" :disabled="loading" @click="refresh">
@@ -77,11 +85,11 @@ watch(() => props.teamId, () => {
       </li>
     </ul>
     <nav v-if="totalPages > 1" class="pagination" aria-label="Páginas de solicitações">
-      <button type="button" :disabled="page === 1" @click="page--">
+      <button type="button" :disabled="page === 1" @click="changePage(page - 1)">
         <i class="mdi mdi-chevron-left" aria-hidden="true"></i> Anterior
       </button>
       <span aria-live="polite">Página {{ page }} de {{ totalPages }}</span>
-      <button type="button" :disabled="page === totalPages" @click="page++">
+      <button type="button" :disabled="page === totalPages" @click="changePage(page + 1)">
         Próxima <i class="mdi mdi-chevron-right" aria-hidden="true"></i>
       </button>
     </nav>
@@ -89,7 +97,7 @@ watch(() => props.teamId, () => {
 </template>
 
 <style scoped>
-.entry-requests { margin: 18px 0 24px; border: 1px solid #d2e2eb; border-radius: 12px; padding: 16px; }
+.entry-requests { margin: 18px 0 24px; border: 1px solid #d2e2eb; border-radius: 12px; padding: 16px; scroll-margin-top: 90px; }
 .request-heading, li, .actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .request-heading h3 { margin: 0; color: #004369; font-size: 17px; }
 ul { list-style: none; margin: 12px 0 0; padding: 0; }
@@ -101,4 +109,20 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .pagination span { font-size: 13px; color: #004369; }
 .pagination button { display: inline-flex; align-items: center; gap: 4px; }
 @media (max-width: 470px) { .pagination { gap: 8px; } .pagination button { font-size: 12px; padding: 8px; } }
+@media (max-width: 949px) {
+  .request-heading { align-items: flex-start; flex-wrap: nowrap; }
+  .request-heading h3 { flex: 1; min-width: 0; font-size: 16px; line-height: 1.35; }
+  .request-heading > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 32px;
+    padding: 5px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
 </style>

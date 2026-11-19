@@ -1,9 +1,10 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useProjectSuggestionsStore } from '@/store/projectSuggestionsStore'
 import studentDetailComponent from '@/components/layout/detailsComponents/studentDetailComponent.vue'
 import teacherDetailComponent from '@/components/layout/detailsComponents/teacherDetailComponent.vue'
 import Pagination from '@/components/paginationComponent.vue'
+import { scrollAfterPagination } from '@/utils/paginationScroll'
 
 const props = defineProps({
   teamId: { type: [String, Number], required: true },
@@ -17,7 +18,8 @@ const loading = ref(false)
 const errorMessage = ref('')
 const actionErrorMessage = ref('')
 const search = ref('')
-const suggestionsPerPage = 4
+const desktopQuery = window.matchMedia('(min-width: 950px)')
+const suggestionsPerPage = ref(desktopQuery.matches ? 4 : 2)
 const currentPage = ref(1)
 const activeTab = ref('sugestoes')
 const pendingActions = ref(new Set())
@@ -61,12 +63,16 @@ const filteredSuggestions = computed(() => {
   )
 })
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredSuggestions.value.length / suggestionsPerPage)),
+  Math.max(1, Math.ceil(filteredSuggestions.value.length / suggestionsPerPage.value)),
 )
 const visibleSuggestions = computed(() => {
-  const start = (currentPage.value - 1) * suggestionsPerPage
-  return filteredSuggestions.value.slice(start, start + suggestionsPerPage)
+  const start = (currentPage.value - 1) * suggestionsPerPage.value
+  return filteredSuggestions.value.slice(start, start + suggestionsPerPage.value)
 })
+function updatePageSize(event) {
+  suggestionsPerPage.value = event.matches ? 4 : 2
+  currentPage.value = 1
+}
 let controller
 
 async function changePage(page) {
@@ -75,10 +81,7 @@ async function changePage(page) {
 
   currentPage.value = page
   await nextTick()
-  suggestionsSection.value?.scrollIntoView({
-    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-    block: 'start',
-  })
+  scrollAfterPagination(suggestionsSection.value)
 }
 
 async function switchTab(tab, focus = false) {
@@ -220,7 +223,11 @@ watch(
   },
   { immediate: true },
 )
-onBeforeUnmount(() => controller?.abort())
+onMounted(() => desktopQuery.addEventListener('change', updatePageSize))
+onBeforeUnmount(() => {
+  controller?.abort()
+  desktopQuery.removeEventListener('change', updatePageSize)
+})
 </script>
 
 <template>

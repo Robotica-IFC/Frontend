@@ -30,11 +30,17 @@ export const useTeamStore = defineStore('team', () => {
     return undefined
   }
 
-  async function getTeams(page = 1) {
+  const errorMessage = ref('')
+  let teamsRequestId = 0
+
+  async function getTeams(page = 1, filters = {}) {
+    const requestId = ++teamsRequestId
+    errorMessage.value = ''
     try {
       loading.value = true
       const pageSize = getPageSize()
-      const response = await teamApi.getAll(page, pageSize)
+      const response = await teamApi.getAll(page, pageSize, filters)
+      if (requestId !== teamsRequestId) return
 
       totalTeams.value = response.data.total
       teams.value = response.data.items
@@ -42,9 +48,11 @@ export const useTeamStore = defineStore('team', () => {
       totalPages.value = response.data.paginas
       total.value = response.data.total
     } catch (error) {
+      if (requestId !== teamsRequestId) return
+      errorMessage.value = 'Não foi possível carregar as equipes. Tente novamente.'
       console.error(error)
     } finally {
-      loading.value = false
+      if (requestId === teamsRequestId) loading.value = false
     }
   }
 
@@ -196,7 +204,7 @@ export const useTeamStore = defineStore('team', () => {
 
   async function deleteTeam(id) {
     await teamApi.delete(id)
-    teams.value = teams.value.filter(team => team.id !== id)
+    teams.value = teams.value.filter((team) => team.id !== id)
     if (actualTeam.value?.id === id) actualTeam.value = []
   }
 
@@ -212,6 +220,7 @@ export const useTeamStore = defineStore('team', () => {
     removeMember,
     updateTeam,
     teams,
+    errorMessage,
     loading,
     currentPage,
     totalPages,

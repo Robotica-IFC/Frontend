@@ -7,6 +7,7 @@ import { useAuthStore } from './authStore'
 import { useTeamStore } from './teamStore'
 import { useTemplateStore } from './template'
 import { useFormLimits } from '@/composables/useFormLimits'
+import { getRegistrationFeedback } from '@/utils/registrationFeedback'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
@@ -28,6 +29,8 @@ export const useStudentStore = defineStore('student', () => {
     meUser: null,
     actualStudent: [],
   })
+
+  const registrationFeedback = ref(null)
 
   const student = computed(() => state.student)
   const students = computed(() => state.students)
@@ -60,7 +63,11 @@ export const useStudentStore = defineStore('student', () => {
         imagem_perfil: state.student.imagem_perfil,
       })
 
-      authStore.setPendingEmail(state.student.email, 'aluno')
+      authStore.setPendingEmail(
+        response.data.email || state.student.email,
+        'aluno',
+        response.data.registration_token || '',
+      )
       await router.push('/verificar-email')
     } catch (error) {
       const errorMsg = error.response?.data
@@ -77,15 +84,22 @@ export const useStudentStore = defineStore('student', () => {
   }
 
   async function submit(file) {
+    registrationFeedback.value = null
     const apenasNumeros = /^\d+$/
 
     if (state.student.cpf && !apenasNumeros.test(state.student.cpf)) {
-      alert('O CPF deve conter apenas números!')
+      registrationFeedback.value = {
+        message: 'O CPF deve conter apenas números!',
+        emailAlreadyRegistered: false,
+      }
       return
     }
 
     if (state.student.telefone && !apenasNumeros.test(state.student.telefone)) {
-      alert('O telefone deve conter apenas números!')
+      registrationFeedback.value = {
+        message: 'O telefone deve conter apenas números!',
+        emailAlreadyRegistered: false,
+      }
       return
     }
 
@@ -115,14 +129,7 @@ export const useStudentStore = defineStore('student', () => {
       templateStore.sign = 0
     } catch (error) {
       console.error('Falha no processo de criação:', error)
-      const backendError = error.response?.data
-      let mensagem = 'Falha ao criar conta.'
-
-      if (backendError) {
-        mensagem += ' Verifique os dados: ' + Object.values(backendError).flat().join(', ')
-      }
-
-      alert(mensagem)
+      registrationFeedback.value = getRegistrationFeedback(error)
     }
   }
 
@@ -164,6 +171,7 @@ export const useStudentStore = defineStore('student', () => {
 
   return {
     state,
+    registrationFeedback,
     student,
     students,
     actualStudent,

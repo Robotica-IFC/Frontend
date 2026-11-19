@@ -8,6 +8,7 @@ import CreatePostModal from '@/components/posts/CreatePostModal.vue'
 import PostCommentsSheet from '@/components/posts/PostCommentsSheet.vue'
 import EditPostModal from '@/components/posts/EditPostModal.vue'
 import PostImageViewer from '@/components/posts/PostImageViewer.vue'
+import ExpandablePostCaption from '@/components/posts/ExpandablePostCaption.vue'
 import EditProjectModal from '@/components/projects/EditProjectModal.vue'
 import ProjectParticipantsModal from '@/components/layout/detailsComponents/projectParticipantsModal.vue'
 import { usePostStore } from '@/store/postsStore'
@@ -29,14 +30,13 @@ const currentUserId = computed(() => authStore.user?.user_id ?? authStore.user?.
 const canEditProject = computed(() =>
   Boolean(
     authStore.user?.tipo === 'professor' &&
-      actualProject.value?.professores?.some(
-        (p) =>
-          (currentUserId.value != null &&
-            (String(p.user_id) === String(currentUserId.value) ||
-              String(p.user?.id) === String(currentUserId.value))) ||
-          (authStore.user?.id != null &&
-            String(p.id) === String(authStore.user.id)),
-      ),
+    actualProject.value?.professores?.some(
+      (p) =>
+        (currentUserId.value != null &&
+          (String(p.user_id) === String(currentUserId.value) ||
+            String(p.user?.id) === String(currentUserId.value))) ||
+        (authStore.user?.id != null && String(p.id) === String(authStore.user.id)),
+    ),
   ),
 )
 function canEditPost(post) {
@@ -80,16 +80,14 @@ const fetchProject = async () => {
       (aluno) =>
         (loggedUser.id != null && String(aluno.id) === String(loggedUser.id)) ||
         (userId != null &&
-          (String(aluno.user_id) === String(userId) ||
-            String(aluno.user?.id) === String(userId))),
+          (String(aluno.user_id) === String(userId) || String(aluno.user?.id) === String(userId))),
     )
 
     const isTeacherInTeam = actualProject.value.professores?.some(
       (prof) =>
         (loggedUser.id != null && String(prof.id) === String(loggedUser.id)) ||
         (userId != null &&
-          (String(prof.user_id) === String(userId) ||
-            String(prof.user?.id) === String(userId))),
+          (String(prof.user_id) === String(userId) || String(prof.user?.id) === String(userId))),
     )
 
     onTheTeam.value = Boolean(isStudentInTeam || isTeacherInTeam)
@@ -118,20 +116,31 @@ onMounted(async () => {
 
 <template>
   <div class="page project-detail-page" v-if="actualProject">
-
     <div class="project-intro">
       <appArrow class="project-back" @back="router.back()" />
 
       <div class="project-heading-row">
         <h1>{{ actualProject.titulo }}</h1>
-        <button v-if="canEditProject" type="button" class="project-edit-control"
-          aria-label="Editar projeto" title="Editar projeto" @click="editingProject = true">
+        <button
+          v-if="canEditProject"
+          type="button"
+          class="project-edit-control"
+          aria-label="Editar projeto"
+          title="Editar projeto"
+          @click="editingProject = true"
+        >
           <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
         </button>
       </div>
       <projectSuggestionBadge v-if="actualProject.sugestao" />
-      <p>{{ actualProject.descricao }}</p>
-      <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true">Ver Participantes</appButton>
+      <ExpandablePostCaption
+        class="project-description"
+        :text="actualProject.descricao"
+        expand-desktop
+      />
+      <appButton :font="'11px'" class="see-team" @click="isParticipantsModalOpen = true"
+        >Ver Participantes</appButton
+      >
     </div>
 
     <div class="action-bar" v-if="onTheTeam">
@@ -139,14 +148,20 @@ onMounted(async () => {
     </div>
 
     <ul class="posts">
-      <li v-for="p in reversedPosts" :id="`post-${p.id}`" :key="p.id" class="post-card" :class="p.formato_imagem === 'QUADRADO' ? 'post-square' : 'post-wide'">
+      <li
+        v-for="p in reversedPosts"
+        :id="`post-${p.id}`"
+        :key="p.id"
+        class="post-card"
+        :class="p.formato_imagem === 'QUADRADO' ? 'post-square' : 'post-wide'"
+      >
         <div class="post-header">
           <RouterLink
             class="post-header-left team-link"
             :to="{ name: 'teamDetails', params: { id: actualProject.equipe_id } }"
             :aria-label="`Ver equipe ${actualProject.equipe}`"
           >
-            <img :src="actualProject.equipe_image" :alt="actualProject.equipe">
+            <img :src="actualProject.equipe_image" :alt="actualProject.equipe" />
             <div class="names">
               <h2 class="team-name">{{ actualProject.equipe }}</h2>
               <h3 v-if="p.aluno_criador">Por: {{ p.aluno_criador.name }}</h3>
@@ -168,11 +183,16 @@ onMounted(async () => {
           </div>
         </div>
 
-        <p class="legenda">{{ p.legenda }}</p>
+        <ExpandablePostCaption class="legenda" :text="p.legenda" expand-desktop />
 
         <div class="post-image post-media" v-if="p.images && p.images.length === 1">
-          <button type="button" class="post-image-open" aria-label="Ampliar imagem do post" @click="viewedImages = { images: p.images, index: 0 }">
-            <img :src="p.images[0].url" alt="Imagem do post" loading="lazy">
+          <button
+            type="button"
+            class="post-image-open"
+            aria-label="Ampliar imagem do post"
+            @click="viewedImages = { images: p.images, index: 0 }"
+          >
+            <img :src="p.images[0].url" alt="Imagem do post" loading="lazy" />
           </button>
         </div>
 
@@ -181,8 +201,13 @@ onMounted(async () => {
 
           <div class="carousel-container" :id="`carousel-${p.id}`">
             <div v-for="(img, index) in p.images" :key="index" class="carousel-item">
-              <button type="button" class="post-image-open" :aria-label="`Ampliar imagem ${index + 1} do post`" @click="viewedImages = { images: p.images, index }">
-                <img :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy">
+              <button
+                type="button"
+                class="post-image-open"
+                :aria-label="`Ampliar imagem ${index + 1} do post`"
+                @click="viewedImages = { images: p.images, index }"
+              >
+                <img :src="img.url" :alt="`Imagem ${index + 1}`" loading="lazy" />
               </button>
             </div>
           </div>
@@ -190,8 +215,13 @@ onMounted(async () => {
           <button class="nav-btn next" @click="scrollCarousel(p.id, 'next')">❯</button>
         </div>
         <div class="post-actions">
-          <button @click="selectedComments = p" type="button"><i class="mdi mdi-comment-outline" /> {{ p.comentarios?.length || 0 }} comentários</button>
-          <button @click="toggleLike(p)" type="button" :aria-pressed="p.curtiu"><span>{{ p.curtidas || 0 }} curtidas</span><i :class="p.curtiu ? 'mdi mdi-heart' : 'mdi mdi-heart-outline'" /></button>
+          <button @click="selectedComments = p" type="button">
+            <i class="mdi mdi-comment-outline" /> {{ p.comentarios?.length || 0 }} comentários
+          </button>
+          <button @click="toggleLike(p)" type="button" :aria-pressed="p.curtiu">
+            <span>{{ p.curtidas || 0 }} curtidas</span
+            ><i :class="p.curtiu ? 'mdi mdi-heart' : 'mdi mdi-heart-outline'" />
+          </button>
         </div>
       </li>
     </ul>
@@ -204,17 +234,35 @@ onMounted(async () => {
       :students="actualProject.alunos || []"
       @close="isParticipantsModalOpen = false"
     />
-    <PostCommentsSheet v-if="selectedComments" :post="selectedComments" @close="selectedComments = null" />
-    <PostImageViewer v-if="viewedImages" :images="viewedImages.images" :initial-index="viewedImages.index" @close="viewedImages = null" />
-    <EditPostModal v-if="editingPost" :post="editingPost" @close="editingPost = null" @saved="fetchProject" />
-    <EditProjectModal v-if="editingProject" :project="actualProject" @close="editingProject = false" @saved="fetchProject" />
+    <PostCommentsSheet
+      v-if="selectedComments"
+      :post="selectedComments"
+      @close="selectedComments = null"
+    />
+    <PostImageViewer
+      v-if="viewedImages"
+      :images="viewedImages.images"
+      :initial-index="viewedImages.index"
+      @close="viewedImages = null"
+    />
+    <EditPostModal
+      v-if="editingPost"
+      :post="editingPost"
+      @close="editingPost = null"
+      @saved="fetchProject"
+    />
+    <EditProjectModal
+      v-if="editingProject"
+      :project="actualProject"
+      @close="editingProject = false"
+      @saved="fetchProject"
+    />
     <CreatePostModal
       :project-id="props.id"
       :is-open="isModalOpen"
       @close="isModalOpen = false"
       @created="fetchProject"
     />
-
   </div>
 </template>
 
@@ -237,94 +285,96 @@ onMounted(async () => {
   outline-offset: -3px;
 }
 .post-actions {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  padding:14px 4px
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 4px;
 }
 .post-actions button {
-  display:flex;
-  align-items:center;
-  gap:6px;
-  border:0;
-  background:transparent;
-  color:#003f63;
-  font:inherit;
-  font-size:13px;
-  cursor:pointer
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #003f63;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
 }
 .post-actions .mdi-heart {
-  color:#df183e
+  color: #df183e;
 }
 .post-actions i {
-  font-size:21px
+  font-size: 21px;
 }
 .post-header-actions {
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:8px;
-  flex-shrink:0
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
 }
 .post-header-actions .date {
-  margin:0;
-  white-space:nowrap
+  margin: 0;
+  white-space: nowrap;
 }
 .post-header-actions .post-edit-icon {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 34px;
-  width:34px;
-  height:34px;
-  padding:0;
-  border:1px solid #bfd4e0;
-  border-radius:8px;
-  background:#f4f9fc;
-  color:#004369;
-  cursor:pointer;
-  line-height:1;
-  transition:background .2s,border-color .2s
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #bfd4e0;
+  border-radius: 8px;
+  background: #f4f9fc;
+  color: #004369;
+  cursor: pointer;
+  line-height: 1;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 .post-header-actions .post-edit-icon .mdi {
-  font-size:18px;
-  line-height:1
+  font-size: 18px;
+  line-height: 1;
 }
 .post-header-actions .post-edit-icon:hover {
-  background:#e2f0f8;
-  border-color:#004369
+  background: #e2f0f8;
+  border-color: #004369;
 }
 .post-header-actions .post-edit-icon:focus-visible {
-  outline:2px solid #004369;
-  outline-offset:2px
+  outline: 2px solid #004369;
+  outline-offset: 2px;
 }
 .project-edit-control {
-  background:transparent;
-  color:#004369;
-  border:1px solid #004369;
-  border-radius:6px;
-  padding:8px 12px;
-  font:inherit;
-  cursor:pointer
+  background: transparent;
+  color: #004369;
+  border: 1px solid #004369;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
 }
-@media(max-width:600px) {
+@media (max-width: 600px) {
   .post-actions button {
-    font-size:11px
+    font-size: 11px;
   }
   .post-actions i {
-    font-size:18px
+    font-size: 18px;
   }
   .post-header-actions {
-    gap:5px
+    gap: 5px;
   }
   .post-header-actions .post-edit-icon {
-    flex-basis:32px;
-    width:32px;
-    height:32px
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
   }
   .post-header-actions .date {
-    font-size:11px
+    font-size: 11px;
   }
 }
 </style>

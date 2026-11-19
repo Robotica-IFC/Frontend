@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useAuthStore } from './authStore'
 
 export const useTemplateStore = defineStore('template', () => {
   const sign = ref(0)
@@ -7,6 +8,21 @@ export const useTemplateStore = defineStore('template', () => {
   const teacherOrStudent = ref(true)
   const panel = ref(true)
   const sidebar = ref(false)
+  const authStore = useAuthStore()
+  const themeKey = computed(() => {
+    const userId = authStore.isAuthenticated ? authStore.user?.user_id : null
+    return userId == null ? null : `robotica:theme:${userId}`
+  })
+  const darkMode = ref(false)
+  watch(themeKey, (key) => {
+    darkMode.value = key !== null && localStorage.getItem(key) === 'dark'
+  }, { immediate: true, flush: 'sync' })
+
+  function setDarkMode(enabled) {
+    if (!themeKey.value) return
+    darkMode.value = enabled
+    localStorage.setItem(themeKey.value, enabled ? 'dark' : 'light')
+  }
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -25,6 +41,9 @@ export const useTemplateStore = defineStore('template', () => {
     changePassword,
     teacherOrStudent,
     panel,
+    sidebar,
+    darkMode,
+    setDarkMode,
     formatDate,
   }
 })

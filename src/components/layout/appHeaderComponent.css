@@ -34,6 +34,7 @@ li:first-child {
 li:nth-child(2) {
   justify-content: center;
   flex-grow: 1;
+  cursor: pointer;
 }
 
 .logo {
@@ -52,6 +53,11 @@ li:last-child {
   border-radius: 50%;
   border: 1px solid black;
   object-fit: cover;
+  cursor: pointer;
+}
+
+.mdi-account-circle-outline {
+  cursor: pointer;
 }
 
 .sidebar-overlay {

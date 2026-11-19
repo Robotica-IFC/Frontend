@@ -1,32 +1,33 @@
-import api from "./config";
+import { normalizePersonalData } from '../utils/personalData.js'
+import api from './config.js'
 
 const studentsApi = {
-    search(term) {
-        return api.get('alunos/', { params: { search: term } })
-    },
-    getAll() {
-        return api.get('alunos/')
-    },
+  search(term) {
+    return api.get('alunos/', { params: { search: term } })
+  },
+  getAll() {
+    return api.get('alunos/')
+  },
 
-    getById(id) {
-        return api.get(`alunos/${id}/`)
-    },
+  getById(id) {
+    return api.get(`alunos/${id}/`)
+  },
 
-    create(data) {
-        return api.post('alunos/', data)
-    },
+  create(data) {
+    return api.post('alunos/', normalizePersonalData(data))
+  },
 
-    update(id, data) {
-        return api.patch(`alunos/${id}/`, data)
-    },
+  update(id, data) {
+    return api.patch(`alunos/${id}/`, normalizePersonalData(data))
+  },
 
-    delete(id) {
-        return api.delete(`alunos/${id}/`)
-    },
+  delete(id) {
+    return api.delete(`alunos/${id}/`)
+  },
 
-    uploadImage(formData) {
-        return api.post('media/images/', formData)
-    },
+  uploadImage(formData) {
+    return api.post('media/images/', formData)
+  },
 }
 
 export default studentsApi

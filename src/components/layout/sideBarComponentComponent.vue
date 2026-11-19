@@ -28,10 +28,6 @@ const notificationsStore = useNotificationsStore();
         <span class="mdi mdi-laptop"></span> Projetos
       </RouterLink>
 
-      <RouterLink to="/tutorials" class="nav-link">
-        <span class="mdi mdi-play-box-multiple"></span> Tutoriais
-      </RouterLink>
-
       <RouterLink v-if="authStore.user?.tipo == 'professor'" to="/teacher" class="nav-link">
         <span class="mdi mdi-account-tie"></span> Professor
       </RouterLink>
@@ -54,7 +50,14 @@ const notificationsStore = useNotificationsStore();
       <div class="dark-mode-toggle">
         <span class="mdi mdi-weather-night"></span>
         <span>Modo noturno</span>
-        <input type="checkbox" class="toggle-checkbox" id="dark-mode" />
+        <input
+          id="dark-mode"
+          type="checkbox"
+          class="toggle-checkbox"
+          aria-label="Modo noturno"
+          :checked="templateStore.darkMode"
+          @change="templateStore.setDarkMode($event.target.checked)"
+        />
         <label for="dark-mode" class="toggle-label"></label>
       </div>
       <div class="close-side">
