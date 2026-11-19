@@ -66,7 +66,7 @@
   outline:2px solid #004369;
   outline-offset:3px
 }
-.project-detail-page .project-intro>p {
+.project-detail-page .project-intro>.project-description {
   font-size:14px;
   line-height:1.55;
   color:#283c49;
@@ -296,7 +296,7 @@
     max-width:760px;
     gap:22px
   }
-  .project-detail-page .project-intro>p {
+  .project-detail-page .project-intro>.project-description {
     font-size:16px
   }
   .project-detail-page .posts {

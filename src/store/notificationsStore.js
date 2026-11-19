@@ -2,17 +2,20 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import notificationsApi from '../api/notificationsApi.js'
 import { formatApiError } from '../utils/formValidation.js'
+import { useInvitesStore } from './invitesStore.js'
 
 export const useNotificationsStore = defineStore('notifications', () => {
   const notifications = ref([])
   const unread = ref(0)
   const loading = ref(false)
   const reading = ref([])
+  const responding = ref([])
   const error = ref('')
   const hasMore = ref(false)
   const toast = ref(null)
   let lastAnnounced = null
   const readDates = new Map()
+  const inviteStatuses = new Map()
   let page = 0
   let generation = 0
   let readVersion = 0
@@ -23,19 +26,25 @@ export const useNotificationsStore = defineStore('notifications', () => {
     if (countInFlight) return countInFlight
     const session = generation
     const version = readVersion
-    const request = notificationsApi.unread().then(({ data }) => {
-      if (session === generation && version === readVersion) {
-        unread.value = data.nao_lidas
-        if (!data.nao_lidas) toast.value = null
-        // Ler a mais recente pode revelar um ID antigo: isso não é uma nova atividade.
-        else if (data.ultima_nao_lida && (lastAnnounced === null || data.ultima_nao_lida > lastAnnounced)) {
-          lastAnnounced = data.ultima_nao_lida
-          toast.value = { id: data.ultima_nao_lida, count: data.nao_lidas }
+    const request = notificationsApi
+      .unread()
+      .then(({ data }) => {
+        if (session === generation && version === readVersion) {
+          unread.value = data.nao_lidas
+          if (!data.nao_lidas) toast.value = null
+          // Ler a mais recente pode revelar um ID antigo: isso não é uma nova atividade.
+          else if (
+            data.ultima_nao_lida &&
+            (lastAnnounced === null || data.ultima_nao_lida > lastAnnounced)
+          ) {
+            lastAnnounced = data.ultima_nao_lida
+            toast.value = { id: data.ultima_nao_lida, count: data.nao_lidas }
+          }
         }
-      }
-    }).finally(() => {
-      if (countInFlight === request) countInFlight = null
-    })
+      })
+      .finally(() => {
+        if (countInFlight === request) countInFlight = null
+      })
     countInFlight = request
     return request
   }
@@ -61,15 +70,27 @@ export const useNotificationsStore = defineStore('notifications', () => {
           loadedPage = current
           if (!response.next) break
         }
-        notifications.value = [...new Map(items.map(item => [item.id, {
-          ...item, lida_em: readDates.get(item.id) || item.lida_em,
-        }])).values()]
+        notifications.value = [
+          ...new Map(
+            items.map((item) => [
+              item.id,
+              {
+                ...item,
+                lida_em: readDates.get(item.id) || item.lida_em,
+                convite_status: inviteStatuses.get(item.id) || item.convite_status,
+              },
+            ]),
+          ).values(),
+        ]
         page = loadedPage
         hasMore.value = Boolean(response.next)
         if (version === readVersion) unread.value = response.nao_lidas
       } catch (err) {
         if (session === generation) {
-          error.value = formatApiError(err, 'Não foi possível carregar as notificações. Tente novamente.')
+          error.value = formatApiError(
+            err,
+            'Não foi possível carregar as notificações. Tente novamente.',
+          )
         }
         throw err
       } finally {
@@ -90,21 +111,59 @@ export const useNotificationsStore = defineStore('notifications', () => {
     try {
       const { data } = await notificationsApi.read(notification.id)
       if (session !== generation) return false
+      const wasRead = readDates.has(notification.id) || notification.lida_em
       readDates.set(notification.id, data.lida_em)
       readVersion++
-      const item = notifications.value.find(item => item.id === notification.id)
+      const item = notifications.value.find((item) => item.id === notification.id)
       if (item) item.lida_em = data.lida_em
-      unread.value = Math.max(0, unread.value - 1)
+      if (!wasRead) unread.value = Math.max(0, unread.value - 1)
       countInFlight = null
       refreshCount().catch(() => {})
       return true
     } catch (err) {
       if (session === generation) {
-        error.value = formatApiError(err, 'Não foi possível marcar a notificação como lida. Tente novamente.')
+        error.value = formatApiError(
+          err,
+          'Não foi possível marcar a notificação como lida. Tente novamente.',
+        )
       }
       throw err
     } finally {
-      if (session === generation) reading.value = reading.value.filter(id => id !== notification.id)
+      if (session === generation)
+        reading.value = reading.value.filter((id) => id !== notification.id)
+    }
+  }
+
+  async function respondToInvite(notification, accept) {
+    if (responding.value.includes(notification.id) || notification.convite_status !== 'P')
+      return false
+    const session = generation
+    responding.value = [...responding.value, notification.id]
+    error.value = ''
+    try {
+      const data = await useInvitesStore().respond(notification.convite, accept)
+      if (!data || session !== generation) return false
+      inviteStatuses.set(notification.id, data.status)
+      const item = notifications.value.find((item) => item.id === notification.id)
+      if (item) item.convite_status = data.status
+      if (data.notificacao_lida_em) {
+        const wasRead = readDates.has(notification.id) || notification.lida_em
+        readDates.set(notification.id, data.notificacao_lida_em)
+        readVersion++
+        if (item) item.lida_em = data.notificacao_lida_em
+        if (!wasRead) unread.value = Math.max(0, unread.value - 1)
+      }
+      countInFlight = null
+      refreshCount().catch(() => {})
+      return true
+    } catch (err) {
+      if (session === generation) {
+        error.value = formatApiError(err, 'Não foi possível responder ao convite. Tente novamente.')
+      }
+      throw err
+    } finally {
+      if (session === generation)
+        responding.value = responding.value.filter((id) => id !== notification.id)
     }
   }
 
@@ -114,6 +173,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     inFlight = null
     countInFlight = null
     readDates.clear()
+    inviteStatuses.clear()
     toast.value = null
     lastAnnounced = null
     notifications.value = []
@@ -122,12 +182,27 @@ export const useNotificationsStore = defineStore('notifications', () => {
     hasMore.value = false
     loading.value = false
     reading.value = []
+    responding.value = []
     error.value = ''
   }
 
   return {
-    notifications, unread, loading, reading, error, hasMore, toast,
-    dismissToast: () => { toast.value = null },
-    refresh: () => fetchPages(), loadMore: () => fetchPages(true), refreshCount, markRead, clear,
+    notifications,
+    unread,
+    loading,
+    reading,
+    responding,
+    error,
+    hasMore,
+    toast,
+    dismissToast: () => {
+      toast.value = null
+    },
+    refresh: () => fetchPages(),
+    loadMore: () => fetchPages(true),
+    refreshCount,
+    markRead,
+    respondToInvite,
+    clear,
   }
 })

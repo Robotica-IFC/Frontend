@@ -1,17 +1,22 @@
 <script setup>
+import ResourceFilters from '@/components/ResourceFilters.vue'
 import { useTeamStore } from '@/store/teamStore'
 import { nextTick, onMounted, ref } from 'vue'
 import Pagination from '@/components/paginationComponent.vue'
-import { scrollAfterPagination } from '@/utils/paginationScroll'
 import router from '@/router'
+import { scrollAfterPagination } from '@/utils/paginationScroll'
 
 const teamStore = useTeamStore()
 const teamsList = ref(null)
+const filters = ref({})
+function applyFilters(value) {
+  filters.value = value
+  teamStore.getTeams(1, value)
+}
 
 async function changePage(page) {
   if (teamStore.loading || page === teamStore.currentPage) return
-
-  await teamStore.getTeams(page)
+  await teamStore.getTeams(page, filters.value)
   await nextTick()
   if (teamsList.value && teamStore.currentPage === page) scrollAfterPagination()
 }
@@ -26,8 +31,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="teamsList" class="content">
-    <ul>
+  <div ref="teamsList" class="content" :aria-busy="teamStore.loading">
+    <ResourceFilters kind="teams" @change="applyFilters" />
+    <p v-if="teamStore.loading" role="status">Carregando equipes...</p>
+    <p v-else-if="teamStore.errorMessage" role="alert">
+      {{ teamStore.errorMessage }}
+      <button type="button" @click="teamStore.getTeams(1, filters)">Tentar novamente</button>
+    </p>
+    <p v-else-if="!teamStore.teams.length">Nenhuma equipe encontrada.</p>
+    <ul v-if="!teamStore.loading && !teamStore.errorMessage">
       <li v-for="t in teamStore.teams" :key="t.id">
         <!-- LAYOUT ORIGINAL (< 950px) -->
         <div class="card-mobile" @click="openTeam(t.id)">
@@ -136,9 +148,9 @@ onMounted(() => {
 
     <Pagination
       class="pagination-wrapper"
+      :inert="teamStore.loading"
       :currentPage="teamStore.currentPage"
       :totalPages="teamStore.totalPages"
-      :inert="teamStore.loading"
       @change="changePage"
     />
   </div>

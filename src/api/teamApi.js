@@ -7,14 +7,10 @@ const teamApi = {
   transferOwner(id, professorId) {
     return api.post(`/equipes/${id}/transferir-owner/`, { professor: professorId })
   },
-  getAll(page, pageSize) {
-    let url = `/equipes/?page=${page}`
-
-    if (pageSize) {
-      url += `&page_size=${pageSize}`
-    }
-
-    return api.get(url)
+  getAll(page = 1, pageSize, filters = {}) {
+    return api.get('/equipes/', {
+      params: { ...filters, page, ...(pageSize ? { page_size: pageSize } : {}) },
+    })
   },
   removeMember(teamId, memberId, type) {
     return api.delete(`/equipes/${teamId}/membros/${memberId}/`, { params: { tipo: type } })

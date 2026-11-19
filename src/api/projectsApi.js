@@ -7,13 +7,13 @@ const projectsApi = {
   delete(id) {
     return api.delete(`/projetos/${id}/`)
   },
-  getAll(page = 1, pageSize) {
+  getAll(page = 1, pageSize, filters = {}) {
     return api.get('/projetos/', {
-      params: { page, ...(pageSize ? { page_size: pageSize } : {}) },
+      params: { ...filters, page, ...(pageSize ? { page_size: pageSize } : {}) },
     })
   },
-  getByTeam(id) {
-    return api.get(`/projetos/?equipe=${id}`)
+  getByTeam(id, page = 1, pageSize = 2, filters = {}) {
+    return api.get('/projetos/', { params: { ...filters, equipe: id, page, page_size: pageSize } })
   },
   uploadImage(formData) {
     return api.post('media/images/', formData)
@@ -26,7 +26,7 @@ const projectsApi = {
   },
   create(payload) {
     return api.post('projetos/', payload)
-  }
+  },
 }
 
 export default projectsApi

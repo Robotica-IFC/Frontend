@@ -1,0 +1,92 @@
+.verification-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+:deep(.code-fields) {
+  width: 100%;
+  gap: clamp(6px, 1vw, 14px);
+}
+
+:deep(.code-fields input) {
+  flex: 1;
+  width: 0;
+  max-width: 56px;
+  height: clamp(44px, 6dvh, 64px);
+  font-size: 24px;
+}
+
+.actions {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.actions button {
+  min-height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--principal-claro);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.actions button:hover:not(:disabled) {
+  background: var(--hover-principal-claro);
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions .resend-button {
+  justify-self: center;
+  min-height: 34px;
+  padding: 5px 10px;
+  background: transparent;
+  color: var(--principal-claro);
+  text-decoration: underline;
+}
+
+.actions .resend-button:hover:not(:disabled) {
+  background: #eff6ff;
+}
+
+.feedback {
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 16px;
+  color: var(--principal-claro);
+}
+
+.error {
+  color: var(--danger-claro);
+}
+
+.email-field {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.email-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid var(--principal-claro);
+  border-radius: 0;
+  font: inherit;
+}

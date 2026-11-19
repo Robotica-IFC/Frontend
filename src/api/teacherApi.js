@@ -1,4 +1,5 @@
-import api from './config'
+import { normalizePersonalData } from '../utils/personalData.js'
+import api from './config.js'
 
 const teacherApi = {
   search(term) {
@@ -12,10 +13,10 @@ const teacherApi = {
   },
 
   create(data) {
-    return api.post('professores/', data)
+    return api.post('professores/', normalizePersonalData(data))
   },
   update(id, data) {
-    return api.patch(`/professores/${id}/`, data)
+    return api.patch(`/professores/${id}/`, normalizePersonalData(data))
   },
   uploadImage(formData) {
     return api.post('media/images/', formData)

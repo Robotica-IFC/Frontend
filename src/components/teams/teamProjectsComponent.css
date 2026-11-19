@@ -1,3 +1,22 @@
+.team-projects {
+  width: 100%;
+  min-width: 0;
+  scroll-margin-top: 90px;
+}
+.section-message {
+  margin: 12px 0;
+  color: var(--principal-claro);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.section-message button {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--principal-claro);
+  border-radius: 6px;
+  background: white;
+  color: var(--principal-claro);
+}
 h1 {
   color: var(--principal-claro);
   font-size: 23px;
@@ -5,7 +24,6 @@ h1 {
 }
 .card {
   background: white;
-  margin-bottom: 15px;
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid #ddd;
@@ -13,16 +31,21 @@ h1 {
   transition: 0.2s;
   display: flex;
   width: 100%;
-  min-height: 120px;
+  min-height: 150px;
+  height: 100%;
+  flex: 1;
 }
 
 .image {
+  position: relative;
   width: 40%;
   align-self: stretch;
   flex-shrink: 0;
 }
 
 .image img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -78,15 +101,32 @@ h2 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-p {
+.project-description {
   font-size: 12px;
   margin-bottom: 10px;
   margin-top: 5px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.45;
+}
+
+@media (max-width: 949px) {
+  .image {
+    width: 32%;
+    min-height: 150px;
+  }
+  .info {
+    padding: 12px;
+    gap: 8px;
+  }
+  h2 {
+    display: block;
+    line-height: 1.3;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+  .project-description {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (min-width: 950px) {
@@ -107,7 +147,7 @@ p {
 
   .card {
     flex-direction: column;
-    height: auto;
+    height: 100%;
     cursor: pointer;
   }
   .card:hover {
@@ -117,6 +157,7 @@ p {
   .image {
     width: 100%;
     height: 220px;
+    flex: 0 0 220px;
   }
 
   .info {
@@ -139,13 +180,27 @@ p {
     margin-bottom: 4px;
   }
 
-  p {
+  .project-description {
     font-size: 13.5px;
-    -webkit-line-clamp: 2;
     margin-bottom: 12px;
   }
 }
 
+.projects {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  gap: 15px;
+}
 .projects > article {
+  display: flex;
+  min-width: 0;
   cursor: pointer;
+}
+@media (min-width: 950px) {
+  .projects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
 }

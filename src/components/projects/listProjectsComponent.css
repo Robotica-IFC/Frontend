@@ -1,5 +1,6 @@
 .container {
   margin: 40px auto;
+  scroll-margin-top: 90px;
 }
 
 .section-message {
@@ -161,6 +162,43 @@ p {
   text-overflow: ellipsis;
 }
 
+@media (max-width: 949px) {
+  .card {
+    display: grid;
+    grid-template-columns: minmax(90px, 32%) minmax(0, 1fr);
+    height: auto;
+    min-height: 220px;
+  }
+  .left { width: 100%; }
+  .image img { display: block; }
+  .rigth { padding: 12px; gap: 10px; }
+  .content { height: auto; gap: 10px; }
+  h2 {
+    margin-top: 0;
+    font-size: 16px;
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    display: block;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .desc-curta {
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    display: block;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .team { gap: 6px; font-size: 12px; }
+  .info-item { align-items: flex-start; }
+  .info-item .equipe,
+  .info-item .instituicao { white-space: normal; overflow-wrap: anywhere; }
+  .detalhe button { width: 100%; max-width: 160px; padding: 8px 10px; font-size: 12px; }
+}
+
 @media (min-width: 950px) {
   .container {
     width: 85%;
@@ -222,9 +260,6 @@ p {
     font-size: 13px;
     line-height: 1.25;
     white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
   }
 
   /* equipe e instituição lado a lado */

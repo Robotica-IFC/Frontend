@@ -1,148 +1,127 @@
 <script setup>
-import appInput from "@/components/form/appInput.vue";
-import appArrow from "@/components/appArrow.vue";
-import appButton from "@/components/form/appButton.vue";
-import { ref, reactive, onMounted, onUnmounted } from "vue";
-import { useAuthStore } from "@/store/authStore";
-import { usePasswordResetStore } from "@/store/passwordResetStore";
-import router from "@/router";
+import appInput from '@/components/form/appInput.vue'
+import AuthLayout from '@/components/layout/AuthLayout.vue'
+import appButton from '@/components/form/appButton.vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useAuthStore } from '@/store/authStore'
+import { usePasswordResetStore } from '@/store/passwordResetStore'
+import router from '@/router'
 
-const authStore = useAuthStore();
-const showPassword = ref(false);
-const passwordReset = usePasswordResetStore();
-const passwordResetSuccess = ref(passwordReset.completed);
-passwordReset.completed = false;
+const authStore = useAuthStore()
+const showPassword = ref(false)
+const loading = ref(false)
+const passwordReset = usePasswordResetStore()
+const passwordResetSuccess = ref(passwordReset.completed)
+passwordReset.completed = false
 
 const credentials = reactive({
   email: '',
-  password: ''
-});
-
-// Desktop: usado só para trocar o texto do botão ("Continuar" x "Entrar")
-const isDesktop = ref(false);
-let mediaQuery;
-const updateDesktop = (e) => (isDesktop.value = e.matches);
+  password: '',
+})
 
 const handleLogin = async () => {
+  if (loading.value) return
+  loading.value = true
   try {
-    await authStore.login(credentials);
+    await authStore.login(credentials)
   } catch (error) {
-    alert("Email ou senha inválidos.");
+    alert('Email ou senha inválidos.')
+  } finally {
+    loading.value = false
   }
-};
+}
 
 onMounted(async () => {
-  mediaQuery = window.matchMedia("(min-width: 900px)");
-  isDesktop.value = mediaQuery.matches;
-  mediaQuery.addEventListener("change", updateDesktop);
-
   if (authStore.isAuthenticated) {
+    loading.value = true
     try {
-      await authStore.refreshUserSession();
+      await authStore.refreshUserSession()
 
-      router.push('/home-page');
+      await router.push('/home-page')
     } catch (error) {
-      console.warn("Sessão expirada. Permanecendo na tela de login.");
+      console.warn('Sessão expirada. Permanecendo na tela de login.')
+    } finally {
+      loading.value = false
     }
   }
-});
-
-onUnmounted(() => {
-  mediaQuery?.removeEventListener("change", updateDesktop);
-});
+})
 </script>
 
 <template>
-  <div class="page">
-   <div class="welcome">
-
-    <section class="hero">
-      <img src="/src/assets/gif/acenar.gif" alt="Robo-acenando" />
-
-      <h2 class="title-mobile">Bem-vindo(a) à Robótica!</h2>
-
-      <h1 class="title-desktop">
-        Bem vindo(a)<br />
-        a <span>Robótica</span>
-      </h1>
-      <p class="tagline">
-        Sua plataforma para aprender, criar e transformar ideias em inovação.
+  <AuthLayout
+    title="Acesse sua conta"
+    subtitle="Entre para continuar sua jornada."
+    icon="mdi-login"
+    :back="false"
+    :busy="loading"
+    loading-message="Entrando na sua conta..."
+  >
+    <form class="login-form" @submit.prevent="handleLogin">
+      <p v-if="passwordResetSuccess" class="password-reset-success" role="status">
+        Senha redefinida com sucesso. Entre com sua nova senha.
       </p>
-    </section>
-
-    <section class="login-card">
-      <div class="card-head">
-        <div class="card-icon">
-          <span class="mdi mdi-login"></span>
-        </div>
-        <h3>Acesse sua conta</h3>
-        <p>Entre para continuar sua jornada.</p>
-      </div>
-
-      <form @submit.prevent="handleLogin">
-        <p v-if="passwordResetSuccess" class="password-reset-success" role="status">
-          Senha redefinida com sucesso. Entre com sua nova senha.
-        </p>
-        <appInput
-          v-model="credentials.email"
-          name="email"
-          style="margin-bottom: 20px;"
-          placeholder="E-mail"
-          icon="mdi mdi-email-outline"
-        />
-
-        <appInput
-          v-model="credentials.password"
-          :type="showPassword ? 'text' : 'password'"
-          name="password"
-          placeholder="Senha"
-          icon="mdi mdi-lock-open"
+      <appInput
+        v-model="credentials.email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="E-mail"
+        icon="mdi mdi-email-outline"
+        required
+      />
+      <appInput
+        v-model="credentials.password"
+        :type="showPassword ? 'text' : 'password'"
+        name="password"
+        autocomplete="current-password"
+        placeholder="Senha"
+        icon="mdi mdi-lock-open"
+        required
+      >
+        <button
+          class="visibility-button"
+          type="button"
+          :aria-label="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          :aria-pressed="showPassword"
+          @click="showPassword = !showPassword"
         >
           <span
-            @click="showPassword = !showPassword"
             :class="showPassword ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline'"
+            aria-hidden="true"
           ></span>
-        </appInput>
-
-        <div class="botao">
-          <div class="submit">
-            <appButton
-              type="submit"
-              variant="primary"
-              :label="isDesktop ? 'Continuar' : 'Entrar'"
-            />
-          </div>
-
-          <div class="forgot">
-            <appButton
-              type="button"
-              @click="router.push('/change-password')"
-              variant="secondary"
-              label="Esqueceu a senha?"
-              width="auto"
-            />
-          </div>
-        </div>
-      </form>
-
-      <!-- Cadastro dentro do card (apenas desktop) -->
-      <div class="signup-desktop">
-        <span>Não possui um cadastro?</span>
-        <appButton @click="router.push('/sign')" variant="secondary" label="Cadastre-se" width="auto" />
+        </button>
+      </appInput>
+      <div class="forgot">
+        <appButton
+          @click="router.push('/change-password')"
+          variant="secondary"
+          label="Esqueceu a senha?"
+          width="auto"
+        />
       </div>
-    </section>
-
-    <!-- Banner de novidades (apenas desktop) -->
-
-    <!-- Cadastro no rodapé (apenas mobile) -->
-    <footer>
-      <div class="footer-text">
+      <appButton
+        type="submit"
+        variant="primary"
+        :disabled="loading"
+        :label="loading ? 'Entrando...' : 'Entrar'"
+      />
+    </form>
+    <template #footer>
+      <p v-if="authStore.pendingRegistrationToken" class="pending-registration">
+        Cadastro aguardando confirmação.
+        <RouterLink to="/verificar-email">Verificar e-mail</RouterLink>
+      </p>
+      <div class="signup">
         <span>Não possui um cadastro?</span>
-        <appButton @click="router.push('/sign')" variant="secondary" label="Cadastre-se" />
+        <appButton
+          @click="router.push('/sign')"
+          variant="secondary"
+          label="Cadastre-se"
+          width="auto"
+        />
       </div>
-    </footer>
-   </div>
-  </div>
+    </template>
+  </AuthLayout>
 </template>
 
 <style scoped src="./welcomeView.css"></style>

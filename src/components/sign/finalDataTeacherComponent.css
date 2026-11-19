@@ -1,37 +1,3 @@
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-.top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-.arrow {
-  width: 100%;
-  display: flex;
-}
-.gif-header {
-  width: 250px;
-  height: auto;
-}
-h2 {
-  font-size: 23px;
-  margin: 25px 0 35px;
-  text-align: center;
-}
-.final {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
-  max-width: 400px;
-}
-
 .avatar-container {
   display: flex;
   flex-direction: column;
@@ -48,9 +14,6 @@ h2 {
   padding: 0;
   margin: 0;
   font: inherit;
-}
-.avatar-label:active {
-  transform: scale(1.05);
 }
 
 .profile-pic {
@@ -75,8 +38,4 @@ h2 {
   align-items: center;
   justify-content: center;
   font-size: 18px;
-}
-.bottom {
-  margin-top: 40px;
-  width: 100%;
 }

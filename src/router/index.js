@@ -29,6 +29,11 @@ const router = createRouter({
   async scrollBehavior(to, from, savedPosition) {
     if (!from.matched.length) return { top: 0, left: 0 }
 
+    if (to.name === 'home-page' && to.hash === '#activities-card') {
+      await nextTick()
+      return { el: to.hash, top: 90 }
+    }
+
     const homeSection = getHomeReturnSection(to, from, window.history.state)
     if (homeSection) {
       await useHomeHighlightsStore().refresh()

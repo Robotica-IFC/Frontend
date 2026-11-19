@@ -7,6 +7,7 @@ import { useNotificationsStore } from '../src/store/notificationsStore.js'
 globalThis.localStorage = { getItem: () => null }
 const notification = { id: 1, projeto: 10, titulo: 'Novo projeto', lida_em: null }
 const readDate = '2026-11-11T12:00:00Z'
+const invitation = { id: 50, tipo: 'CONVITE', convite: 3, convite_status: 'P', projeto: null, equipe: 'team', lida_em: null }
 const response = data => ({ data, status: 200, statusText: 'OK', headers: {}, config: {} })
 const page = (items, unread = 1, next = null) => response({ results: items, nao_lidas: unread, next })
 function store() { setActivePinia(createPinia()); return useNotificationsStore() }
@@ -163,4 +164,77 @@ test('abrir a atividade mais recente não anuncia novamente as antigas não lida
   api.defaults.adapter = async () => response({ nao_lidas: 1, ultima_nao_lida: 13 })
   await notifications.refreshCount()
   assert.equal(notifications.toast.id, 13)
+})
+
+test('responder ao convite atualiza o status e a leitura uma única vez', async () => {
+  const notifications = store()
+  api.defaults.adapter = async () => page([invitation], 2)
+  await notifications.refresh()
+  const pending = deferred()
+  let calls = 0
+  api.defaults.adapter = config => {
+    if (config.url.endsWith('nao-lidas/')) return Promise.resolve(response({ nao_lidas: 1 }))
+    assert.equal(config.url, 'convites/3/aceitar/')
+    calls++
+    return pending.promise
+  }
+  const answering = notifications.respondToInvite(notifications.notifications[0], true)
+  assert.equal(await notifications.respondToInvite(notifications.notifications[0], true), false)
+  pending.resolve(response({ id: 3, status: 'A', notificacao_lida_em: readDate }))
+  assert.equal(await answering, true)
+  assert.equal(calls, 1)
+  assert.equal(notifications.notifications[0].convite_status, 'A')
+  assert.equal(notifications.notifications[0].lida_em, readDate)
+  assert.equal(notifications.unread, 1)
+  assert.deepEqual(notifications.responding, [])
+})
+
+test('atualização atrasada não restaura convite pendente nem notificação não lida', async () => {
+  const notifications = store()
+  api.defaults.adapter = async () => page([invitation])
+  await notifications.refresh()
+  const stale = deferred()
+  const started = deferred()
+  api.defaults.adapter = config => {
+    if (config.url.endsWith('/recusar/')) return Promise.resolve(response({ id: 3, status: 'N', notificacao_lida_em: readDate }))
+    if (config.url.endsWith('nao-lidas/')) return Promise.resolve(response({ nao_lidas: 0 }))
+    started.resolve()
+    return stale.promise
+  }
+  const refreshing = notifications.refresh()
+  await started.promise
+  await notifications.respondToInvite(notifications.notifications[0], false)
+  stale.resolve(page([invitation]))
+  await refreshing
+  assert.equal(notifications.notifications[0].convite_status, 'N')
+  assert.equal(notifications.notifications[0].lida_em, readDate)
+  assert.equal(notifications.unread, 0)
+})
+
+test('falha ao responder preserva convite pendente e permite nova tentativa', async () => {
+  const notifications = store()
+  api.defaults.adapter = async () => page([invitation])
+  await notifications.refresh()
+  api.defaults.adapter = async () => { throw { response: { status: 400, data: { detail: 'Tente novamente.' } } } }
+  await assert.rejects(notifications.respondToInvite(notifications.notifications[0], true))
+  assert.equal(notifications.notifications[0].convite_status, 'P')
+  assert.equal(notifications.notifications[0].lida_em, null)
+  assert.equal(notifications.unread, 1)
+  assert.equal(notifications.error, 'Tente novamente.')
+  assert.deepEqual(notifications.responding, [])
+})
+
+test('logout descarta uma resposta de convite de outra sessão', async () => {
+  const notifications = store()
+  api.defaults.adapter = async () => page([invitation])
+  await notifications.refresh()
+  const pending = deferred()
+  api.defaults.adapter = () => pending.promise
+  const answering = notifications.respondToInvite(notifications.notifications[0], true)
+  notifications.clear()
+  pending.resolve(response({ id: 3, status: 'A', notificacao_lida_em: readDate }))
+  assert.equal(await answering, false)
+  assert.deepEqual(notifications.notifications, [])
+  assert.deepEqual(notifications.responding, [])
+  assert.equal(notifications.unread, 0)
 })

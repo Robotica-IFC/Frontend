@@ -10,13 +10,13 @@ import { useFormLimits } from '@/composables/useFormLimits'
 import { getProfileImageUrl } from '@/utils/profileImage'
 import { clearSessionTokens, getSessionToken, saveSessionToken } from '@/utils/authSession'
 
-
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(getSessionToken('access_token') || null)
   const refreshToken = ref(getSessionToken('refresh_token') || null)
   const user = ref(null)
   const pendingEmail = ref(sessionStorage.getItem('pending_email') || '')
   const pendingType = ref(sessionStorage.getItem('pending_type') || 'aluno')
+  const pendingRegistrationToken = ref(sessionStorage.getItem('pending_registration_token') || '')
 
   const isAuthenticated = computed(() => !!accessToken.value)
 
@@ -60,22 +60,39 @@ export const useAuthStore = defineStore('auth', () => {
     setUserFromToken(accessToken.value)
   }
 
-  function setPendingEmail(email, tipo = 'aluno') {
+  function setPendingEmail(email, tipo = 'aluno', registrationToken = null) {
+    const sameEmail = email.trim().toLowerCase() === pendingEmail.value.trim().toLowerCase()
+    const token = registrationToken ?? (sameEmail ? pendingRegistrationToken.value : '')
+    if (token && token !== pendingRegistrationToken.value) {
+      sessionStorage.setItem(
+        `verification_resend_until:${email.trim().toLowerCase()}`,
+        String(Date.now() + 60000),
+      )
+    }
     pendingEmail.value = email
     pendingType.value = tipo
+    pendingRegistrationToken.value = token
     sessionStorage.setItem('pending_email', email)
     sessionStorage.setItem('pending_type', tipo)
+    if (token) sessionStorage.setItem('pending_registration_token', token)
+    else sessionStorage.removeItem('pending_registration_token')
   }
 
   function clearPendingVerification() {
     pendingEmail.value = ''
+    pendingRegistrationToken.value = ''
     sessionStorage.removeItem('pending_email')
     sessionStorage.removeItem('pending_type')
+    sessionStorage.removeItem('pending_registration_token')
   }
 
   async function verifyEmail(codigo) {
     if (!pendingEmail.value) throw new Error('Informe o e-mail da conta pendente.')
-    const { data } = await authApi.verifyEmail(pendingEmail.value, codigo)
+    const { data } = await authApi.verifyEmail(
+      pendingEmail.value,
+      codigo,
+      pendingRegistrationToken.value,
+    )
     accessToken.value = data.access
     refreshToken.value = data.refresh
     sessionStorage.removeItem('user_profile_cache')
@@ -88,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function resendVerificationCode() {
     if (!pendingEmail.value) throw new Error('Informe o e-mail da conta pendente.')
-    return authApi.resendVerificationCode(pendingEmail.value)
+    return authApi.resendVerificationCode(pendingEmail.value, pendingRegistrationToken.value)
   }
 
   async function login(credentials) {
@@ -104,7 +121,7 @@ export const useAuthStore = defineStore('auth', () => {
       router.push('/home-page')
     } catch (error) {
       if (error.response?.data?.code === 'email_not_verified') {
-        setPendingEmail(credentials.email)
+        setPendingEmail(credentials.email, 'aluno', '')
         await router.push('/verificar-email')
         return
       }
@@ -215,6 +232,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     pendingEmail,
     pendingType,
+    pendingRegistrationToken,
     setPendingEmail,
     clearPendingVerification,
     verifyEmail,
