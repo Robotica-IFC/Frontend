@@ -11,7 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useTeamStore } from '@/store/teamStore'
 
 import { useConfirmation } from '@/composables/useConfirmation'
-import { getProfileImageUrl } from '@/utils/profileImage'
+import { getAvatarUrl, useDefaultAvatar } from '@/utils/profileImage'
 import { formatApiError } from '@/utils/formValidation'
 
 import router from '@/router'
@@ -27,7 +27,7 @@ const teamsUser = ref(null)
 const checkingDeletion = ref(false)
 
 const profileImageUrl = computed(() =>
-  getProfileImageUrl(user.value?.imagem_perfil),
+  getAvatarUrl(user.value?.imagem_perfil),
 )
 
 function confirmLogout() {
@@ -118,17 +118,12 @@ function openTeam(id) {
       <div class="first-data">
         <div class="name-image">
           <img
-            v-if="profileImageUrl"
             class="profile-image"
             :src="profileImageUrl"
+            @error="useDefaultAvatar"
             :alt="user?.name"
           />
 
-          <span
-            v-else
-            class="mdi mdi-account-circle profile-placeholder"
-            aria-label="Sem foto de perfil"
-          ></span>
 
           <div>
             <h1>{{ user?.username }}</h1>
@@ -168,9 +163,11 @@ function openTeam(id) {
           @click="openTeam(t.id)"
         >
           <img
-            :src="t.image_perfil?.url || t.image_perfil?.file"
+            v-if="t.image_perfil?.url || t.image_perfil?.file"
+            :src="t.image_perfil.url || t.image_perfil.file"
             :alt="t.nome"
           />
+          <span v-else class="mdi mdi-account-group team-image-placeholder" aria-label="Equipe sem imagem"></span>
 
           <h2>{{ t.nome }}</h2>
         </li>

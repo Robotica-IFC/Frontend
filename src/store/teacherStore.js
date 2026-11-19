@@ -24,8 +24,8 @@ export const useTeacherStore = defineStore('teacher', () => {
       data_nascimento: '',
       ativo: true,
       email_verificado: false,
-      imagem_perfil: '',
-    },
+      imagem_perfil: null,
+    }
     teachers: [],
     meUser: null,
     actualTeacher: null,
@@ -123,7 +123,7 @@ export const useTeacherStore = defineStore('teacher', () => {
         const image = await uploadImage(file, { validateLimits: false })
         state.teacher.imagem_perfil = image.attachment_key
       } else {
-        state.teacher.imagem_perfil = '8d7c4190-fb43-46e1-a094-6e400c9365b2'
+        state.teacher.imagem_perfil = null
       }
 
       await createTeacher()

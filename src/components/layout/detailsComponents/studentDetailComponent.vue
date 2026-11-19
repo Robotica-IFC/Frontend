@@ -3,6 +3,7 @@ import { computed, defineProps, onMounted, onBeforeUnmount } from 'vue'
 import { useStudentStore } from '@/store/studentStore'
 import appArrow from '@/components/appArrow.vue'
 import router from '@/router'
+import { getAvatarUrl, useDefaultAvatar } from '@/utils/profileImage'
 
 const studentStore = useStudentStore()
 
@@ -20,9 +21,6 @@ function closeProfile() {
   if (props.embedded) emit('close')
   else router.back()
 }
-
-// Evita baixar a imagem novamente a cada renderização
-const cacheBust = Date.now()
 
 function openTeam(id) {
   if (props.embedded) emit('close')
@@ -76,13 +74,12 @@ const student = computed(
             <!-- IMAGEM DO ALUNO -->
             <div class="profile-image-container">
               <img
-                v-if="student.imagem_perfil?.url || student.imagem_perfil?.file"
                 class="profile-image"
-                :src="`${student.imagem_perfil.url || student.imagem_perfil.file}?t=${cacheBust}`"
+                 :src="getAvatarUrl(student.imagem_perfil)"
+                @error="useDefaultAvatar"
                 :alt="student.user?.name"
               />
 
-              <span v-else class="mdi mdi-account-circle profile-placeholder"></span>
             </div>
 
             <div>

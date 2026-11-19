@@ -2,6 +2,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import router from '@/router'
+import { getAvatarUrl, useDefaultAvatar } from '@/utils/profileImage'
 
 const props = defineProps({
   teachers: { type: Array, default: () => [] },
@@ -79,22 +80,11 @@ function goToTeacher(id) {
             @click="goToTeacher(teacher.id)"
           >
             <img
-              v-if="
-                teacher.imagem_perfil?.url ||
-                teacher.imagem_perfil?.file
-              "
-              :src="
-                teacher.imagem_perfil.url ||
-                teacher.imagem_perfil.file
-              "
+              :src="getAvatarUrl(teacher.imagem_perfil)"
+              @error="useDefaultAvatar"
               :alt="teacher.user?.name || 'Professor'"
             />
 
-            <span
-              v-else
-              class="avatar-placeholder mdi mdi-account"
-              aria-hidden="true"
-            ></span>
 
             <span class="member-label">
               <strong :title="teacher.user?.name">
@@ -175,22 +165,11 @@ function goToTeacher(id) {
             @click="goToStudent(student.id)"
           >
             <img
-              v-if="
-                student.imagem_perfil?.url ||
-                student.imagem_perfil?.file
-              "
-              :src="
-                student.imagem_perfil.url ||
-                student.imagem_perfil.file
-              "
+              :src="getAvatarUrl(student.imagem_perfil)"
+              @error="useDefaultAvatar"
               :alt="student.user?.name || 'Aluno'"
             />
 
-            <span
-              v-else
-              class="avatar-placeholder mdi mdi-account"
-              aria-hidden="true"
-            ></span>
 
             <span class="member-label">
               <strong :title="student.user?.name">
