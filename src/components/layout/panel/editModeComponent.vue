@@ -8,6 +8,7 @@ import appInput from '@/components/form/appInput.vue'
 import imagesourcesheet from '@/components/imagesourcesheet.vue'
 import FieldHint from '@/components/form/FieldHint.vue'
 import { useFormLimits } from '@/composables/useFormLimits'
+import { DEFAULT_AVATAR_URL, useDefaultAvatar } from '@/utils/profileImage'
 
 const limits = useFormLimits()
 
@@ -63,10 +64,7 @@ const {
       <div class="edit-header">
         <div class="image-upload-container">
           <button type="button" class="image-label" @click="showProfileSheet = true">
-            <img v-if="imagePreview" :src="imagePreview" class="profile-image-edit" />
-            <div v-else class="profile-image-edit placeholder">
-              <span class="mdi mdi-account-circle"></span>
-            </div>
+            <img :src="imagePreview || DEFAULT_AVATAR_URL" @error="useDefaultAvatar" class="profile-image-edit" alt="Foto de perfil" />
             <div class="upload-icon-main">
               <span class="mdi mdi-camera"></span>
             </div>

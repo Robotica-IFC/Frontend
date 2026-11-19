@@ -2,6 +2,7 @@
 <script setup>
 import { computed } from 'vue'
 import router from '@/router'
+import { getAvatarUrl, getProfileImageUrl, useDefaultAvatar } from '@/utils/profileImage'
 
 const props = defineProps({
   isOpen: {
@@ -44,17 +45,12 @@ function getPersonName(person) {
 function getPersonImage(person) {
   const nestedUser = person?.user || person?.usuario || {}
 
-  return (
-    person?.imagem_perfil?.url ||
-    person?.imagem_perfil?.file ||
-    nestedUser?.imagem_perfil?.url ||
-    nestedUser?.imagem_perfil?.file ||
-    person?.image_perfil?.url ||
-    person?.image_perfil?.file ||
-    nestedUser?.image_perfil?.url ||
-    nestedUser?.image_perfil?.file ||
-    null
-  )
+  return [
+    person?.imagem_perfil,
+    nestedUser?.imagem_perfil,
+    person?.image_perfil,
+    nestedUser?.image_perfil,
+  ].map(getProfileImageUrl).find(Boolean) || null
 }
 
 function getPersonEmail(person) {
@@ -152,17 +148,12 @@ function goToTeacher(id) {
               >
                 <div class="avatar-wrap">
                   <img
-                    v-if="getPersonImage(teacher)"
-                    :src="getPersonImage(teacher)"
+                    :src="getAvatarUrl(getPersonImage(teacher))"
+                    @error="useDefaultAvatar"
                     :alt="getPersonName(teacher)"
                     loading="lazy"
                   />
 
-                  <span
-                    v-else
-                    class="mdi mdi-account"
-                    aria-hidden="true"
-                  ></span>
                 </div>
 
                 <div class="participant-info">
@@ -208,17 +199,12 @@ function goToTeacher(id) {
               >
                 <div class="avatar-wrap">
                   <img
-                    v-if="getPersonImage(student)"
-                    :src="getPersonImage(student)"
+                    :src="getAvatarUrl(getPersonImage(student))"
+                    @error="useDefaultAvatar"
                     :alt="getPersonName(student)"
                     loading="lazy"
                   />
 
-                  <span
-                    v-else
-                    class="mdi mdi-account"
-                    aria-hidden="true"
-                  ></span>
                 </div>
 
                 <div class="participant-info">

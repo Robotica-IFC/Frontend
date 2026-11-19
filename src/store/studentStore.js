@@ -24,8 +24,8 @@ export const useStudentStore = defineStore('student', () => {
       descricao: '',
       ativo: true,
       email_verificado: false,
-      imagem_perfil: '',
-    },
+      imagem_perfil: null,
+    }
     students: [],
     meUser: null,
     actualStudent: [],
@@ -113,7 +113,7 @@ export const useStudentStore = defineStore('student', () => {
         const image = await uploadImage(file, { validateLimits: false })
         state.student.imagem_perfil = image.attachment_key
       } else {
-        state.student.imagem_perfil = '8d7c4190-fb43-46e1-a094-6e400c9365b2'
+        state.student.imagem_perfil = null
       }
 
       await createStudent()

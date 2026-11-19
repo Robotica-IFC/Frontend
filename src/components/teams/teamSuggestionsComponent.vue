@@ -5,6 +5,7 @@ import studentDetailComponent from '@/components/layout/detailsComponents/studen
 import teacherDetailComponent from '@/components/layout/detailsComponents/teacherDetailComponent.vue'
 import Pagination from '@/components/paginationComponent.vue'
 import { scrollAfterPagination } from '@/utils/paginationScroll'
+import { getAvatarUrl, useDefaultAvatar } from '@/utils/profileImage'
 
 const props = defineProps({
   teamId: { type: [String, Number], required: true },
@@ -358,16 +359,11 @@ onBeforeUnmount(() => {
               @click="openAuthorProfile(suggestion, $event)"
             >
               <img
-                v-if="authorImage(suggestion)"
                 class="author-avatar"
-                :src="authorImage(suggestion)"
+                :src="getAvatarUrl(authorImage(suggestion))"
+                @error="useDefaultAvatar"
                 :alt="`Foto de perfil de ${authorName(suggestion)}`"
               />
-              <span
-                v-else
-                class="mdi mdi-account-circle author-placeholder"
-                aria-hidden="true"
-              ></span>
               <span class="author-identity">
                 <strong>{{ authorName(suggestion) }}</strong>
                 <span

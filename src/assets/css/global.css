@@ -475,3 +475,123 @@ button.details-button:active:not(:disabled) {
   background: linear-gradient(145deg, #21364D, #182330);
   box-shadow: 0 0 0 1px var(--cor-destaque), 0 6px 18px #0006;
 }
+
+
+/* FEAT-125: contraste consistente nos componentes do tema escuro. */
+:root[data-theme="dark"] {
+  --principal-escuro: #e8eaf0;
+  --surface-raised: #1e2b3b;
+  --surface-input: #23354a;
+  --surface-hover: #2a4460;
+  --surface-selected: #244b6e;
+  --border-input: #809ab7;
+  --placeholder: #b8c8da;
+  --danger-claro: #ff9e9e;
+}
+
+/* Input, textarea e select precisam se destacar de cards e painéis escuros. */
+:root[data-theme="dark"] body :is(
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="color"], [type="file"]),
+  textarea,
+  select
+) {
+  background-color: var(--surface-input);
+  color: var(--cor-fonte);
+  border-color: var(--border-input);
+  caret-color: var(--cor-fonte);
+}
+:root[data-theme="dark"] body :is(input, textarea)::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+:root[data-theme="dark"] body :is(input, textarea, select):is(:focus, :focus-visible) {
+  border-color: var(--cor-principal);
+  outline: 2px solid var(--cor-principal);
+  outline-offset: 2px;
+}
+:root[data-theme="dark"] body :is(input, textarea, select):disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+:root[data-theme="dark"] body :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: #91c4ff;
+}
+
+/* Inputs com estilo de linha: mantém a superfície escura mesmo sem borda externa. */
+:root[data-theme="dark"] .input:focus-within,
+:root[data-theme="dark"] .search-field:focus-within,
+:root[data-theme="dark"] .searchable-filter .field:focus-within {
+  border-color: var(--cor-principal);
+}
+:root[data-theme="dark"] .resource-filters :is(.search-field, select),
+:root[data-theme="dark"] .searchable-filter :is(.field, .options),
+:root[data-theme="dark"] .suggestion-section :is(.team-select-control, .team-select-dropdown) {
+  background-color: var(--surface-input);
+  border-color: var(--border-input);
+  color: var(--cor-fonte);
+}
+:root[data-theme="dark"] .resource-filters select.selected,
+:root[data-theme="dark"] .searchable-filter.selected .field,
+:root[data-theme="dark"] .searchable-filter .options li:is(:hover, .active, [aria-selected="true"]) {
+  background-color: var(--surface-selected);
+  color: #fff;
+}
+:root[data-theme="dark"] .searchable-filter .options li.empty,
+:root[data-theme="dark"] .resource-filters .options-error {
+  color: var(--cor-fonte-secundaria);
+}
+
+/* Painéis e cartões: evita superfícies sem separação e texto escuro sobre fundo escuro. */
+:root[data-theme="dark"] body :is(
+  .modal-container, .modal-header, .participant-item, .new-inst, .form-interno,
+  .auth-card, .input-group, .notification-toast, .dropdown-menu, .custom-dropdown,
+  .edit-form, .no-teams, .entry-requests, .entry-requests li
+) {
+  border-color: var(--cor-borda);
+  color: var(--cor-fonte);
+}
+:root[data-theme="dark"] body :is(
+  .modal-container, .participant-item, .auth-card, .notification-toast, .custom-dropdown,
+  .dropdown-menu, .new-inst, .form-interno
+) {
+  background-color: var(--surface-raised);
+}
+:root[data-theme="dark"] body .modal-header {
+  background: var(--surface-hover);
+}
+:root[data-theme="dark"] body :is(
+  .participant-info strong, .modal-header h2, .modal-container h2,
+  .modal-container h3, .auth-card h2, .input-group label
+) {
+  color: var(--cor-fonte);
+}
+:root[data-theme="dark"] body :is(
+  .participant-info small, .modal-container p, .auth-subtitle, .auth-footer,
+  .field-hint, .team-suggestions .suggestion-author, .notifications-page .activity-meta
+) {
+  color: var(--cor-fonte-secundaria);
+}
+:root[data-theme="dark"] body :is(
+  .participant-item, .team-suggestions .suggestion-card,
+  .storage-wrapper .category-section, .entry-requests
+) {
+  border-color: var(--cor-borda);
+}
+:root[data-theme="dark"] body :is(
+  .btn button.border, .details-button, .clear, .btn-cancel, .cancel-btn
+) {
+  background-color: var(--surface-input);
+  color: var(--cor-fonte);
+  border-color: var(--border-input);
+}
+:root[data-theme="dark"] body :is(
+  .btn button.border, .details-button, .clear, .btn-cancel, .cancel-btn
+):enabled:hover {
+  background-color: var(--surface-hover);
+  color: #fff;
+}
+:root[data-theme="dark"] body :is(
+  a, button, [role="button"]
+):focus-visible {
+  outline-color: var(--cor-principal);
+}
