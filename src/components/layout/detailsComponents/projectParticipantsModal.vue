@@ -2,6 +2,7 @@
 <script setup>
 import { computed } from 'vue'
 import router from '@/router'
+import { getAvatarUrl, useDefaultAvatar } from '@/utils/profileImage'
 
 const props = defineProps({
   isOpen: {
@@ -152,17 +153,12 @@ function goToTeacher(id) {
               >
                 <div class="avatar-wrap">
                   <img
-                    v-if="getPersonImage(teacher)"
-                    :src="getPersonImage(teacher)"
+                                        :src="getAvatarUrl(getPersonImage(teacher))"
+                    @error="useDefaultAvatar"
                     :alt="getPersonName(teacher)"
                     loading="lazy"
                   />
 
-                  <span
-                    v-else
-                    class="mdi mdi-account"
-                    aria-hidden="true"
-                  ></span>
                 </div>
 
                 <div class="participant-info">
@@ -208,17 +204,12 @@ function goToTeacher(id) {
               >
                 <div class="avatar-wrap">
                   <img
-                    v-if="getPersonImage(student)"
-                    :src="getPersonImage(student)"
+                                        :src="getAvatarUrl(getPersonImage(student))"
+                    @error="useDefaultAvatar"
                     :alt="getPersonName(student)"
                     loading="lazy"
                   />
 
-                  <span
-                    v-else
-                    class="mdi mdi-account"
-                    aria-hidden="true"
-                  ></span>
                 </div>
 
                 <div class="participant-info">
