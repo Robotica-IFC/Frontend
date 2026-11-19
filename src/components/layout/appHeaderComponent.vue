@@ -4,6 +4,7 @@ import router from "@/router";
 import sideBarComponent from "./sideBarComponentComponent.vue";
 import { useTemplateStore } from "@/store/template";
 import { useNotificationsStore } from '@/store/notificationsStore';
+import { getProfileImageUrl } from '@/utils/profileImage';
 
 const templateStore = useTemplateStore();
 const authStore = useAuthStore();
@@ -40,9 +41,9 @@ const notificationsStore = useNotificationsStore();
       <li>
         <img
           @click="router.push('/edit')"
-          v-if="authStore.user?.imagem_perfil"
+          v-if="getProfileImageUrl(authStore.user?.imagem_perfil)"
           class="perfil"
-          :src="authStore.user?.imagem_perfil"
+           :src="getProfileImageUrl(authStore.user?.imagem_perfil)"
           :alt="authStore.user?.name"
         />
         <span v-else class="mdi mdi-account-circle-outline" @click="router.push('/edit')"></span>
