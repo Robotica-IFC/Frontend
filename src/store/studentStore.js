@@ -8,6 +8,7 @@ import { useTeamStore } from './teamStore'
 import { useTemplateStore } from './template'
 import { useFormLimits } from '@/composables/useFormLimits'
 import { getRegistrationFeedback } from '@/utils/registrationFeedback'
+import { canResumePendingVerification } from '@/utils/pendingRegistration'
 
 export const useStudentStore = defineStore('student', () => {
   const state = reactive({
@@ -70,6 +71,10 @@ export const useStudentStore = defineStore('student', () => {
       )
       await router.push('/verificar-email')
     } catch (error) {
+      if (canResumePendingVerification(error, authStore, state.student.email, 'aluno')) {
+        await router.push('/verificar-email')
+        return
+      }
       const errorMsg = error.response?.data
       console.error('Erro detalhado:', errorMsg)
       throw error
