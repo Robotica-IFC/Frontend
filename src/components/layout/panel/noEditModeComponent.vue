@@ -168,9 +168,11 @@ function openTeam(id) {
           @click="openTeam(t.id)"
         >
           <img
-            :src="t.image_perfil?.url || t.image_perfil?.file"
+            v-if="t.image_perfil?.url || t.image_perfil?.file"
+            :src="t.image_perfil.url || t.image_perfil.file"
             :alt="t.nome"
           />
+          <span v-else class="mdi mdi-account-group team-image-placeholder" aria-label="Equipe sem imagem"></span>
 
           <h2>{{ t.nome }}</h2>
         </li>
