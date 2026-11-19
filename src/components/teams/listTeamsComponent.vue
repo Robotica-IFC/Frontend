@@ -1,10 +1,16 @@
 <script setup>
+import ResourceFilters from '@/components/ResourceFilters.vue'
 import { useTeamStore } from '@/store/teamStore'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import Pagination from '@/components/paginationComponent.vue'
 import router from '@/router'
 
 const teamStore = useTeamStore()
+const filters = ref({})
+function applyFilters(value) {
+  filters.value = value
+  teamStore.getTeams(1, value)
+}
 
 function openTeam(id) {
   router.push({ name: 'teamDetails', params: { id } })
@@ -16,8 +22,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="content">
-    <ul>
+  <div class="content" :aria-busy="teamStore.loading">
+    <ResourceFilters kind="teams" @change="applyFilters" />
+    <p v-if="teamStore.loading" role="status">Carregando equipes...</p>
+    <p v-else-if="teamStore.errorMessage" role="alert">
+      {{ teamStore.errorMessage }}
+      <button type="button" @click="teamStore.getTeams(1, filters)">Tentar novamente</button>
+    </p>
+    <p v-else-if="!teamStore.teams.length">Nenhuma equipe encontrada.</p>
+    <ul v-if="!teamStore.loading && !teamStore.errorMessage">
       <li v-for="t in teamStore.teams" :key="t.id">
         <!-- LAYOUT ORIGINAL (< 950px) -->
         <div class="card-mobile" @click="openTeam(t.id)">
@@ -126,11 +139,12 @@ onMounted(() => {
 
     <Pagination
       class="pagination-wrapper"
+      :inert="teamStore.loading"
       :currentPage="teamStore.currentPage"
       :totalPages="teamStore.totalPages"
       @change="
         (page) => {
-          teamStore.getTeams(page)
+          teamStore.getTeams(page, filters)
         }
       "
     />

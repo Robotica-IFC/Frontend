@@ -16,13 +16,13 @@ export const useProjectStore = defineStore('project', () => {
   const totalProjects = ref(0)
   const total = ref(0)
 
-  async function getProjects(page = 1, pageSize) {
+  async function getProjects(page = 1, pageSize, filters = {}) {
     const requestId = ++projectsRequestId
     try {
       loading.value = true
       errorMessage.value = ''
 
-      const response = await projectApi.getAll(page, pageSize)
+      const response = await projectApi.getAll(page, pageSize, filters)
       if (requestId !== projectsRequestId) return false
 
       projects.value = response.data.results
@@ -50,7 +50,7 @@ export const useProjectStore = defineStore('project', () => {
   let teamRequestId = 0
   let loadedTeamId
 
-  async function getProjectsByTeam(id, page = 1) {
+  async function getProjectsByTeam(id, page = 1, filters = {}) {
     const requestId = ++teamRequestId
     if (loadedTeamId !== String(id)) {
       loadedTeamId = String(id)
@@ -62,7 +62,7 @@ export const useProjectStore = defineStore('project', () => {
     teamErrorMessage.value = ''
 
     try {
-      const response = await projectApi.getByTeam(id, page, 2)
+      const response = await projectApi.getByTeam(id, page, 2, filters)
       if (requestId !== teamRequestId) return false
       teamProjects.value = response.data.results
       teamCurrentPage.value = response.data.page
@@ -131,8 +131,8 @@ export const useProjectStore = defineStore('project', () => {
 
   async function deleteProject(id) {
     await projectApi.delete(id)
-    projects.value = projects.value.filter(project => String(project.id) !== String(id))
-    teamProjects.value = teamProjects.value.filter(project => String(project.id) !== String(id))
+    projects.value = projects.value.filter((project) => String(project.id) !== String(id))
+    teamProjects.value = teamProjects.value.filter((project) => String(project.id) !== String(id))
   }
 
   return {

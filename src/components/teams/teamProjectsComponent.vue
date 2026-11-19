@@ -1,4 +1,5 @@
 <script setup>
+import ResourceFilters from '@/components/ResourceFilters.vue'
 import { nextTick, ref, watch } from 'vue'
 import { useProjectStore } from '@/store/projectsStore'
 import router from '@/router'
@@ -9,6 +10,11 @@ import ExpandablePostCaption from '@/components/posts/ExpandablePostCaption.vue'
 const projectStore = useProjectStore()
 const projectsSection = ref(null)
 const requestedPage = ref(1)
+const filters = ref({})
+function applyFilters(value) {
+  filters.value = value
+  loadPage(1)
+}
 
 const props = defineProps({
   teamId: {
@@ -23,7 +29,7 @@ function openProject(id) {
 
 async function loadPage(page, scroll = false) {
   requestedPage.value = page
-  const loaded = await projectStore.getProjectsByTeam(props.teamId, page)
+  const loaded = await projectStore.getProjectsByTeam(props.teamId, page, filters.value)
   if (!loaded || !scroll) return
   await nextTick()
   projectsSection.value?.scrollIntoView({
@@ -52,15 +58,18 @@ watch(
 
 <template>
   <section ref="projectsSection" class="team-projects" :aria-busy="projectStore.teamLoading">
-    <h1
+    <h1>Projetos da equipe</h1>
+    <ResourceFilters team-only @change="applyFilters" />
+    <p
       v-if="
-        projectStore.teamProjects.length ||
-        projectStore.teamLoading ||
-        projectStore.teamErrorMessage
+        !projectStore.teamLoading &&
+        !projectStore.teamErrorMessage &&
+        !projectStore.teamProjects.length
       "
+      class="section-message"
     >
-      Projetos da Equipe
-    </h1>
+      Nenhum projeto encontrado.
+    </p>
     <p v-if="projectStore.teamLoading" class="section-message" role="status">
       Carregando projetos...
     </p>

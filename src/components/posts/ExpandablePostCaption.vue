@@ -4,6 +4,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'v
 const props = defineProps({
   text: { type: String, default: '' },
   desktopClamp: Boolean,
+  expandDesktop: Boolean,
   desktopLines: { type: Number, default: 3 },
 })
 const captionId = useId()
@@ -13,8 +14,9 @@ const canExpand = ref(false)
 const collapsedText = ref('')
 const mobileQuery = window.matchMedia('(max-width: 949px)')
 const isMobile = ref(mobileQuery.matches)
+const expandableLayout = computed(() => isMobile.value || props.expandDesktop)
 const visibleText = computed(() =>
-  (isMobile.value && canExpand.value && !expanded.value
+  (expandableLayout.value && canExpand.value && !expanded.value
     ? collapsedText.value
     : props.text || ''
   ).trimEnd(),
@@ -22,7 +24,7 @@ const visibleText = computed(() =>
 let observer
 
 function measure() {
-  if (!caption.value || !isMobile.value) {
+  if (!caption.value || !expandableLayout.value) {
     canExpand.value = false
     return
   }
@@ -112,7 +114,7 @@ onUnmounted(() => {
   >
     <p :id="captionId" ref="caption" class="caption-text">
       <span>{{ visibleText }}</span
-      ><template v-if="isMobile && canExpand"
+      ><template v-if="expandableLayout && canExpand"
         >{{ ' '
         }}<button
           type="button"
