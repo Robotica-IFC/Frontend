@@ -22,9 +22,6 @@ function closeProfile() {
   else router.back()
 }
 
-// Evita baixar a imagem novamente a cada renderização
-const cacheBust = Date.now()
-
 function openTeam(id) {
   if (props.embedded) emit('close')
   router.push({ name: 'teamDetails', params: { id } })
