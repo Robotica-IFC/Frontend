@@ -25,7 +25,7 @@ export const useStudentStore = defineStore('student', () => {
       ativo: true,
       email_verificado: false,
       imagem_perfil: null,
-    }
+    },
     students: [],
     meUser: null,
     actualStudent: [],
