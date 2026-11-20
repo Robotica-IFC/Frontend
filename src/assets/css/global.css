@@ -595,3 +595,170 @@ button.details-button:active:not(:disabled) {
 ):focus-visible {
   outline-color: var(--cor-principal);
 }
+
+
+/* FEAT-129: contraste nos filtros, projetos, notificações e modais do tema escuro. */
+:root[data-theme="dark"] body .resource-filters .search-field,
+:root[data-theme="dark"] body .resource-filters select,
+:root[data-theme="dark"] body .searchable-filter .field,
+:root[data-theme="dark"] body .searchable-filter .options {
+  background: var(--surface-input, #23354a);
+  color: var(--cor-fonte, #e8eaf0);
+  border-color: var(--border-input, #809ab7);
+}
+:root[data-theme="dark"] body .resource-filters .search-field input,
+:root[data-theme="dark"] body .searchable-filter .field input {
+  background: transparent;
+  color: var(--cor-fonte, #e8eaf0);
+  border: 0;
+  outline: none;
+  box-shadow: none;
+  caret-color: #fff;
+}
+:root[data-theme="dark"] body .resource-filters :is(.search-field, select):focus-within,
+:root[data-theme="dark"] body .searchable-filter .field:focus-within {
+  outline: 2px solid #9bcaff;
+  outline-offset: 2px;
+}
+:root[data-theme="dark"] body .resource-filters select {
+  color-scheme: dark;
+  background-image: none;
+}
+:root[data-theme="dark"] body .resource-filters select.selected,
+:root[data-theme="dark"] body .searchable-filter.selected .field,
+:root[data-theme="dark"] body .searchable-filter .options li:is(:hover, .active, [aria-selected="true"]) {
+  background: var(--surface-selected, #244b6e);
+  color: #fff;
+}
+:root[data-theme="dark"] body .searchable-filter .options li.empty {
+  color: #ced8e6;
+}
+/* Os botões claros de Ver Detalhes devem ter texto preto legível. */
+:root[data-theme="dark"] body .card-desktop button.details-button {
+  background: #fff;
+  color: #111827;
+  border-color: #93b4d0;
+}
+:root[data-theme="dark"] body .card-desktop button.details-button:is(:hover, :focus-visible) {
+  background: #dcebf9;
+  color: #111827;
+}
+/* Textos das páginas e ações das publicações que ainda usavam azul escuro fixo. */
+:root[data-theme="dark"] body .project-detail-page .project-heading-row h1,
+:root[data-theme="dark"] body .project-detail-page .post-header-left .team-name {
+  color: #9bcaff;
+}
+:root[data-theme="dark"] body .project-detail-page .project-intro .project-description,
+:root[data-theme="dark"] body .project-detail-page .legenda,
+:root[data-theme="dark"] body .project-detail-page .legenda *,
+:root[data-theme="dark"] body .project-detail-page .post-actions button,
+:root[data-theme="dark"] body .project-detail-page .post-actions button :is(span, i),
+:root[data-theme="dark"] body .project-detail-page .post-header-left .names,
+:root[data-theme="dark"] body .project-detail-page .post-header-left h3 {
+  color: var(--cor-fonte, #e8eaf0);
+}
+:root[data-theme="dark"] body .project-detail-page .post-actions button:hover {
+  color: #a9d1ff;
+}
+:root[data-theme="dark"] body .project-detail-page .post-actions button .mdi-heart {
+  color: #ff7189;
+}
+:root[data-theme="dark"] body .project-detail-page .posts > li.post-card {
+  background: var(--surface-raised, #1e2b3b);
+}
+:root[data-theme="dark"] body .project-detail-page .project-edit-control {
+  background: var(--surface-input, #23354a);
+  color: #9bcaff;
+}
+:root[data-theme="dark"] body .notifications-page .activity-card .team-link,
+:root[data-theme="dark"] body .notifications-page .activity-card .project-link {
+  color: #9bcaff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+:root[data-theme="dark"] body .notifications-page .activity-card .team-link:hover {
+  color: #fff;
+}
+/* Corrige títulos e textos dos cartões de projeto em breakpoints desktop. */
+:root[data-theme="dark"] body .container .card h2,
+:root[data-theme="dark"] body .container .card .desc-curta {
+  color: var(--cor-fonte, #e8eaf0);
+}
+/* Modais com estilos claros isolados: manter superfície e ações consistentes. */
+:root[data-theme="dark"] body :is(
+  .modal-overlay .modal-content, .post-edit-panel, .edit-project-dialog,
+  .comments-panel, .overlay .dialog, .edit-project-dialog,
+  .modal-backdrop .modal-container
+) {
+  background: var(--surface-raised, #1e2b3b);
+  border: 1px solid var(--cor-borda, #526b89);
+  color: var(--cor-fonte, #e8eaf0);
+}
+:root[data-theme="dark"] body :is(
+  .post-edit-panel h2, .edit-project-dialog h2,
+  .comments-panel h2, .overlay .dialog h2, .modal-overlay .modal-header h2,
+  .modal-backdrop .modal-container .participant-info strong
+) {
+  color: #a9d1ff;
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay .modal-header, .modal-backdrop .modal-header
+) {
+  background: transparent;
+  border-color: var(--cor-borda, #526b89);
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay .format-selector label, .post-edit-panel .format-selector label,
+  .modal-overlay .post-format-preview, .modal-backdrop .participant-item
+) {
+  background: var(--surface-input, #23354a);
+  border-color: var(--cor-borda, #526b89);
+  color: var(--cor-fonte, #e8eaf0);
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay .format-selector label.active, .post-edit-panel .format-selector label.active
+) {
+  background: var(--surface-selected, #244b6e);
+  border-color: #a9d1ff;
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay .format-selector legend, .modal-overlay .format-tip,
+  .post-edit-panel .hint, .post-edit-panel label, .post-edit-panel .format-selector legend,
+  .edit-project-dialog label, .edit-project-dialog .delete-project p,
+  .comments-panel .comment-content strong, .comments-panel .comment-content p,
+  .comments-panel .comment-content time, .overlay .dialog label,
+  .overlay .dialog p, .modal-backdrop .participant-info small
+) {
+  color: var(--cor-fonte, #e8eaf0);
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay .add-image-btn, .modal-overlay .close-btn,
+  .post-edit-panel header button, .edit-project-dialog header button,
+  .comments-panel header button
+) {
+  color: #a9d1ff;
+}
+:root[data-theme="dark"] body :is(
+  .post-edit-panel footer .secondary, .edit-project-dialog footer .secondary,
+  .overlay .dialog footer .secondary, .comments-panel footer .secondary
+) {
+  background: var(--surface-input, #23354a);
+  border-color: #8aabc9;
+  color: #f5f8ff;
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay textarea, .post-edit-panel textarea,
+  .edit-project-dialog :is(input:not([type="checkbox"]), textarea, select),
+  .overlay .dialog :is(input:not([type="checkbox"]), textarea, select),
+  .comments-panel input
+) {
+  background: var(--surface-input, #23354a);
+  border-color: var(--border-input, #809ab7);
+  color: #f5f8ff;
+}
+:root[data-theme="dark"] body :is(
+  .modal-overlay .modal-body .field-hint, .post-edit-panel .field-hint,
+  .edit-project-dialog .field-hint, .comments-panel .empty
+) {
+  color: #d0dded;
+}
