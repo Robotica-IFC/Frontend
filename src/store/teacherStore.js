@@ -25,7 +25,7 @@ export const useTeacherStore = defineStore('teacher', () => {
       ativo: true,
       email_verificado: false,
       imagem_perfil: null,
-    }
+    },
     teachers: [],
     meUser: null,
     actualTeacher: null,
