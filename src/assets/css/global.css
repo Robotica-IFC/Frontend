@@ -762,3 +762,53 @@ button.details-button:active:not(:disabled) {
 ) {
   color: #d0dded;
 }
+
+/* Modais de equipe, projeto e estoque: contrastes que não dependem do tema claro. */
+:root[data-theme="dark"] body :is(
+  .modal-container .modal-body, .modal-container .modal-actions,
+  .modal-container .modal-header, .modal-container .form-group,
+  .modal-container .input-group, .modal-container .image-preview-container,
+  .modal-container .upload-placeholder, .modal-container .category-list,
+  .modal-container .category-list label
+) {
+  border-color: var(--cor-borda, #526b89);
+  color: var(--cor-fonte, #e8eaf0);
+}
+:root[data-theme="dark"] body :is(
+  .modal-container .upload-placeholder, .modal-container .image-preview-container,
+  .modal-container .category-list, .modal-container .category-list label,
+  .modal-container .form-group
+) {
+  background-color: var(--surface-input, #23354a);
+}
+:root[data-theme="dark"] body :is(
+  .modal-container .upload-placeholder, .modal-container .form-group label,
+  .modal-container .modal-header h2, .modal-container .modal-body h3,
+  .modal-container .modal-body p
+) {
+  color: var(--cor-fonte, #e8eaf0);
+}
+:root[data-theme="dark"] body :is(
+  .modal-container .btn-cancel, .modal-container button.secondary
+) {
+  background: var(--surface-input, #23354a);
+  color: var(--cor-fonte, #e8eaf0);
+  border-color: var(--border-input, #809ab7);
+}
+:root[data-theme="dark"] body .modal-container .btn-save,
+:root[data-theme="dark"] body .modal-container button.primary {
+  background: var(--cor-botao, #1d4e78);
+  color: #fff;
+}
+/* Legibilidade no seletor de formato e nas barras dos comentários. */
+:root[data-theme="dark"] body .comments-panel form {
+  background: var(--surface-input, #23354a);
+  border-top: 1px solid var(--cor-borda, #526b89);
+}
+:root[data-theme="dark"] body .comments-panel .comment-list article {
+  border-bottom-color: var(--cor-borda, #526b89);
+}
+:root[data-theme="dark"] body .post-edit-panel .hint,
+:root[data-theme="dark"] body .modal-overlay .format-tip {
+  color: #cbd9e8;
+}
