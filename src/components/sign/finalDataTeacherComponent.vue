@@ -8,6 +8,7 @@ import imagesourcesheet from '../imagesourcesheet.vue'
 import { ref } from 'vue'
 import stepComponent from '../stepComponent.vue'
 import RegistrationNotice from './RegistrationNotice.vue'
+import LegalAcceptance from './LegalAcceptance.vue'
 
 const teacherStore = useTeacherStore() // Alterado para Teacher
 const templateStore = useTemplateStore()
@@ -16,6 +17,8 @@ const previewImage = ref('/img/default2.jpg')
 const file = ref(null)
 const showImageSheet = ref(false)
 const loading = ref(false)
+const termsAccepted = ref(false)
+const privacyAcknowledged = ref(false)
 teacherStore.registrationFeedback = null
 
 function back() {
@@ -28,7 +31,7 @@ function handleFileSelected(selectedFile) {
 }
 
 async function submit() {
-  if (loading.value) return
+  if (loading.value || !termsAccepted.value || !privacyAcknowledged.value) return
   loading.value = true
   try {
     await teacherStore.submit(file.value)
@@ -70,7 +73,11 @@ async function submit() {
         required=""
       />
 
-      <appButton type="submit" :disabled="loading">{{
+      <LegalAcceptance
+        v-model:termsAccepted="termsAccepted"
+        v-model:privacyAcknowledged="privacyAcknowledged"
+      />
+      <appButton type="submit" :disabled="loading || !termsAccepted || !privacyAcknowledged">{{
         loading ? 'Enviando código...' : 'Verificar e-mail'
       }}</appButton>
     </form>
