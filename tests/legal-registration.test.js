@@ -21,8 +21,8 @@ test('ambos os documentos legais são públicos no roteador', () => {
 
 test('confirmações exigidas para alunos e professores antes de enviar', () => {
   const acceptance = read('src/components/sign/LegalAcceptance.vue')
-  assert.match(acceptance, /name="acceptTerms"[\\s\\S]*?required/)
-  assert.match(acceptance, /name="acknowledgePrivacy"[\\s\\S]*?required/)
+  assert.ok(acceptance.includes('name="acceptTerms"') && acceptance.includes('required'))
+  assert.ok(acceptance.includes('name="acknowledgePrivacy"') && acceptance.includes('required'))
   for (const component of [
     'src/components/sign/finalDataStudentComponent.vue',
     'src/components/sign/finalDataTeacherComponent.vue',
@@ -30,8 +30,8 @@ test('confirmações exigidas para alunos e professores antes de enviar', () => 
     const source = read(component)
     assert.match(source, /v-model:termsAccepted="termsAccepted"/)
     assert.match(source, /v-model:privacyAcknowledged="privacyAcknowledged"/)
-    assert.match(source, /!termsAccepted\\.value \\|\\| !privacyAcknowledged\\.value/)
-    assert.match(source, /:disabled="loading \\|\\| !termsAccepted \\|\\| !privacyAcknowledged"/)
+    assert.ok(source.includes('!termsAccepted.value || !privacyAcknowledged.value'))
+    assert.ok(source.includes(':disabled="loading || !termsAccepted || !privacyAcknowledged"'))
   }
 })
 
