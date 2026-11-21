@@ -23,6 +23,8 @@ import myTeamsView from '@/views/myTeamsView.vue'
 import TutorialView from '@/views/tutorialView.vue'
 import TeacherView from '@/views/teacherView.vue'
 import NotificationsView from '@/views/notificationsView.vue'
+import TermsOfUseView from '@/views/termsOfUseView.vue'
+import PrivacyPolicyView from '@/views/privacyPolicyView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,6 +56,8 @@ const router = createRouter({
   },
 
   routes: [
+    { path: '/termos-de-uso', name: 'terms-of-use', component: TermsOfUseView },
+    { path: '/privacidade', name: 'privacy-policy', component: PrivacyPolicyView },
     { path: '/notifications', name: 'notifications', component: NotificationsView },
     {
       path: '/verificar-email',
@@ -164,7 +168,7 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = authStore.isAuthenticated
 
   // Lista de rotas que QUALQUER UM pode acessar sem estar logado
-  const publicPaths = ['/', '/sign', '/change-password', '/verificar-email']
+  const publicPaths = ['/', '/sign', '/change-password', '/verificar-email', '/termos-de-uso', '/privacidade']
   const isPublicRoute = publicPaths.includes(to.path)
 
   if (!isLoggedIn && !isPublicRoute) {
