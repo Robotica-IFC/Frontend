@@ -18,6 +18,8 @@ const currentYear = new Date().getFullYear()
             <li><RouterLink to="/projects">Projetos</RouterLink></li>
             <li><RouterLink to="/team">Equipes</RouterLink></li>
             <li><RouterLink to="/about-us">Sobre nós</RouterLink></li>
+            <li><RouterLink to="/termos-de-uso">Termos de Uso</RouterLink></li>
+            <li><RouterLink to="/privacidade">Privacidade</RouterLink></li>
           </ul>
         </nav>
       </div>
